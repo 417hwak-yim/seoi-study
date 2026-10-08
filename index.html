@@ -3067,10 +3067,22 @@ function bubbleGame(){
   function fire(){ if(state!=='playing'||shot) return; kick=1; trail=[]; shot={x:OX,y:OY,vx:Math.cos(angle)*850,vy:Math.sin(angle)*850,color:current}; fx('shoot'); }
   function swap(){ if(state==='playing'&&!shot){ const t=current; current=next; next=t; fx('swap'); } }
   function jelly(x,y,color,r,t){ r=r||R; const c=colors[color]||colors[0]; ctx.save(); ctx.translate(x,y); ctx.scale(1+Math.sin(t||0)*.025,1-Math.sin(t||0)*.025);
-    const g=ctx.createRadialGradient(-r*.3,-r*.45,r*.04,0,0,r*1.15); g.addColorStop(0,c[2]); g.addColorStop(.4,c[0]); g.addColorStop(1,c[1]); ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(0,1,r*.95,r*.92,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=INK; ctx.lineWidth=2; ctx.stroke();
-    ctx.fillStyle='#ffffff80'; ctx.beginPath(); ctx.ellipse(-r*.34,-r*.5,r*.25,r*.12,-.5,0,7); ctx.fill();
-    for(const k of [-.27,.27]){ ctx.fillStyle='#fff'; ctx.beginPath(); ctx.ellipse(r*k,-r*.03,r*.17,r*.25,0,0,7); ctx.fill(); ctx.fillStyle=INK; ctx.beginPath(); ctx.ellipse(r*k+r*.03,r*.015,r*.083,r*.14,0,0,7); ctx.fill(); }
-    ctx.strokeStyle=INK; ctx.lineWidth=1.6; ctx.beginPath(); ctx.arc(0,r*.25,r*.12,0,Math.PI); ctx.stroke(); ctx.restore(); }
+    // 딸기 방석 몸통
+    const g=ctx.createRadialGradient(-r*.3,-r*.35,r*.04,0,0,r*1.15); g.addColorStop(0,c[2]); g.addColorStop(.45,c[0]); g.addColorStop(1,c[1]);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(0,r*.04,r*.95,r*.9,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=INK; ctx.lineWidth=2; ctx.stroke();
+    // 꼭지(줄기)
+    ctx.fillStyle='#7CCFD6'; ctx.strokeStyle=INK; ctx.lineWidth=1.6; ctx.beginPath(); ctx.ellipse(r*.06,-r*.9,r*.09,r*.13,.25,0,7); ctx.fill(); ctx.stroke();
+    // 물결 모양 잎
+    ctx.save(); ctx.beginPath(); ctx.ellipse(0,r*.04,r*.95,r*.9,0,0,Math.PI*2); ctx.clip();
+    ctx.beginPath(); ctx.moveTo(-r*.78,-r*1.1); ctx.lineTo(-r*.78,-r*.5);
+    const n=4, w=r*1.56/n; for(let i=0;i<n;i++){ const x0=-r*.78+w*i, d=r*(i===1||i===2?.3:.2); ctx.quadraticCurveTo(x0+w*.5,-r*.5+d*2,x0+w,-r*.5-(i===n-1?0:r*.04)); }
+    ctx.lineTo(r*.78,-r*1.1); ctx.closePath(); ctx.fillStyle='#8FD8DE'; ctx.fill(); ctx.strokeStyle=INK; ctx.lineWidth=1.6; ctx.stroke(); ctx.restore();
+    ctx.strokeStyle=INK; ctx.lineWidth=2; ctx.beginPath(); ctx.ellipse(0,r*.04,r*.95,r*.9,0,0,Math.PI*2); ctx.stroke();
+    // 씨앗
+    ctx.fillStyle=INK; for(const [sx,sy,a] of [[-.5,.0,.25],[.5,.0,-.25],[0,.12,0],[-.3,.45,.2],[.3,.45,-.2],[0,.66,0]]){ ctx.beginPath(); ctx.ellipse(r*sx,r*sy,r*.045,r*.1,a,0,7); ctx.fill(); }
+    // 하이라이트
+    ctx.fillStyle='#ffffff70'; ctx.beginPath(); ctx.ellipse(-r*.55,-r*.2,r*.1,r*.2,.5,0,7); ctx.fill();
+    ctx.restore(); }
   function aim(e){ const a=cv.getBoundingClientRect(), x=(e.clientX-a.left)/a.width*W, y=(e.clientY-a.top)/a.height*H; angle=Math.max(-Math.PI+.15,Math.min(-.15,Math.atan2(Math.min(-15,y-OY),x-OX))); }
   cv.addEventListener('pointerdown',e=>{ if(state!=='playing') return; aiming=true; try{cv.setPointerCapture(e.pointerId)}catch(_){} aim(e); });
   cv.addEventListener('pointermove',e=>{ if(e.pointerType==='mouse'||aiming) aim(e); });
