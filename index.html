@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3EAD6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1E1A16" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="서이의 공부방">
+<meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
 <title>서이의 공부방</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
@@ -998,6 +1004,63 @@ body{background-color:#F4E7CF}
 .stab.on{background:var(--u); color:#FFF6E8; border-color:var(--u)}
 .stab.home{background:var(--sun); color:#2B2520}
 @media (max-width:560px){ .subjtabs{gap:5px} .stab{padding:6px 8px; font-size:.86rem; min-height:40px} .stab.home{flex-basis:100%} }
+
+/* ===== 휴대폰·태블릿 최적화 ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+body{overscroll-behavior-y:contain;-webkit-tap-highlight-color:transparent}
+#app{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (max-width:560px){#app{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}}
+button,.btn,summary{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+img,svg,canvas{-webkit-touch-callout:none;-webkit-user-drag:none}
+.kidface{pointer-events:none}
+.sfxbtn{right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px))}
+.modal{overscroll-behavior:contain}
+.bpstage{width:min(100%,calc((100dvh - 290px) * 468 / 630))}
+.fb{scroll-margin-bottom:64px}
+@media (hover:none){.unit:hover,.grade:hover:not([disabled]){transform:none}.back:hover{color:var(--soft)}}
+.choice:not([disabled]):active,.lesson:active,.unit:active,.grade:not([disabled]):active,.game:active,.todaycard:active,.stab:active,.srow:active,.srev:active,.picbtn:active,.letbtn:active,.wordbtn:active{transform:scale(.97)}
+@media (pointer:coarse){
+  .say{min-height:44px;padding:6px 14px}
+  .back{min-height:44px;padding:8px 6px}
+  .hint,.stab{min-height:44px}
+  .calrow .calnav{min-width:40px;min-height:40px}
+  .sfxbtn{width:44px;height:44px}
+  summary{padding:8px 0}
+  .code{min-height:44px;font-size:16px}
+  .tile:not(.dtile){min-height:44px;min-width:44px}
+  .mitem,.mlb{min-height:56px}
+}
+/* 태블릿 */
+@media (min-width:700px) and (pointer:coarse){
+  body{font-size:19px}
+  .choice{min-height:76px;font-size:1.3rem}
+  .npk{grid-template-columns:repeat(3,96px)} .npk button{min-height:64px;font-size:1.8rem}
+  .digbtn{min-width:56px;min-height:60px}
+  .trace{width:min(100%,400px)} .trace .ghost{font-size:min(70vw,310px)}
+  .trace.wide{width:min(100%,640px)}
+  .dpad{grid-template-columns:repeat(3,84px);grid-template-rows:repeat(2,68px)} .dpad button{font-size:1.7rem}
+  .picbtn{min-width:100px;min-height:100px} .letbtn{min-width:84px;min-height:84px}
+  .ox button{width:130px;height:130px}
+  .mem{max-width:600px}
+  .casebtn{width:76px}
+}
+/* 휴대폰을 가로로 눕혔을 때: 판이 화면 높이를 넘지 않게 */
+@media (orientation:landscape) and (max-height:520px){
+  .mzwrap{max-width:min(560px,calc(100dvh - 40px))}
+  .trace{width:min(100%,calc(100dvh - 90px))}
+  .trace.wide{width:min(100%,520px,calc((100dvh - 80px) * 900 / 420))}
+  .mem{max-width:min(520px,calc(100dvh + 40px))}
+  .holes{max-width:min(460px,calc(100dvh - 20px))}
+  .stim .pic,.stimpic{font-size:3rem}
+}
+
+/* 미로 게임: 좁은 화면에서도 "시작" 단추가 판 밖으로 잘리지 않게 */
+.mzwrap .bpover{padding:8px; place-items:center; cursor:pointer}
+.mzwrap .bpover>div{display:flex; flex-direction:column; box-sizing:border-box; max-height:100%; min-height:0; padding:12px 14px; border-radius:16px; box-shadow:0 4px 0 var(--ink)}
+.mzwrap .bpover h2{flex:none; font-size:1.2rem; margin-bottom:4px}
+.mzwrap .bpover p{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; margin:0 0 8px; font-size:.86rem; line-height:1.45}
+.mzwrap .bpover .row{flex:none}
+.mzwrap .bpover .btn{min-height:48px; min-width:140px; font-size:1.15rem}
 </style>
 </head>
 <body>
@@ -1666,7 +1729,7 @@ STATE.stamps=STATE.stamps||{}; STATE.best=STATE.best||{}; STATE.days=STATE.days|
 const prog=STATE.stamps;
 let cloudRef=null, cloudBusy=false, cloudDirty=false, cloudState='checking';
 function saveLocal(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify(STATE))}catch(e){} }
-function sig(){ return JSON.stringify([STATE.stamps,STATE.best,STATE.days,STATE.resume&&[STATE.resume.uid,STATE.resume.l,STATE.resume.i]]); }
+function sig(){ return JSON.stringify([STATE.stamps,STATE.best,STATE.days,STATE.last||0,STATE.resume&&[STATE.resume.uid,STATE.resume.l,STATE.resume.i]]); }
 function readRemote(snap){ try{ const d=snap&&snap.exists?snap.data():null; return d&&d.json?JSON.parse(d.json):null; }catch(e){ return null; } }
 /* 계정 저장: 먼저 계정에 있는 기록을 읽어 합친 뒤에 써서, 다른 기기에서 모은 도장을 지우지 않아요 */
 async function pushCloud(){
@@ -1682,6 +1745,7 @@ function mergeState(o){
   Object.keys(o.stamps||{}).forEach(k=>{ if((prog[k]||0)<o.stamps[k]) prog[k]=o.stamps[k]; });
   Object.keys(o.best||{}).forEach(k=>{ const a=STATE.best[k], b=o.best[k]; if(b&&(!a||b.r>a.r)) STATE.best[k]=b; });
   Object.keys(o.days||{}).forEach(k=>{ if((STATE.days[k]||0)<o.days[k]) STATE.days[k]=o.days[k]; });
+  STATE.last=STATE.last||{}; Object.keys(o.last||{}).forEach(k=>{ const a=STATE.last[k], b=o.last[k]; if(b&&(!a||(b.t||0)>(a.t||0))) STATE.last[k]=b; });
   STATE.dsub=STATE.dsub||{}; Object.keys(o.dsub||{}).forEach(k=>{ [...o.dsub[k]].forEach(c=>{ if(!(STATE.dsub[k]||'').includes(c)) STATE.dsub[k]=(STATE.dsub[k]||'')+c; }); });
   STATE.dcut=STATE.dcut||{}; Object.keys(o.dcut||{}).forEach(k=>{ [...o.dcut[k]].forEach(c=>{ if(!(STATE.dcut[k]||'').includes(c)) STATE.dcut[k]=(STATE.dcut[k]||'')+c; }); }); applyCuts();
   if((o.t||0)>(STATE.t||0)){ STATE.resume=o.resume||null; if(o.bp) STATE.bp=o.bp; STATE.t=o.t; }
@@ -1759,7 +1823,7 @@ function calHTML(){
     +(marks.length?'<p class="calmarks">'+marks.join('')+'</p>':'')
     +'<p class="lead" style="margin:8px 0 0">이번 달에 '+cnt+'일 공부했어요.</p>';
 }
-function saveStamp(u,l,stars){
+function saveStamp(u,l,stars){ { const sk=Object.keys(SUBJ).find(k=>SUBJ[k].order.includes(u.g)); if(sk&&slotsOf(u).includes(l)){ STATE.last=STATE.last||{}; STATE.last[sk]={uid:u.id,l:l,t:Date.now()}; } }
   const k=u.id+'-'+l; if((prog[k]||0)<stars) prog[k]=stars; markToday(u);
   persist();
 }
@@ -1933,11 +1997,18 @@ function start(subj){
     const nDone=TK.filter(k=>doneToday.includes(DCH[k])).length, nAll=TK.length;
     todayBox='<section class="todaybox'+(nDone===nAll?' alldone':'')+'" aria-label="오늘의 학습"><h2>오늘의 학습 <span class="tcount" aria-label="'+nAll+'과목 중 '+nDone+'과목 완료">'+TK.map(k=>'<i class="'+(doneToday.includes(DCH[k])?'on':'')+'"></i>').join('')+(subj?'':'<b>'+nDone+' / '+nAll+'</b>')+'</span></h2><p class="lead">'+(nDone===nAll?(subj?'오늘 '+SUBJ[subj].name+' 학습을 했어요! 🎉':'오늘의 학습을 모두 끝냈어요! 🎉'):'누르면 바로 시작해요.')+'</p><div class="todaygrid">';
     TK.forEach(k=>{ const S=SUBJ[k]; let nx=null;
-      for(const g of S.order){ const us=GRADES[g].units; for(let ui=0;ui<us.length&&!nx;ui++){ const l=slotsOf(us[ui]).find(x=>!prog[us[ui].id+'-'+x]); if(l!==undefined) nx={g,ui,u:us[ui],l}; } if(nx) break; }
+      /* 지난번에 한 곳 바로 다음부터 이어서 내요. 풀다 만 문제가 있으면 그것부터, 끝까지 갔으면 앞에 남겨 둔 곳으로 돌아가요 */
+      const seq=[]; S.order.forEach(g=>GRADES[g].units.forEach((uu,ui)=>slotsOf(uu).forEach(l=>seq.push({g,ui,u:uu,l}))));
+      const at=(uid,l)=>seq.findIndex(x=>x.u.id===uid&&String(x.l)===String(l)), open=x=>!prog[x.u.id+'-'+x.l];
+      const rsm=resumeInfo(); let mid=false;
+      if(rsm&&rsm.r.i>0&&rsm.r.i<rsm.r.qs.length){ const p=at(rsm.u.id,rsm.r.l); if(p>=0&&open(seq[p])){ nx=seq[p]; mid=true; } }
+      if(!nx){ const lp=(STATE.last||{})[k]; let p=lp?at(lp.uid,lp.l):-1;
+        if(p<0) for(let n=seq.length-1;n>=0;n--) if(!open(seq[n])){ p=n; break; }
+        nx=seq.slice(p+1).find(open)||seq.find(open)||null; }
       const did=doneToday.includes(DCH[k]);
       if(!nx){ todayBox+='<button class="todaycard done" style="--u:'+S.color+'" data-go="subj:'+k+'">'+mascot(MK[k],40,true)+'<span class="tt"><b>'+S.name+'</b><span class="tl">모두 끝냈어요! 🎉</span></span></button>'; return; }
       const G=GRADES[nx.g], u=nx.u, ln=nx.l==='s'?(u.rev?'마무리 평가':'실전 문제'):(u.rev?'평가 '+(nx.l+1)+' ':(nx.l+1)+'단계 ')+LN(u,nx.l)[0];
-      todayBox+='<button class="todaycard'+(did?' did':'')+'" style="--u:'+S.color+'" data-go="today:'+nx.g+':'+nx.ui+'_'+nx.l+'">'+mascot(MK[k],40,did)+'<span class="tt"><b>'+S.name+'</b><span class="tw">'+(G.subj==='math'||G.subj==='ko'?G.step+' ':'')+G.name+' · '+u.label+'</span><span class="tl">'+(did?'<span class="tnext">다음: </span>':'')+ln+'</span></span>'+(did?'<span class="tdone" role="img" aria-label="오늘 완료">완료</span>':'<span class="tgo" aria-hidden="true">▶</span>')+'</button>'; });
+      todayBox+='<button class="todaycard'+(did?' did':'')+'" style="--u:'+S.color+'" data-go="today:'+nx.g+':'+nx.ui+'_'+nx.l+'">'+mascot(MK[k],40,did)+'<span class="tt"><b>'+S.name+'</b><span class="tw">'+(G.subj==='math'||G.subj==='ko'?G.step+' ':'')+G.name+' · '+u.label+'</span><span class="tl">'+(mid?'이어서: ':did?'<span class="tnext">다음: </span>':'')+ln+'</span></span>'+(did?'<span class="tdone" role="img" aria-label="오늘 완료">완료</span>':'<span class="tgo" aria-hidden="true">▶</span>')+'</button>'; });
     todayBox+='</div></section>'; }
   const calBox='<section class="board cal" id="cal" aria-label="공부 달력">'+calHTML()+'</section>';
   let h='<div class="starttop inkhero '+SEASON+'" id="hero"><div id="scene">'+scene(SEASON)+'</div>'+'<header class="hero">'+(KID.photo?'<img class="kidface" src="'+KID.photo+'" alt="'+KID.name+' 사진">':'')+'<div class="herotxt"><h1 style="--tc:'+([...(KID.name+'의'+(subj==='eng'?'영어공부':subj==='hanja'?'한자공부':subj==='math'?'수학공부':subj==='ko'?'어휘학습':'공부방'))].length+.45)+'"><span class="vseal" aria-hidden="true"><span class="hj">'+(subj?SUBJ[subj].mark:'배움터')+'</span></span>'+KID.name+'의 '+(subj==='eng'?'영어 공부':subj==='hanja'?'한자 공부':subj==='math'?'수학 공부':subj==='ko'?'어휘 학습':'공부방')+'</h1><p><b class="hello">'+KID.call+'</b><br>'+(subj==='eng'?'공부할 단계를 골라요.':subj==='hanja'?'공부할 급수를 골라요.':subj==='math'?'공부할 단원을 골라요.':subj==='ko'?'공부할 낱말 묶음을 골라요.':dailyHello())+'</p></div></header>'+todayBox+'</div>';
@@ -2987,7 +3058,10 @@ function gameMaze(u){
   cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; e.preventDefault(); dragOn=true; P.q.length=0; try{ cv.setPointerCapture(e.pointerId); }catch(_){} extend(cellAt(e),true); });
   cv.addEventListener('pointermove',e=>{ if(!dragOn||state!=='play') return; e.preventDefault(); extend(cellAt(e),false); });
   const dragEnd=()=>{ dragOn=false; }; cv.addEventListener('pointerup',dragEnd); cv.addEventListener('pointercancel',dragEnd);
-  $('mzgo').onclick=()=>{ $('mzo').hidden=true; state='play'; safe=1.5; ask(); cv.focus({preventScroll:true}); };
+  const mzStart=()=>{ if(state!=='ready') return; $('mzo').hidden=true; state='play'; safe=1.5; ask(); try{ cv.focus({preventScroll:true}); }catch(_){} };
+  $('mzgo').onclick=e=>{ e.stopPropagation(); mzStart(); };
+  /* 안내 판 어디를 눌러도 시작해요 (글을 밀어 읽는 동안은 빼고) */
+  $('mzo').addEventListener('click',e=>{ if(!e.target.closest('p')) mzStart(); });
   cv._dbg=()=>({map:MAP,px:P.x,py:P.y,items:items.map(i=>({x:i.x,y:i.y,ok:i.ok,c:i.c.c})),ghosts:G.map(g=>[g.x,g.y]),hearts,qi,right,state,score});
   hud(); requestAnimationFrame(frame);
 }
@@ -3134,6 +3208,11 @@ function bubbleGame(){
   requestAnimationFrame(frame);
 }
 
+
+/* 휴대폰: 답을 고른 뒤 "다음" 단추가 화면 밖에 있으면 보이는 곳까지 내려 줘요 */
+new MutationObserver(ms=>{ ms.forEach(m=>m.addedNodes.forEach(nd=>{ if(nd.nodeType!==1) return; const f=nd.classList&&nd.classList.contains('fb')?nd:nd.querySelector&&nd.querySelector('.fb'); if(f) requestAnimationFrame(()=>{ const r=f.getBoundingClientRect(); if(r.bottom>window.innerHeight-56||r.top<0){ try{ f.scrollIntoView({block:'end',behavior:'smooth'}); }catch(e){ f.scrollIntoView(false); } } }); })); }).observe($app,{childList:true,subtree:true});
+/* iOS: 두 손가락 확대 몸짓이 놀이 판을 흔들지 않게 */
+document.addEventListener('gesturestart',e=>{ if(e.target.closest&&e.target.closest('canvas,.trace,.match,.mline,.dslots,.dbank')) e.preventDefault(); });
 restoreView();
 initCloud();
 </script>
