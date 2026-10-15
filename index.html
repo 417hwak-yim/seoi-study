@@ -1312,6 +1312,37 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 .sbend{text-align:center; padding:22px 10px; background:#fffdf6; border:1px solid #e9dcc0; border-radius:18px; color:#3a2c1c}
 .sbend h2{font-size:2.3rem; margin:6px 0; color:#3a2c1c}
 .sbend p{margin:0}
+</style><style>/* 책장 고침 10.15 */
+.rdbtns{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:6px 0 4px}
+.rdbtns .btn{width:100%; min-width:0; padding-left:6px; padding-right:6px; justify-content:center; text-align:center; box-sizing:border-box}
+.rdform2{display:flex; flex-wrap:wrap; gap:12px}
+.rdform2 .rdfields{flex:1 1 100%; min-width:0}
+.rdcropat{flex:1 1 100%; min-width:0}
+.rdcrop{position:relative; overflow:hidden; border-radius:12px; max-width:340px; margin:0 auto; touch-action:none; -webkit-user-select:none; user-select:none}
+.rdcrop img{display:block; width:100%; height:auto; pointer-events:none}
+.rdcrect{position:absolute; border:3px solid #fff; outline:2px dashed #2FA36B; box-shadow:0 0 0 9999px rgba(0,0,0,.45); touch-action:none; cursor:move; box-sizing:border-box}
+.rdcrect i{position:absolute; width:28px; height:28px; background:#fff; border:3px solid #2FA36B; border-radius:50%; touch-action:none; box-sizing:border-box}
+.rdcrect i[data-h="nw"]{left:-15px; top:-15px} .rdcrect i[data-h="ne"]{right:-15px; top:-15px}
+.rdcrect i[data-h="sw"]{left:-15px; bottom:-15px} .rdcrect i[data-h="se"]{right:-15px; bottom:-15px}
+.rdcrophint{text-align:center; font-size:.88rem; margin:8px 0 4px; opacity:.85}
+.rdcropbtn{gap:8px}
+.rdalts{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 8px}
+.rdalts span{width:100%; font-size:.85rem; opacity:.8}
+.rdalt{border:2px solid #2FA36B; background:#fff; color:#1B2750; border-radius:999px; padding:5px 12px; font:inherit; font-weight:700; touch-action:manipulation}
+</style><style>/* 국어독해 */
+.rdtext{background:#FFFDF6; border:1.5px solid #E6D8B8; border-radius:16px; padding:14px 16px; margin:12px 0; color:#3a2c1c}
+.rdtext header{display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap}
+.rdtext header b{font-size:1.15rem}
+.rdgenre{font-size:.78rem; font-weight:700; color:#fff; background:var(--u); border-radius:999px; padding:2px 10px}
+.rdpara{margin:0 0 10px; font-size:1.18rem; line-height:1.95; word-break:keep-all; text-indent:.6em}
+.rdpara.rdpoem{text-indent:0; text-align:center; line-height:2.1}
+.rds{border-radius:6px; transition:background .2s}
+.rds.on{background:#FFE08A}
+.rdread{margin-top:4px}
+.rdpeek{margin:0 0 10px}
+.rdpeek summary{cursor:pointer; font-weight:700; color:var(--u); padding:4px 0}
+.rdpeek .rdtext{margin:6px 0 0}
+.rdpeek .rdpara{font-size:1.05rem; line-height:1.8}
 </style></head>
 <body>
 <div id="app"></div>
@@ -1570,9 +1601,9 @@ const phLessons=u=>{ if(u._ls) return u._ls; const P=phParts(u), lv1=u.lv===1, o
   out.forEach((o,k)=>{ const same=out.filter(x=>x[0].replace(/ [①②③④]$/,'')===o[0]); if(same.length>1) same.forEach((x,j)=>{ x[0]+=' '+'①②③④'[j]; }); });
   if(P.length===3) out.push(['낱말 모아 다지기','배운 낱말을 모두 섞어 풀어요']);
   out.push(lv1?['글자 다지기','큰 글자와 작은 글자, 첫 글자를 찾아요']:['문장 읽기','배운 낱말로 만든 문장을 읽고 풀어요']); return u._ls=out; };
-const LS=u=>u.rev?REV_LESSONS[u.kind==='wd'?'wd':u.kind==='st'?'story':u.kind==='ph'?'eng':u.kind==='ma'?'math':u.kind==='ko'?'ko':'hanja']:u.kind==='ph'?phLessons(u):u.kind==='ma'?MA_LESSONS:u.kind==='ko'?KO_LESSONS[u.sub]:u.kind==='st'?ST_LESSONS:u.kind==='wd'?WD_LESSONS:LESSONS;
+const LS=u=>u.rev?REV_LESSONS[u.kind==='rd'?'rd':u.kind==='wd'?'wd':u.kind==='st'?'story':u.kind==='ph'?'eng':u.kind==='ma'?'math':u.kind==='ko'?'ko':'hanja']:u.kind==='ph'?phLessons(u):u.kind==='ma'?MA_LESSONS:u.kind==='ko'?KO_LESSONS[u.sub]:u.kind==='st'?ST_LESSONS:u.kind==='wd'?WD_LESSONS:u.kind==='rd'?RD_LESSONS:LESSONS;
 const pic=w=>'<span class="pic">'+((w&&w.p)||'')+'</span>';
-const ukeys=u=>u.kind==='st'?'<span class="pic">'+(u.cv||'📚')+'</span>':u.kind==='ko'||u.kind==='wd'?'<span style="letter-spacing:.02em;font-size:.82em">'+u.kshow+'</span>':u.kind==='ma'?'<span class="en" style="letter-spacing:.02em">'+u.kshow+'</span>':u.kind==='ph'?'<span class="en">'+u.keys.map(k=>k[0]).join(' ')+'</span>':'<span class="hj">'+u.chars.map(c=>c.c).join('')+'</span>';
+const ukeys=u=>u.kind==='rd'?'<span class="pic">'+(u.ic||'📖')+'</span>':u.kind==='st'?'<span class="pic">'+(u.cv||'📚')+'</span>':u.kind==='ko'||u.kind==='wd'?'<span style="letter-spacing:.02em;font-size:.82em">'+u.kshow+'</span>':u.kind==='ma'?'<span class="en" style="letter-spacing:.02em">'+u.kshow+'</span>':u.kind==='ph'?'<span class="en">'+u.keys.map(k=>k[0]).join(' ')+'</span>':'<span class="hj">'+u.chars.map(c=>c.c).join('')+'</span>';
 
 let CURSUBJ='';
 /* ================= 수학: 1학년 2학기 (학습지의 유형을 따라, 풀 때마다 수가 바뀌는 문제를 만들어요) ================= */
@@ -2082,6 +2113,86 @@ SUBJ.wd={name:'낱말 탐험',sub:'비슷한 말, 반대말, 소리가 같은 �
 WDORDER.forEach(g=>ALLG.push(g));
 REVGROUP[501]=[2,2]; REVGROUP[502]=[2,2]; REVGROUP[503]=[2,2]; REVGROUP[504]=[2,2];
 REV_LESSONS.wd=[['낱말 평가','낱말과 뜻을 확인해요'],['문장 평가','문장 속 낱말을 확인해요']];
+/* ================= 국어독해: ERI 예비 단계(7살)와 1단계(초등 1학년) 수준의 짧은 글을 읽고 문제를 풀어요 =================
+   글과 문제는 이 프로그램을 위해 새로 썼어요(「해님과 바람의 내기」는 이솝 이야기를 새로 쓴 것이에요).
+   문단: p 배열 (동시는 줄마다 \n) / 낱말: "낱말;뜻;글에 나온 모양" /
+   문제: ['f',물음,정답,오답,오답] 사실 확인 · ['ox',문장,'O'|'X'] · ['seq',먼저,나중] 차례 · ['main',물음,정답,오답,오답] 중심 내용 · ['why',물음,정답,오답,오답] 까닭·마음 */
+const RDG=[
+['예비 단계','ERI 100 안팎 · 짧은 문장 한 문단','#0E9F8E',[
+ {t:'다람쥐의 도토리',g:'이야기',i:'🐿️',p:['아기 다람쥐가 도토리를 주웠어요. 다람쥐는 도토리를 땅에 묻었어요. 겨울이 되었어요. 다람쥐는 도토리를 찾았어요. 그런데 도토리가 없었어요. 봄이 되자 그 자리에서 작은 싹이 났어요.'],
+  w:'줍다;떨어진 것을 집어 들다;주웠어요|묻다;땅을 파고 넣은 뒤 흙으로 덮다;묻었어요|싹;씨앗에서 처음 돋아나는 잎;싹이',
+  q:[['f','다람쥐가 주운 것은 무엇인가요?','🌰 도토리','🍎 사과','🍌 바나나'],['f','다람쥐는 도토리를 어디에 두었나요?','땅속','나무 위','집 안'],['f','봄이 되자 무엇이 났나요?','작은 싹','예쁜 꽃','버섯'],['ox','다람쥐는 겨울에 도토리를 쉽게 찾았어요.','X'],['ox','도토리를 묻은 자리에서 싹이 났어요.','O'],
+   ['seq','도토리를 땅에 묻었어요.','작은 싹이 났어요.'],['seq','도토리를 주웠어요.','겨울이 되었어요.'],['main','이 이야기에 알맞은 제목은 무엇일까요?','도토리가 싹이 되었어요','다람쥐의 생일잔치','겨울의 눈사람'],['why','다람쥐가 도토리를 땅에 묻은 까닭은 무엇일까요?','겨울에 먹으려고','버리려고','친구에게 주려고'],['why','도토리가 없었을 때 다람쥐의 마음은 어땠을까요?','속상했어요','신났어요','졸렸어요']]},
+ {t:'힘이 센 개미',g:'설명글',i:'🐜',p:['개미는 아주 작아요. 하지만 힘이 아주 세요. 개미는 자기 몸보다 무거운 먹이도 들 수 있어요. 개미는 여럿이 함께 먹이를 날라요. 그래서 큰 먹이도 집까지 옮길 수 있어요.'],
+  w:'무겁다;무게가 많이 나가다;무거운|나르다;물건을 다른 곳으로 옮기다;날라요|여럿;많은 수의 사람이나 동물;여럿이',
+  q:[['f','개미의 몸은 어떤가요?','아주 작아요','아주 커요','아주 길어요'],['f','개미는 먹이를 어떻게 나르나요?','여럿이 함께','혼자서만','날아서'],['f','개미는 무엇을 들 수 있나요?','자기 몸보다 무거운 먹이','자동차','커다란 집'],['ox','개미는 힘이 약해요.','X'],['ox','개미는 큰 먹이를 집까지 옮길 수 있어요.','O'],['ox','개미는 혼자서만 일해요.','X'],
+   ['seq','개미는 아주 작아요.','개미는 여럿이 함께 먹이를 날라요.'],['main','이 글은 무엇을 알려 주나요?','힘이 센 개미','개미의 집 그리기','개미의 생일'],['why','개미가 큰 먹이를 옮길 수 있는 까닭은 무엇인가요?','여럿이 함께 나르니까','날개가 있으니까','먹이가 가벼우니까']]},
+ {t:'할머니 댁에 간 날',g:'일기',i:'👵',p:['10월 3일 맑음. 오늘 할머니 댁에 갔어요. 할머니께서 따뜻한 호박죽을 주셨어요. 나는 할머니와 함께 감을 땄어요. 감이 아주 달았어요. 다음에도 또 오고 싶어요.'],
+  w:'댁;‘집’을 높여 이르는 말;댁에|따다;붙어 있는 열매를 떼어 내다;땄어요|달다;꿀이나 설탕 같은 맛이 나다;달았어요',
+  q:[['f','글쓴이는 오늘 어디에 갔나요?','할머니 댁','학교','바닷가'],['f','할머니께서 주신 음식은 무엇인가요?','호박죽','떡볶이','김밥'],['f','할머니와 함께 한 일은 무엇인가요?','감 따기','눈사람 만들기','수영하기'],['ox','오늘은 비가 왔어요.','X'],['ox','감이 아주 달았어요.','O'],
+   ['seq','호박죽을 먹었어요.','감을 땄어요.'],['main','이 글은 어떤 글인가요?','하루 동안 겪은 일을 쓴 일기','동물을 알려 주는 글','노래 가사'],['why','이 글을 쓴 아이의 마음은 어땠을까요?','즐겁고 기뻤어요','무섭고 슬펐어요','화가 났어요'],['why','다음에도 또 오고 싶다고 한 까닭은 무엇일까요?','할머니 댁에서 즐거웠으니까','숙제가 많아서','길을 잃어서']]},
+ {t:'봄비',g:'동시',i:'🌧️',p:['똑똑똑 봄비가 와요\n새싹이 고개를 쏙 내밀어요\n꽃잎도 살며시 눈을 떠요\n봄비는 봄을 깨우는 노크 소리'],
+  w:'새싹;새로 돋아나는 싹;새싹이|살며시;드러나지 않게 가만히;살며시|노크;문을 똑똑 두드리는 것;노크',
+  q:[['f','봄비 소리를 어떻게 흉내 냈나요?','똑똑똑','쿵쿵쿵','멍멍멍'],['f','고개를 쏙 내민 것은 무엇인가요?','새싹','고양이','눈사람'],['f','이 시의 계절은 언제인가요?','봄','여름','겨울'],['ox','이 시는 겨울에 내리는 눈을 노래했어요.','X'],['ox','꽃잎이 살며시 눈을 뜬다고 했어요.','O'],
+   ['seq','봄비가 와요.','꽃잎도 살며시 눈을 떠요.'],['main','이 시에서 봄비는 무엇이라고 했나요?','봄을 깨우는 노크 소리','여름을 부르는 노래','무서운 천둥소리'],['why','새싹이 고개를 내민 까닭은 무엇일까요?','봄비가 와서 깨어났으니까','추워서','배가 고파서']]},
+ {t:'이를 닦아요',g:'설명글',i:'🪥',p:['밥을 먹으면 이 사이에 음식 찌꺼기가 남아요. 찌꺼기를 그냥 두면 이가 썩을 수 있어요. 그래서 밥을 먹은 뒤에는 이를 닦아야 해요. 칫솔로 위아래로 꼼꼼히 닦아요. 그러면 이가 튼튼해져요.'],
+  w:'찌꺼기;쓰고 남은 작은 부스러기;찌꺼기가|썩다;상해서 나쁘게 변하다;썩을|꼼꼼히;빈틈없이 자세하게;꼼꼼히',
+  q:[['f','밥을 먹으면 이 사이에 무엇이 남나요?','음식 찌꺼기','물','치약'],['f','이는 언제 닦아야 하나요?','밥을 먹은 뒤','놀기 전에만','잠에서 깨기 전'],['f','칫솔로 어떻게 닦나요?','위아래로 꼼꼼히','한 번만 살짝','손가락으로'],['ox','찌꺼기를 그냥 두면 이가 썩을 수 있어요.','O'],['ox','이를 닦으면 이가 약해져요.','X'],
+   ['seq','이 사이에 찌꺼기가 남아요.','이가 튼튼해져요.'],['main','이 글이 말하고 싶은 것은 무엇인가요?','밥을 먹은 뒤에는 이를 닦아요','칫솔은 비싸요','밥을 많이 먹어요'],['why','이를 닦아야 하는 까닭은 무엇인가요?','이가 썩지 않게 하려고','칫솔이 예뻐서','배가 고파서']]},
+ {t:'눈사람의 친구',g:'이야기',i:'⛄',p:['하얀 눈이 펑펑 내렸어요. 민지는 마당에 눈사람을 만들었어요. 눈사람은 혼자라서 쓸쓸해 보였어요. 민지는 작은 눈사람을 하나 더 만들었어요. 두 눈사람이 나란히 서서 웃는 것 같았어요.'],
+  w:'펑펑;눈이 많이 쏟아지는 모양;펑펑|쓸쓸하다;외롭고 허전하다;쓸쓸해|나란히;줄지어 가지런하게;나란히',
+  q:[['f','민지는 어디에 눈사람을 만들었나요?','마당','교실','바닷가'],['f','민지가 하나 더 만든 것은 무엇인가요?','작은 눈사람','눈썰매','연'],['f','마지막에 두 눈사람은 어떻게 보였나요?','나란히 서서 웃는 것 같았어요','울고 있었어요','녹아 버렸어요'],['ox','눈사람은 처음에 혼자였어요.','O'],['ox','비가 많이 내렸어요.','X'],
+   ['seq','눈사람을 만들었어요.','작은 눈사람을 하나 더 만들었어요.'],['main','이 이야기에 알맞은 제목은 무엇일까요?','눈사람의 친구','여름 바다','민지의 생일 케이크'],['why','민지가 눈사람을 하나 더 만든 까닭은 무엇일까요?','눈사람이 쓸쓸해 보여서','눈이 그쳐서','엄마가 시켜서']]}
+]],
+['1단계','ERI 100~200 · 두 문단의 글','#2C6E8C',[
+ {t:'내 짝꿍 지우',g:'이야기',i:'🖍️',p:['오늘 새 짝꿍이 생겼어요. 이름은 지우예요. 지우는 말이 없고 조용했어요. 나는 지우와 친해지고 싶었어요.','쉬는 시간에 지우가 그림을 그리고 있었어요. “와, 고양이를 정말 잘 그린다!” 내가 말하자 지우가 활짝 웃었어요. 우리는 함께 고양이 그림을 그렸어요. 이제 지우는 나의 좋은 친구예요.'],
+  w:'짝꿍;옆자리에 앉는 친구;짝꿍이|조용하다;시끄럽지 않고 고요하다;조용했어요|활짝;얼굴에 웃음을 크게 띤 모양;활짝',
+  q:[['f','새 짝꿍의 이름은 무엇인가요?','지우','민지','서준'],['f','지우가 그린 것은 무엇인가요?','고양이','강아지','자동차'],['f','쉬는 시간에 지우는 무엇을 하고 있었나요?','그림 그리기','책 읽기','줄넘기'],['ox','지우는 처음에 말이 많고 시끄러웠어요.','X'],['ox','두 아이는 함께 그림을 그렸어요.','O'],
+   ['seq','새 짝꿍이 생겼어요.','함께 고양이 그림을 그렸어요.'],['seq','지우가 그림을 그리고 있었어요.','지우가 활짝 웃었어요.'],['main','이 이야기의 중심 내용은 무엇인가요?','새 짝꿍 지우와 친구가 되었어요','고양이를 키우게 되었어요','그림 대회에서 상을 받았어요'],['why','지우가 활짝 웃은 까닭은 무엇일까요?','그림을 잘 그린다고 칭찬을 들어서','선물을 받아서','집에 가는 시간이라서'],['why','이야기 속 ‘나’는 어떤 친구일까요?','먼저 다가가 칭찬해 주는 친구','혼자 놀기만 하는 친구','친구를 놀리는 친구']]},
+ {t:'고슴도치의 가시',g:'설명글',i:'🦔',p:['고슴도치의 등에는 뾰족한 가시가 많이 나 있어요. 가시는 고슴도치를 지켜 주는 갑옷과 같아요.','무서운 동물이 다가오면 고슴도치는 몸을 공처럼 동그랗게 말아요. 그러면 가시가 바깥으로 곤두서서 다른 동물이 함부로 건드리지 못해요. 고슴도치는 밤에 나와서 벌레를 잡아먹어요.'],
+  w:'뾰족하다;끝이 가늘고 날카롭다;뾰족한|곤두서다;꼿꼿하게 거꾸로 서다;곤두서서|함부로;생각 없이 마구;함부로',
+  q:[['f','고슴도치의 등에는 무엇이 나 있나요?','뾰족한 가시','부드러운 털','날개'],['f','무서운 동물이 오면 고슴도치는 어떻게 하나요?','몸을 동그랗게 말아요','하늘로 날아가요','큰 소리로 울어요'],['f','고슴도치는 언제 나와서 먹이를 찾나요?','밤','아침','한낮'],['ox','고슴도치의 가시는 갑옷과 같다고 했어요.','O'],['ox','고슴도치는 풀만 먹어요.','X'],
+   ['seq','등에 가시가 있다는 내용','밤에 벌레를 잡아먹는다는 내용'],['main','이 글은 무엇을 알려 주나요?','고슴도치가 가시로 몸을 지키는 방법','고슴도치를 키우는 방법','벌레의 종류'],['why','가시를 갑옷과 같다고 한 까닭은 무엇일까요?','몸을 지켜 주니까','반짝반짝 예쁘니까','아주 무거우니까']]},
+ {t:'선생님께',g:'편지',i:'✉️',p:['김민정 선생님께. 선생님, 안녕하세요? 저는 1학년 2반 서연이에요.','지난주에 제가 운동장에서 넘어졌을 때 선생님께서 보건실에 데려가 주셨지요. 그때 정말 고마웠어요. 이제 무릎이 다 나았어요. 앞으로 뛸 때는 조심할게요. 선생님, 사랑해요! 서연 올림.'],
+  w:'보건실;학교에서 아플 때 가는 곳;보건실에|낫다;아픈 것이 없어지다;나았어요|올림;편지 끝에 보내는 사람 이름 뒤에 쓰는 말;올림',
+  q:[['f','이 편지는 누가 썼나요?','서연','김민정 선생님','민지'],['f','서연이는 어디에서 넘어졌나요?','운동장','교실','집'],['f','선생님께서 서연이를 데려가 주신 곳은 어디인가요?','보건실','도서관','급식실'],['ox','서연이의 무릎은 이제 다 나았어요.','O'],['ox','이 편지는 친구에게 쓴 편지예요.','X'],
+   ['seq','운동장에서 넘어졌어요.','무릎이 다 나았어요.'],['main','서연이가 이 편지를 쓴 까닭은 무엇인가요?','선생님께 고마운 마음을 전하려고','숙제를 내려고','생일에 초대하려고'],['why','서연이가 앞으로 하겠다고 다짐한 것은 무엇인가요?','뛸 때 조심할게요','운동장에 안 갈게요','보건실에 매일 갈게요']]},
+ {t:'구름',g:'동시',i:'☁️',p:['하늘에 둥실 흰 구름\n솜사탕처럼 몽실몽실\n바람이 불면\n양이 되었다가\n토끼가 되었다가\n어느새 커다란 고래가 되었어요'],
+  w:'둥실;가볍게 떠 있는 모양;둥실|몽실몽실;통통하고 보드라운 모양;몽실몽실|어느새;어느 틈인지 모르는 사이에;어느새',
+  q:[['f','구름을 무엇처럼 몽실몽실하다고 했나요?','솜사탕','돌멩이','얼음'],['f','마지막에 구름은 무엇이 되었나요?','커다란 고래','양','토끼'],['f','구름은 무슨 색이라고 했나요?','흰색','검은색','빨간색'],['ox','바람이 불면 구름 모양이 바뀌어요.','O'],['ox','구름이 강아지가 되었다고 했어요.','X'],
+   ['seq','양이 되었어요.','커다란 고래가 되었어요.'],['seq','토끼가 되었어요.','고래가 되었어요.'],['main','이 시는 무엇을 노래했나요?','모양이 바뀌는 구름','비 오는 날','밤하늘의 별'],['why','구름 모양이 바뀐 까닭은 무엇인가요?','바람이 불어서','해가 져서','비가 와서']]},
+ {t:'물은 어디로 갈까요?',g:'설명글',i:'💧',p:['비가 내리면 빗물은 땅으로 스며들거나 강으로 흘러가요. 강물은 흘러흘러 바다로 가요.','햇볕이 뜨겁게 내리쬐면 바닷물은 수증기가 되어 하늘로 올라가요. 하늘로 올라간 수증기는 모여서 구름이 돼요. 구름이 무거워지면 다시 비가 되어 내려요. 이렇게 물은 돌고 돌아요.'],
+  w:'스며들다;물이 속으로 배어 들어가다;스며들거나|수증기;물이 데워져 공기 속으로 날아간 것;수증기가|내리쬐다;햇볕이 세게 비치다;내리쬐면',
+  q:[['f','강물은 흘러서 어디로 가나요?','바다','산','하늘'],['f','바닷물은 무엇이 되어 하늘로 올라가나요?','수증기','얼음','모래'],['f','수증기가 모이면 무엇이 되나요?','구름','바람','무지개'],['ox','구름이 무거워지면 비가 내려요.','O'],['ox','물은 한 번 바다에 가면 다시는 움직이지 않아요.','X'],
+   ['seq','바닷물이 수증기가 돼요.','수증기가 모여 구름이 돼요.'],['seq','구름이 돼요.','비가 되어 내려요.'],['main','이 글의 중심 내용은 무엇인가요?','물은 모습을 바꾸며 돌고 돌아요','바다에는 물고기가 많아요','비 오는 날에는 우산을 써요'],['why','바닷물이 하늘로 올라가려면 무엇이 필요할까요?','뜨거운 햇볕','차가운 눈','커다란 배']]},
+ {t:'해님과 바람의 내기',g:'이야기',i:'🌞',p:['해님과 바람이 누가 더 힘이 센지 내기를 했어요. “저기 걸어가는 나그네의 외투를 먼저 벗기는 쪽이 이기는 거야.”','바람이 먼저 쌩쌩 세게 불었어요. 그러자 나그네는 외투를 더 꽉 여몄어요. 이번에는 해님이 따뜻하게 햇볕을 비추었어요. 나그네는 “아, 덥다!” 하며 외투를 벗었어요. 내기에서 해님이 이겼어요.'],
+  w:'내기;누가 이기는지 겨루는 일;내기를|나그네;길을 떠나 이곳저곳을 다니는 사람;나그네의|여미다;벌어진 옷깃을 바로 합치다;여몄어요',
+  q:[['f','해님과 바람은 무엇을 했나요?','내기','숨바꼭질','달리기 시합'],['f','나그네의 외투를 벗긴 것은 누구인가요?','해님','바람','구름'],['f','바람이 불자 나그네는 어떻게 했나요?','외투를 꽉 여몄어요','외투를 벗었어요','집으로 뛰어갔어요'],['ox','바람이 내기에서 이겼어요.','X'],['ox','해님은 따뜻하게 햇볕을 비추었어요.','O'],
+   ['seq','바람이 세게 불었어요.','해님이 햇볕을 비추었어요.'],['main','이 이야기에서 배울 점은 무엇일까요?','억지로 하는 것보다 따뜻하게 대하는 것이 더 힘이 세요','바람이 가장 힘이 세요','외투는 꼭 입어야 해요'],['why','나그네가 외투를 벗은 까닭은 무엇인가요?','더워서','추워서','외투가 찢어져서']]},
+ {t:'줄넘기 연습',g:'일기',i:'🤸',p:['11월 5일 흐림. 학교에서 줄넘기 시험이 있다고 했다. 나는 아직 줄넘기를 다섯 번밖에 못 한다.','저녁마다 아빠와 놀이터에서 연습을 했다. 처음에는 줄에 발이 자꾸 걸렸다. 그래도 포기하지 않았다. 오늘은 열다섯 번이나 넘었다! 아빠가 “역시 연습이 최고야!” 하고 박수를 쳐 주셨다.'],
+  w:'포기하다;하던 일을 그만두다;포기하지|연습;잘하려고 되풀이해서 익히는 것;연습을|역시;생각한 대로 정말;역시',
+  q:[['f','줄넘기 연습은 누구와 했나요?','아빠','엄마','선생님'],['f','처음에는 줄넘기를 몇 번 할 수 있었나요?','다섯 번','열다섯 번','스무 번'],['f','오늘은 몇 번 넘었나요?','열다섯 번','다섯 번','백 번'],['ox','처음부터 줄넘기를 잘했다.','X'],['ox','연습은 놀이터에서 했다.','O'],
+   ['seq','줄에 발이 자꾸 걸렸다.','열다섯 번이나 넘었다.'],['main','이 글에서 배울 점은 무엇일까요?','포기하지 않고 연습하면 잘할 수 있어요','어려운 것은 안 하는 게 좋아요','놀이터는 저녁에만 가요'],['why','아빠가 박수를 쳐 주신 까닭은 무엇일까요?','연습해서 실력이 많이 늘었으니까','시험이 끝나서','줄을 새로 사서']]},
+ {t:'나뭇잎 색이 바뀌어요',g:'설명글',i:'🍁',p:['여름에 초록색이던 나뭇잎이 가을이 되면 빨갛게, 노랗게 물들어요. 왜 그럴까요?','나뭇잎 속에는 초록색을 내는 물질이 있어요. 날씨가 추워지면 이 물질이 줄어들어요. 그러면 숨어 있던 노란색이나 빨간색이 드러나요. 그래서 가을 산은 알록달록 고운 색으로 바뀌어요.'],
+  w:'물들다;빛깔이 옮아서 묻거나 배다;물들어요|드러나다;가려 있던 것이 보이게 되다;드러나요|알록달록;여러 빛깔이 고르지 않게 섞인 모양;알록달록',
+  q:[['f','여름에 나뭇잎은 무슨 색인가요?','초록색','빨간색','하얀색'],['f','날씨가 추워지면 무엇이 줄어드나요?','초록색을 내는 물질','나무의 뿌리','햇볕'],['f','가을 산은 어떻게 바뀌나요?','알록달록 고운 색','온통 하얀색','깜깜한 색'],['ox','가을이 되면 나뭇잎이 물들어요.','O'],['ox','날씨가 더워지면 나뭇잎이 빨개져요.','X'],
+   ['seq','초록색을 내는 물질이 줄어들어요.','노란색이나 빨간색이 드러나요.'],['main','이 글은 무엇을 알려 주나요?','가을에 나뭇잎 색이 바뀌는 까닭','나무를 심는 방법','여름에 하는 놀이'],['why','글쓴이가 “왜 그럴까요?” 하고 물은 까닭은 무엇일까요?','읽는 사람이 궁금해하며 읽게 하려고','답을 몰라서','화가 나서']]}
+]]];
+const RDORDER=[], RD_LESSONS=[['글 읽기','글을 읽고 누가, 무엇을 했는지 찾아요'],['낱말 알기','글에 나온 낱말의 뜻을 알아봐요'],['내용 확인','차례와 맞고 틀림을 살펴요'],['생각하며 읽기','중심 내용과 까닭을 생각해요'],['놀이 한마당','게임으로 한 번 더 다져요']];
+RDG.forEach((V,vi)=>{ const g=601+vi; RDORDER.push(g);
+  GRADES[g]={name:V[0],han:vi?'1':'P',step:'국어독해 '+V[0],sub:V[1],color:V[2],subj:'rd',units:V[3].map((S,k)=>{
+    const id='rd'+(vi+1)+'-'+(k+1), words=S.w.split('|').map(x=>{ const a=x.split(';'); return {w:a[0],d:a[1],f:a[2]||a[0]}; });
+    const qs=S.q.map(q=>({ty:q[0],a:q.slice(1),uid:id}));
+    const sents=S.p.join(' ').replace(/\n/g,' ').split(/(?<=[.?!”])\s+/).filter(Boolean);
+    const facts=words.map(w=>({q:w.d,a:w.w})).concat(qs.filter(q=>q.ty==='f').map(q=>({q:q.a[0],a:q.a[1].replace(/^[^가-힣0-9]+/,'')})));
+    let sl=words.map(w=>w.w[0]); sl.push(S.t[0]); while(sl.length<5) sl.push('읽'); sl=sl.slice(0,5); sl.push('★');
+    return {id,kind:'rd',g,sem:2,num:k+1,title:S.t,ko:S.g+' · '+sents.length+'문장',kshow:'',ic:S.i,genre:S.g,paras:S.p,sents,words,qs,chars:[],games:['speed','mem','ox'],seals:sl,facts,fact:()=>RP(facts),
+      memf:()=>shuffle(words.map(w=>({q:w.w,a:w.d}))),
+      speedQ:n=>{ const F=qs.filter(q=>q.ty==='f'||q.ty==='main'||q.ty==='why'); return Array.from({length:n},()=>{ const q=RP(F); return {lab:'글에서 알맞은 답은?',p:q.a[0],a:q.a[1],ch:shuffle(q.a.slice(1,4))}; }); }}; })}; });
+SUBJ.rd={name:'국어독해',sub:'짧은 글 읽고 문제 풀기 · ERI 예비~1단계',mark:'읽기',order:RDORDER,color:'#0E9F8E'};
+RDORDER.forEach(g=>ALLG.push(g));
+REVGROUP[601]=[2,2,2]; REVGROUP[602]=[2,2,2,2];
+REV_LESSONS.rd=[['낱말 평가','글에 나온 낱말을 확인해요'],['내용 평가','글의 내용을 확인해요']];
 ALLG.forEach(g=>{
   const G=GRADES[g], UW=G.subj==='math'?'차시':G.subj==='story'?'권':'단원', src=G.units, out=[], PAL=['#2C4A7C','#B8402A','#3E7F6F','#7A3E6A','#B7791F','#2C6E8C']; let p=0, n=0;
   REVGROUP[g].forEach((sz,k)=>{
@@ -2093,6 +2204,7 @@ ALLG.forEach(g=>{
       r.ko='낱말 '+r.words.length+'개와 소리 '+r.keys.length+'개를 모아서 확인해요'; }
     else if(G.subj==='ko'){ r.kind='ko'; r.sub=mem[0].sub; r.kshow=mem.map(u=>u.sub==='H'?u.cen.c:u.words[0].w).join(' · '); r.games=[]; r.words=mem.flatMap(u=>u.words); r.ko='낱말 '+r.words.length+'개를 모아서 확인해요'; r.fact=()=>RP(mem).fact(); }
     else if(G.subj==='story'){ r.kind='st'; const sw=new Set(); r.words=mem.flatMap(u=>u.words).filter(w=>!sw.has(w.en)&&sw.add(w.en)); r.pages=mem.flatMap(u=>u.pages); r.qs=mem.flatMap(u=>u.qs); r.cv='📚'; r.games=[]; r.seals=[]; r.ko='그림책 '+mem.length+'권의 이야기와 낱말을 모아서 확인해요'; }
+    else if(G.subj==='rd'){ r.kind='rd'; r.ic='📚'; r.words=mem.flatMap(u=>u.words); r.qs=mem.flatMap(u=>u.qs); r.facts=mem.flatMap(u=>u.facts); r.fact=()=>RP(r.facts); r.kshow=''; r.games=[]; r.seals=[]; r.ko='글 '+mem.length+'편을 모아서 확인해요'; }
     else if(G.subj==='wd'){ r.kind='wd'; r.rel=G.rel; r.items=mem.flatMap(u=>u.items); r.facts=mem.flatMap(u=>u.facts); r.fact=()=>RP(r.facts); r.words=mem.flatMap(u=>u.words); r.kshow=mem.map(u=>u.title).join(' · '); r.games=[]; r.seals=[]; r.ko='낱말 '+r.items.length+'개를 모아서 확인해요'; }
     else if(G.subj==='math'){ r.kind='ma'; r.kshow=mem.map(u=>u.title).join(' · '); r.games=[]; r.ko=mem.length+'개 차시에서 배운 것을 모아서 확인해요'; }
     else{ r.chars=mem.flatMap(u=>u.chars); r.ko='한자 '+r.chars.length+'자를 모아서 확인해요'; }
@@ -2248,7 +2360,7 @@ function sticker(u,l,kind){
 }
 /* 공부 달력: 차시, 규칙 퀴즈, 말하기 도전을 하나 끝낼 때마다 오늘 날짜에 표시해요 */
 const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-function markToday(u){ const k=dkey(new Date()); STATE.days[k]=(STATE.days[k]||0)+1; const s=u&&u.kind==='ph'?'e':u&&u.kind==='ma'?'m':u&&u.kind==='ko'?'k':u&&u.kind==='st'?'b':u&&u.kind==='wd'?'w':'h'; STATE.dsub=STATE.dsub||{}; if(!(STATE.dsub[k]||'').includes(s)) STATE.dsub[k]=(STATE.dsub[k]||'')+s; if(STATE.dcut&&STATE.dcut[k]) STATE.dcut[k]=STATE.dcut[k].replace(s,''); grantGame(); }
+function markToday(u){ const k=dkey(new Date()); STATE.days[k]=(STATE.days[k]||0)+1; const s=u&&u.kind==='ph'?'e':u&&u.kind==='ma'?'m':u&&u.kind==='ko'?'k':u&&u.kind==='st'?'b':u&&u.kind==='wd'?'w':u&&u.kind==='rd'?'r':'h'; STATE.dsub=STATE.dsub||{}; if(!(STATE.dsub[k]||'').includes(s)) STATE.dsub[k]=(STATE.dsub[k]||'')+s; if(STATE.dcut&&STATE.dcut[k]) STATE.dcut[k]=STATE.dcut[k].replace(s,''); grantGame(); }
 function applyCuts(){ STATE.dcut=STATE.dcut||{}; Object.keys(STATE.dcut).forEach(k=>{ if(!STATE.dcut[k]||!STATE.days[k]) return; let cur=STATE.dsub[k]!==undefined?STATE.dsub[k]:'h'; [...STATE.dcut[k]].forEach(c=>{ cur=cur.replace(c,''); }); if(cur) STATE.dsub[k]=cur; else{ delete STATE.days[k]; delete STATE.dsub[k]; } }); }
 const daySub=k=>STATE.days[k]?((STATE.dsub||{})[k]||'h'):'';
 function streak(){ const d=new Date(); if(!STATE.days[dkey(d)]) d.setDate(d.getDate()-1); let n=0; while(STATE.days[dkey(d)]){ n++; d.setDate(d.getDate()-1); } return n; }
@@ -2267,10 +2379,10 @@ function calHTML(){
   for(let d=1;d<=last;d++){ const dt=new Date(calY,calM,d), k=dkey(dt), n=STATE.days[k]||0, sub=daySub(k); if(n) cnt++;
     const bd=calM+1===KID.bday.m&&d===KID.bday.d, hol=holiday(calY,calM+1,d), red=hol||dt.getDay()===0;
     if(hol) marks.push('<span class="holnote">'+d+'일 '+hol+'</span>'); if(bd) marks.push('<span class="bdnote">🎂 '+d+'일 '+KID.name+' 생일</span>');
-    cells+='<span role="button" tabindex="0" data-day="'+k+'" class="cd'+(k===(calSel||tk)?' sel':'')+(n?' done':'')+(k===tk?' today':'')+(bd?' bday':'')+(hol?' hol':'')+(red?' red':'')+'" aria-label="'+(calM+1)+'월 '+d+'일'+(hol?', '+hol:'')+(bd?', '+KID.name+' 생일':'')+(n?', '+(sub.includes('e')?'영어 ':'')+(sub.includes('h')?'한자 ':'')+(sub.includes('m')?'수학 ':'')+(sub.includes('k')?'어휘 ':'')+(sub.includes('b')?'영어 동화 ':'')+(sub.includes('w')?'낱말 탐험 ':'')+'공부 '+n+'개 완료':'')+'"><b>'+d+'</b>'+(moodOf(k)?'<u class="cdmood">'+moodOf(k)[1]+'</u>':'')+(bd?'<em>🎂</em>':'')+'</span>'; }
+    cells+='<span role="button" tabindex="0" data-day="'+k+'" class="cd'+(k===(calSel||tk)?' sel':'')+(n?' done':'')+(k===tk?' today':'')+(bd?' bday':'')+(hol?' hol':'')+(red?' red':'')+'" aria-label="'+(calM+1)+'월 '+d+'일'+(hol?', '+hol:'')+(bd?', '+KID.name+' 생일':'')+(n?', '+(sub.includes('e')?'영어 ':'')+(sub.includes('h')?'한자 ':'')+(sub.includes('m')?'수학 ':'')+(sub.includes('k')?'어휘 ':'')+(sub.includes('b')?'영어 동화 ':'')+(sub.includes('w')?'낱말 탐험 ':'')+(sub.includes('r')?'국어독해 ':'')+'공부 '+n+'개 완료':'')+'"><b>'+d+'</b>'+(moodOf(k)?'<u class="cdmood">'+moodOf(k)[1]+'</u>':'')+(bd?'<em>🎂</em>':'')+'</span>'; }
   const st=streak(), did=STATE.days[tk]||0, isBd=today.getMonth()+1===KID.bday.m&&today.getDate()===KID.bday.d, th=holiday(today.getFullYear(),today.getMonth()+1,today.getDate());
   return '<p class="jua" style="margin:0 0 6px;font-size:1rem">📅 '+KID.name+'의 공부 달력</p><div class="calhead"><button class="calnav" data-cal="-1" aria-label="이전 달">◀</button><h2>'+calY+'년 '+(calM+1)+'월</h2><button class="calnav" data-cal="1" aria-label="다음 달"'+((calY-today.getFullYear())*12+calM-today.getMonth()>=14?' disabled':'')+'>▶</button></div>'
-    +'<p class="lead" style="margin:4px 0 8px">'+(isBd?'🎉 오늘은 '+KID.name+' 생일! 생일 축하해, '+KID.ya+'! ':'')+(th?'오늘은 '+th+'! ':'')+(did?'✅ 오늘의 공부 완료! 오늘 '+[['e','영어'],['h','한자'],['m','수학'],['k','어휘'],['b','영어 동화'],['w','낱말 탐험']].filter(x=>daySub(tk).includes(x[0])).map(x=>x[1]).join(', ')+' '+did+'개를 끝냈어요.':'오늘은 아직 공부하지 않았어요. 단계를 하나 끝내면 달력에 표시돼요.')+(st>1?' 🔥 '+st+'일 연속 공부 중!':'')+'</p>'
+    +'<p class="lead" style="margin:4px 0 8px">'+(isBd?'🎉 오늘은 '+KID.name+' 생일! 생일 축하해, '+KID.ya+'! ':'')+(th?'오늘은 '+th+'! ':'')+(did?'✅ 오늘의 공부 완료! 오늘 '+[['e','영어'],['h','한자'],['m','수학'],['k','어휘'],['b','영어 동화'],['w','낱말 탐험'],['r','국어독해']].filter(x=>daySub(tk).includes(x[0])).map(x=>x[1]).join(', ')+' '+did+'개를 끝냈어요.':'오늘은 아직 공부하지 않았어요. 단계를 하나 끝내면 달력에 표시돼요.')+(st>1?' 🔥 '+st+'일 연속 공부 중!':'')+'</p>'
     +'<div class="calgrid">'+['일','월','화','수','목','금','토'].map((w,i)=>'<span class="cw'+(i===0?' sun':i===6?' sat':'')+'">'+w+'</span>').join('')+cells+'</div>'
     +(marks.length?'<p class="calmarks">'+marks.join('')+'</p>':'')
     +'<p class="lead" style="margin:8px 0 0">이번 달에 '+cnt+'일 공부했어요.</p>'+calDayHTML()+calBookHTML();
@@ -2360,7 +2472,7 @@ function restoreView(){
 function home(){
   VIEW='home';
   const total=UNITS.reduce((n,u)=>n+slotsOf(u).filter(l=>prog[u.id+'-'+l]).length,0), sems=[[1,'1학기'],[2,'2학기']].filter(x=>UNITS.some(u=>u.sem===x[0])), multi=sems.length>1;
-  let h='<button class="back" data-go="subj:'+GRADES[GRADE].subj+'">← '+({eng:'단계 고르기',hanja:'급수 고르기',math:'단원 고르기',ko:'묶음 고르기',story:'단계 고르기',wd:'묶음 고르기'})[GRADES[GRADE].subj]+'</button><header class="hero" style="padding-top:4px"><h1>'+(GRADES[GRADE].subj==='math'||GRADES[GRADE].subj==='ko'?GRADES[GRADE].step+' ':'')+GN(GRADE)+(GRADES[GRADE].subj==='hanja'?' 한자':'')+' <span style="font-size:.5em;color:var(--soft)">'+GRADES[GRADE].sub+'</span></h1><p>'+KID.call+' 단계를 끝내면 배운 '+({eng:'소리가',hanja:'한자가',math:'내용이',ko:'낱말이',story:'낱말이',wd:'낱말이'})[GRADES[GRADE].subj]+' 빨간 도장으로 찍혀요.</p></header>';
+  let h='<button class="back" data-go="subj:'+GRADES[GRADE].subj+'">← '+({eng:'단계 고르기',hanja:'급수 고르기',math:'단원 고르기',ko:'묶음 고르기',story:'단계 고르기',wd:'묶음 고르기',rd:'단계 고르기'})[GRADES[GRADE].subj]+'</button><header class="hero" style="padding-top:4px"><h1>'+(GRADES[GRADE].subj==='math'||GRADES[GRADE].subj==='ko'?GRADES[GRADE].step+' ':'')+GN(GRADE)+(GRADES[GRADE].subj==='hanja'?' 한자':'')+' <span style="font-size:.5em;color:var(--soft)">'+GRADES[GRADE].sub+'</span></h1><p>'+KID.call+' 단계를 끝내면 배운 '+({eng:'소리가',hanja:'한자가',math:'내용이',ko:'낱말이',story:'낱말이',wd:'낱말이',rd:'글이'})[GRADES[GRADE].subj]+' 빨간 도장으로 찍혀요.</p></header>';
   const rs=resumeInfo();
   if(rs&&rs.u.g===GRADE&&rs.r.i<rs.r.qs.length) h+='<button class="lesson" style="--u:'+rs.u.color+';width:100%;margin-top:18px" data-go="resume"><span class="n">이어서 풀기</span><span><b>'+KID.ya+', 지난번에 풀던 문제 이어서 풀까?</b><span>'+rs.u.label+' '+(rs.r.l+1)+'단계 '+LN(rs.u,rs.r.l)[0]+', '+(rs.r.i+1)+'번 문제부터 이어서 풀어요.</span></span><span class="go pic" style="font-size:1.8rem">📖</span></button>';
   h+='<section class="board"><h2>'+KID.name+'의 도장 '+total+'개</h2><p class="lead" style="margin:-4px 0 12px;font-size:.95rem">흐린 도장은 아직 못 받은 도장이에요. 단계를 끝내면 빨간 인주로 찍혀요.</p>';
@@ -2395,7 +2507,7 @@ function home(){
 /* ---------- 한자 도장: 단원에서 배운 한자가 빨간 인주 도장으로 찍혀요 ---------- */
 function stickerOf(u,l){
   if(u.rev){ const k=slotsOf(u).indexOf(l); return {e:['🥉','🥈','🥇'][k],name:['동메달','은메달','금메달'][k],bg:'',rot:[-5,4,0][k],medal:1}; }
-  if(u.kind==='ph'||u.kind==='ma'||u.kind==='ko'||u.kind==='st'||u.kind==='wd'){ const lab=u.seals[l==='s'?5:l], m=UNITS.indexOf(u)*6+(l==='s'?5:l); return {e:lab,name:'‘'+lab+'’',bg:'',rot:[-6,4,-3,5,-4,3][m%6],en:1}; }
+  if(u.kind==='ph'||u.kind==='ma'||u.kind==='ko'||u.kind==='st'||u.kind==='wd'||u.kind==='rd'){ const lab=u.seals[l==='s'?5:l], m=UNITS.indexOf(u)*6+(l==='s'?5:l); return {e:lab,name:'‘'+lab+'’',bg:'',rot:[-6,4,-3,5,-4,3][m%6],en:1}; }
   const n=UNITS.indexOf(u)*6+(l==='s'?5:l), rot=[-6,4,-3,5,-4,3][n%6];
   if(l==='s') return {e:'★',name:'마무리 별',bg:'',rot};
   const c=u.chars[l%u.chars.length]; return {e:c.c,name:c.c+'('+hs(c)+')',bg:'',rot}; }
@@ -2473,7 +2585,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
   let todayBox='';
   /* 오늘의 학습은 그날 처음 정해진 단계가 자정까지 그대로 있어요. 끝내면 ‘완료’로 보이고, 자정이 지나면 그다음 단계로 바뀌어요.
      오늘 못 끝낸 단계는 내일도 그대로 오늘의 학습으로 나와요. */
-  { const TK=subj?[subj]:Object.keys(SUBJ), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil'};
+  { const TK=subj?[subj]:Object.keys(SUBJ), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop'};
     LASTDAY=tk;
     if(!STATE.td||STATE.td.d!==tk||!STATE.td.a){ const old=STATE.td; STATE.td={d:tk,a:{},done:{}};
       /* 어제 못 끝낸 단계는 오늘의 학습으로 그대로 넘어와요 */
@@ -2498,7 +2610,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
     const nAll=TK.length;
     todayBox='<section class="todaybox'+(nDone===nAll?' alldone':'')+'" aria-label="오늘의 학습"><h2>오늘의 학습 <span class="tcount" aria-label="'+nAll+'과목 중 '+nDone+'과목 완료">'+TK.map(k=>'<i class="'+(TD.done[k]||!TD.a[k]?'on':'')+'"></i>').join('')+(subj?'':'<b>'+nDone+' / '+nAll+'</b>')+'</span></h2><p class="lead">'+(nDone===nAll?(subj?'오늘의 '+SUBJ[subj].name+' 학습을 끝냈어요! 🎉 내일 새 단계가 열려요.':'오늘의 학습을 모두 끝냈어요! 🎉 내일 새 단계가 열려요.'):'누르면 바로 시작해요.')+'</p><div class="todaygrid">'+cards+'</div></section>'; }
   const calBox='<section class="board cal" id="cal" aria-label="공부 달력">'+calHTML()+'</section>';
-  let h='<div class="starttop inkhero '+SEASON+'" id="hero"><div id="scene">'+scene(SEASON)+'</div>'+'<header class="hero">'+(KID.photo?'<img class="kidface" src="'+KID.photo+'" alt="'+KID.name+' 사진">':'')+'<div class="herotxt"><h1 style="--tc:'+([...(KID.name+'의'+(subj==='eng'?'영어공부':subj==='hanja'?'한자공부':subj==='math'?'수학공부':subj==='ko'?'어휘학습':subj==='story'?'영어동화':subj==='wd'?'낱말탐험':'공부방'))].length+.45)+'"><span class="vseal" aria-hidden="true"><span class="hj">'+(subj?SUBJ[subj].mark:'배움터')+'</span></span>'+KID.name+'의 '+(subj==='eng'?'영어 공부':subj==='hanja'?'한자 공부':subj==='math'?'수학 공부':subj==='ko'?'어휘 학습':subj==='story'?'영어 동화':subj==='wd'?'낱말 탐험':'공부방')+'</h1><p><b class="hello">'+KID.call+'</b><br>'+(subj==='eng'?'공부할 단계를 골라요.':subj==='hanja'?'공부할 급수를 골라요.':subj==='math'?'공부할 단원을 골라요.':subj==='ko'?'공부할 낱말 묶음을 골라요.':subj==='story'?'읽을 그림책 단계를 골라요.':subj==='wd'?'공부할 낱말 묶음을 골라요.':dailyHello())+'</p></div></header><div class="todaywrap"><div class="moodrow">'+moodBtn()+'</div>'+todayBox+'</div></div>';
+  let h='<div class="starttop inkhero '+SEASON+'" id="hero"><div id="scene">'+scene(SEASON)+'</div>'+'<header class="hero">'+(KID.photo?'<img class="kidface" src="'+KID.photo+'" alt="'+KID.name+' 사진">':'')+'<div class="herotxt"><h1 style="--tc:'+([...(KID.name+'의'+(subj==='eng'?'영어공부':subj==='hanja'?'한자공부':subj==='math'?'수학공부':subj==='ko'?'어휘학습':subj==='story'?'영어동화':subj==='wd'?'낱말탐험':subj==='rd'?'국어독해':'공부방'))].length+.45)+'"><span class="vseal" aria-hidden="true"><span class="hj">'+(subj?SUBJ[subj].mark:'배움터')+'</span></span>'+KID.name+'의 '+(subj==='eng'?'영어 공부':subj==='hanja'?'한자 공부':subj==='math'?'수학 공부':subj==='ko'?'어휘 학습':subj==='story'?'영어 동화':subj==='wd'?'낱말 탐험':subj==='rd'?'국어 독해':'공부방')+'</h1><p><b class="hello">'+KID.call+'</b><br>'+(subj==='eng'?'공부할 단계를 골라요.':subj==='hanja'?'공부할 급수를 골라요.':subj==='math'?'공부할 단원을 골라요.':subj==='ko'?'공부할 낱말 묶음을 골라요.':subj==='story'?'읽을 그림책 단계를 골라요.':subj==='wd'?'공부할 낱말 묶음을 골라요.':subj==='rd'?'읽을 글의 단계를 골라요.':dailyHello())+'</p></div></header><div class="todaywrap"><div class="moodrow">'+moodBtn()+'</div>'+todayBox+'</div></div>';
   const rs=resumeInfo();
   if(rs&&rs.r.i<rs.r.qs.length) h+='<button class="lesson" style="--u:'+rs.u.color+';width:100%;margin-top:18px" data-go="resume"><span class="n">이어서 풀기</span><span><b>'+KID.ya+', 지난번에 풀던 문제 이어서 풀까?</b><span>'+GN(rs.u.g)+' '+rs.u.label+' '+(rs.r.l+1)+'단계 '+LN(rs.u,rs.r.l)[0]+', '+(rs.r.i+1)+'번 문제부터 이어서 풀어요.</span></span><span class="go pic" style="font-size:1.6rem">📖</span></button>';
   { const M=mgState(); if(M.pend) h+='<button class="lesson" style="--u:#7A3E6A;width:100%;margin-top:18px" data-go="mg"><span class="n">게임 시간</span><span><b>'+MGAMES[M.pend.k][0]+' '+MGAMES[M.pend.k][1]+'</b><span>'+M.pend.sec+'초 동안 할 수 있어요.</span></span><span class="go pic" style="font-size:1.6rem">🎮</span></button>'; }
@@ -2506,10 +2618,10 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
   if(!subj){
     h+='<section class="grades">';
     Object.keys(SUBJ).forEach(k=>{ const S=SUBJ[k]; let got=0, tot=0; S.order.forEach(g=>{ const c=gcount(g); got+=c[0]; tot+=c[1]; });
-      h+='<button class="grade subjcard" style="--u:'+S.color+'" data-go="subj:'+k+'"><span class="gnum '+(k==='hanja'?'hj':'en')+'" style="font-size:'+(k==='hanja'?'1.6rem':'1.5rem')+'">'+S.mark+'</span><span class="gtxt"><b>'+S.name+'</b><span>'+S.sub+'</span><span class="nb">도장 '+got+' / '+tot+'개</span><span class="gbar"><i style="width:'+(got/tot*100)+'%"></i></span></span><span class="subjmas">'+mascot({eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil'}[k],54,true)+'</span></button>'; });
+      h+='<button class="grade subjcard" style="--u:'+S.color+'" data-go="subj:'+k+'"><span class="gnum '+(k==='hanja'?'hj':'en')+'" style="font-size:'+(k==='hanja'?'1.6rem':'1.5rem')+'">'+S.mark+'</span><span class="gtxt"><b>'+S.name+'</b><span>'+S.sub+'</span><span class="nb">도장 '+got+' / '+tot+'개</span><span class="gbar"><i style="width:'+(got/tot*100)+'%"></i></span></span><span class="subjmas">'+mascot({eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop'}[k],54,true)+'</span></button>'; });
     h+='</section><button class="lesson" style="--u:#3E7F5F;width:100%;margin-top:18px" data-go="read"><span class="n">'+KID.name+'의 책장</span><span><b>📚 읽은 책을 꽂아요</b><span>표지를 찍어 기록해요. 지금까지 '+((STATE.reads||[]).length)+'권 읽었어요.</span></span><span class="go pic" style="font-size:1.6rem">📖</span></button><div class="calrow">'+calBox+'</div>'+friendsHTML()+'<p class="sync" id="sync">'+syncText()+'</p>';
     h+='<details><summary>다른 기기로 기록 옮기기</summary><p>같은 주소에서 새 버전으로 바뀌면 기록은 그대로 이어져요. <b>새 파일이나 새 주소, 다른 기기</b>에서 열 때는 여기에서 기록을 옮겨요. 도장, 달력, 지난번에 한 곳, 기분, 책장이 모두 옮겨져서 하던 곳 다음부터 공부할 수 있어요.</p><div class="row" style="margin-bottom:12px"><button class="btn sun" id="savefile">💾 기록 파일로 저장</button><label class="btn rdpick">📂 기록 파일 불러오기<input type="file" id="loadfile" accept=".txt,text/plain" hidden></label></div><p class="lead" style="margin:0 0 6px">파일 대신 코드를 복사해서 붙여 넣어도 돼요.</p><div class="row"><input class="code en" id="mycode" readonly aria-label="내 기록 코드" value="'+makeCode()+'"><button class="btn" id="copycode">코드 복사</button></div><div class="row" style="margin-top:12px"><input class="code en" id="incode" aria-label="받은 기록 코드" placeholder="받은 코드를 붙여 넣어요" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn main" id="usecode">기록 가져오기</button></div><p id="codemsg" class="lead" style="margin:10px 0 0"></p></details>';
-    h+='<details><summary>이 프로그램에 쓰인 자료</summary><p>한자의 뜻과 소리는 한국어문회 급수 한자(8급, 7급Ⅱ, 7급)를 따랐어요. 급수는 8급, 7급Ⅱ, 7급 순서로 높아져요. 획순 그림은 Make Me a Hanzi 자료(hanzi-writer-data, Arphic Public License)를, 획순 따라 쓰기는 Hanzi Writer(MIT License)를 사용했어요. 획순 자료는 중국 표준을 따른 것이라, 몇몇 글자는 우리나라 교재와 쓰는 순서가 조금 다를 수 있어요.</p><p>어휘 학습은 비상교육 초등 교과 어휘·한자 어휘 1학년 학습지의 낱말과 차례를 따랐고, 뜻풀이와 예문, 문제는 이 프로그램에서 새로 썼어요.</p><p>수학은 비상교육 초등 수학 1학년 2학기 기초 학습지의 차례와 문제 유형을 따랐고, 문제의 수와 글은 이 프로그램에서 풀 때마다 새로 만들어요. 5단원 ‘규칙 찾기’는 받은 학습지가 없어서, 교육과정의 주제에 맞춰 이 프로그램에서 직접 만들었어요.</p><p>영어 파닉스는 알파벳 소리, 짧은 모음, 긴 모음, 두 글자 소리의 순서로 엮었고, 낱말과 문장은 이 프로그램을 위해 새로 지었어요. 글자 옆에 적은 우리말 소리는 비슷하게 적은 것이니, 소리 듣기로 실제 소리를 들어 주세요.</p><p>영어 동화의 그림책은 이 프로그램을 위해 새로 썼어요. 2단계의 「개미와 비둘기」, 「사자와 생쥐」, 「거북이와 토끼」는 이솝 이야기를, 「커다란 당근」은 옛이야기 ‘커다란 순무’를 아이 눈높이에 맞게 새로 쓴 것이에요. 그림은 기기의 그림 글자(이모지)로 보여 줘요.</p><p>낱말 탐험의 비슷한 말, 반대말, 소리가 같은 말, 헷갈리는 말은 1학년 국어 교육과정의 낱말 공부에 맞춰 골랐고, 예문과 문제는 이 프로그램에서 새로 썼어요.</p></details>';
+    h+='<details><summary>이 프로그램에 쓰인 자료</summary><p>한자의 뜻과 소리는 한국어문회 급수 한자(8급, 7급Ⅱ, 7급)를 따랐어요. 급수는 8급, 7급Ⅱ, 7급 순서로 높아져요. 획순 그림은 Make Me a Hanzi 자료(hanzi-writer-data, Arphic Public License)를, 획순 따라 쓰기는 Hanzi Writer(MIT License)를 사용했어요. 획순 자료는 중국 표준을 따른 것이라, 몇몇 글자는 우리나라 교재와 쓰는 순서가 조금 다를 수 있어요.</p><p>어휘 학습은 비상교육 초등 교과 어휘·한자 어휘 1학년 학습지의 낱말과 차례를 따랐고, 뜻풀이와 예문, 문제는 이 프로그램에서 새로 썼어요.</p><p>수학은 비상교육 초등 수학 1학년 2학기 기초 학습지의 차례와 문제 유형을 따랐고, 문제의 수와 글은 이 프로그램에서 풀 때마다 새로 만들어요. 5단원 ‘규칙 찾기’는 받은 학습지가 없어서, 교육과정의 주제에 맞춰 이 프로그램에서 직접 만들었어요.</p><p>영어 파닉스는 알파벳 소리, 짧은 모음, 긴 모음, 두 글자 소리의 순서로 엮었고, 낱말과 문장은 이 프로그램을 위해 새로 지었어요. 글자 옆에 적은 우리말 소리는 비슷하게 적은 것이니, 소리 듣기로 실제 소리를 들어 주세요.</p><p>영어 동화의 그림책은 이 프로그램을 위해 새로 썼어요. 2단계의 「개미와 비둘기」, 「사자와 생쥐」, 「거북이와 토끼」는 이솝 이야기를, 「커다란 당근」은 옛이야기 ‘커다란 순무’를 아이 눈높이에 맞게 새로 쓴 것이에요. 그림은 기기의 그림 글자(이모지)로 보여 줘요.</p><p>낱말 탐험의 비슷한 말, 반대말, 소리가 같은 말, 헷갈리는 말은 1학년 국어 교육과정의 낱말 공부에 맞춰 골랐고, 예문과 문제는 이 프로그램에서 새로 썼어요.</p><p>국어독해는 EBS ERI 지수(글의 낱말, 문장, 배경지식으로 난이도를 매긴 수치)에 맞춰, 7살 수준의 예비 단계(ERI 100 안팎)와 초등 1학년 수준의 1단계(ERI 100~200)로 나누었어요. 글과 문제는 이 프로그램을 위해 새로 썼고, 「해님과 바람의 내기」는 이솝 이야기를 새로 쓴 것이에요.</p></details>';
   }else{
     h+='<nav class="subjtabs" aria-label="과목 바꾸기"><button class="stab home" data-go="start">🏠 메인 화면</button>'+Object.keys(SUBJ).map(k=>'<button class="stab'+(k===subj?' on':'')+'" style="--u:'+SUBJ[k].color+'" data-go="subj:'+k+'"'+(k===subj?' aria-current="page"':'')+'>'+SUBJ[k].name+'</button>').join('')+'</nav><section class="grades" style="margin-top:10px">';
     SUBJ[subj].order.forEach(g=>{ const G=GRADES[g], c=gcount(g);
@@ -2560,6 +2672,7 @@ function unitView(u){
 function lessonIntro(u,l){
   if(u.rev) return revIntro(u,l);
   if(u.kind==='ma') return maIntro(u,l);
+  if(u.kind==='rd') return rdIntro(u,l);
   if(u.kind==='wd') return wdIntro(u,l);
   if(u.kind==='st') return stIntro(u,l);
   if(u.kind==='ko') return koIntro(u,l);
@@ -2601,6 +2714,7 @@ function buildQuiz(u,l){
   if(u.kind==='ph') return phQuiz(u,l);
   if(u.kind==='st') return stQuiz(u,l);
   if(u.kind==='wd') return wdQuiz(u,l);
+  if(u.kind==='rd') return rdQuiz(u,l);
   const part=!u.rev&&(l===0||l===1), C=part?hjPart(u,l):u.chars, big=t=>'<div class="line hj big">'+t+'</div>', txt=t=>'<div class="line">'+t+'</div>';
   /* 보기 넷: 정답과 겹치거나 서로 같은 보기는 빼요 */
   const mk=(c,inst,stim,val,same,ex,extra)=>{ const seen=new Set([val(c)]), ds=[];
@@ -2895,7 +3009,8 @@ function revIntro(u,l){
   let h='<button class="back" data-go="unit:'+i+'">← '+u.label+'</button><section class="panel"><h2>평가 '+(l+1)+' '+L[0]+'</h2>';
   h+='<div class="stkline">'+sticker(u,l,'preview')+'<span>'+(has?KID.name+'가 받은 <b>'+a.name+'</b>이에요. 별을 더 모아 볼까요?':'이 평가를 끝내면 <b>'+a.name+'</b>을 받아요.')+'</span></div>';
   h+='<p class="lead">'+KID.call+' '+u.members.map(m=>m.num).join(', ')+GRADES[u.g].uword+'에서 배운 것을 모아서 확인해요. 틀려도 괜찮아요. 끝까지 풀면 메달을 받아요.</p>';
-  if(u.kind==='wd') h+='<div class="revchips">'+u.items.map(it=>'<span><b>'+(it.w||it.a)+'</b>'+(it.p?' '+(it.rel==='syn'?'≈':'↔')+' '+it.p:it.b?' · '+it.b:'')+'</span>').join('')+'</div>';
+  if(u.kind==='rd') h+='<div class="revchips">'+u.members.map(m=>'<span>'+m.ic+' <b>'+esc(m.title)+'</b></span>').join('')+'</div>';
+  else if(u.kind==='wd') h+='<div class="revchips">'+u.items.map(it=>'<span><b>'+(it.w||it.a)+'</b>'+(it.p?' '+(it.rel==='syn'?'≈':'↔')+' '+it.p:it.b?' · '+it.b:'')+'</span>').join('')+'</div>';
   else if(u.kind==='st') h+='<div class="revchips">'+u.members.map(m=>'<span>'+m.cv+' <b class="en">'+m.t+'</b></span>').join('')+'</div>';
   else if(u.kind==='ko') h+='<div class="revchips">'+u.words.map(w=>'<span><b>'+w.w+'</b>'+(w.hj?' <span class="hj" style="font-size:1rem">'+w.hj+'</span>':'')+'</span>').join('')+'</div>';
   else if(u.kind==='ma') h+='<div class="revchips">'+u.members.map(m=>'<span><b>'+m.label+'</b> '+m.title+'</span>').join('')+'</div>';
@@ -3552,6 +3667,64 @@ function wdQuiz(u,l){
 }
 
 { const _hm=home; home=function(){ const r=_hm.apply(this,arguments); try{ const b=$app.querySelector('.board:not(.cal)'); if(b){ b.style.marginTop='20px'; $app.appendChild(b); } }catch(e){} return r; }; }
+/* ---------- 국어독해: 글 보여 주기와 읽어 주기 ---------- */
+const RDTIP={'이야기':'누가 나오는지, 무슨 일이 일어났는지 생각하며 읽어요.','설명글':'무엇을 알려 주는 글인지 찾으며 읽어요.','일기':'언제, 어디서, 무엇을 했는지 찾으며 읽어요.','편지':'누가 누구에게, 왜 쓴 편지인지 찾으며 읽어요.','동시':'소리와 모양을 흉내 낸 말을 찾으며 소리 내어 읽어요.'};
+const rdUnit=id=>{ let u=null; ALLG.forEach(g=>{ if(!u) u=GRADES[g].units.find(x=>x.id===id); }); return u; };
+function rdText(u,open){ let n=0;
+  const body=u.paras.map(p=>'<p class="rdpara'+(u.genre==='동시'?' rdpoem':'')+'">'+(u.genre==='동시'?p.split('\n').map(l=>'<span class="rds" data-s="'+(n++)+'">'+esc(l)+'</span>').join('<br>'):p.split(/(?<=[.?!”])\s+/).filter(Boolean).map(s=>'<span class="rds" data-s="'+(n++)+'">'+esc(s)+'</span>').join(' '))+'</p>').join('');
+  return '<article class="rdtext"><header><span class="rdgenre">'+u.genre+'</span><b>'+u.ic+' '+esc(u.title)+'</b></header>'+body+(canSpeak?'<button class="btn sun rdread" type="button" data-rd="'+u.id+'">🔊 읽어 주기</button>':'')+'</article>'; }
+/* 읽어 주기: 한 문장씩 천천히 읽으면서 읽는 문장을 표시해요 */
+let RDRUN=0;
+function rdRead(btn){ const art=btn.closest('.rdtext'), ss=[...art.querySelectorAll('.rds')], my=++RDRUN;
+  try{ speechSynthesis.cancel(); }catch(e){} const n=++SAYN, v=pickVoice('ko-KR'); btn.textContent='⏹ 그만 읽기'; btn.dataset.on='1';
+  const done=()=>{ ss.forEach(x=>x.classList.remove('on')); if(btn.isConnected){ btn.textContent='🔊 다시 읽어 주기'; delete btn.dataset.on; } };
+  const go=k=>{ if(my!==RDRUN||n!==SAYN||!btn.isConnected){ done(); return; } if(k>=ss.length){ done(); return; }
+    ss.forEach((x,j)=>x.classList.toggle('on',j===k)); const u=new SpeechSynthesisUtterance(ss[k].textContent); u.lang='ko-KR'; u.rate=.88; if(v) u.voice=v;
+    let moved=false; const nx=()=>{ if(moved) return; moved=true; setTimeout(()=>go(k+1),250); }; u.onend=nx; u.onerror=nx; speechSynthesis.speak(u);
+    setTimeout(()=>{ if(!moved&&my===RDRUN) { /* 끝 소식이 오지 않는 기기에서도 다음 문장으로 넘어가요 */ if(!speechSynthesis.speaking) nx(); } },1500+ss[k].textContent.length*260); };
+  if(ISAND) setTimeout(()=>go(0),150); else go(0); }
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('.rdread'); if(!b) return; if(b.dataset.on){ RDRUN++; try{ speechSynthesis.cancel(); }catch(_){} b.textContent='🔊 다시 읽어 주기'; delete b.dataset.on; b.closest('.rdtext').querySelectorAll('.rds').forEach(x=>x.classList.remove('on')); return; } rdRead(b); });
+/* ---------- 국어독해: 단계 소개 ---------- */
+function rdIntro(u,l){
+  const i=UNITS.indexOf(u), a=stickerOf(u,l), has=prog[u.id+'-'+l], L=RD_LESSONS[l];
+  const rz=resumeInfo(), canRes=rz&&rz.u===u&&rz.r.l===l&&rz.r.i>0&&rz.r.i<rz.r.qs.length;
+  const quizBtn=label=>canRes?'<button class="btn main" data-go="resume">'+(rz.r.i+1)+'번 문제부터 이어서 풀기</button><button class="btn" data-go="quiz:'+i+':'+l+'">처음부터 풀기</button>':'<button class="btn main" data-go="quiz:'+i+':'+l+'">'+label+'</button>';
+  let h='<button class="back" data-go="unit:'+i+'">← '+esc(u.title)+'</button><section class="panel"><h2>'+(l+1)+'단계 '+L[0]+'</h2><div class="stkline">'+sticker(u,l,'preview')+'<span>'+(has?KID.name+'가 모은 <b>'+a.name+'</b> 도장이에요. 별을 더 모아 볼까요?':'이 단계를 끝내면 <b>'+a.name+'</b> 도장이 찍혀요.')+'</span></div>', go='';
+  if(l===0){ h+='<div class="tip"><b>읽기 약속</b> '+(RDTIP[u.genre]||'')+' 모르는 낱말이 나와도 끝까지 읽어 봐요.</div>'+rdText(u); go=quizBtn('다 읽었어요, 문제 풀기'); }
+  else if(l===1){ h+='<p class="lead">'+KID.call+' 글에 나온 낱말이에요. 뜻을 알고 다시 읽으면 글이 더 잘 보여요.</p><div class="hcards" style="grid-template-columns:1fr">'+u.words.map(w=>{ const s=u.sents.find(x=>x.includes(w.f))||''; return '<article class="hcard" style="grid-template-columns:1fr"><div class="hinfo"><b class="kw">'+w.w+'</b>'+(canSpeak?' <button class="say" data-say="'+w.w+'">소리 듣기</button>':'')+'<p><b class="wdlab">뜻</b> '+w.d+'</p>'+(s?'<p class="kex"><b class="wdlab">글에서</b> '+esc(s).replace(w.f,'<b class="kfill">'+w.f+'</b>')+'</p>':'')+'</div></article>'; }).join('')+'</div>'; go=quizBtn('문제 풀기'); }
+  else if(l===2){ h+='<p class="lead">'+KID.call+' 글을 한 번 더 읽고, 일이 일어난 차례와 맞는 내용을 찾아봐요.</p>'+rdText(u); go=quizBtn('문제 풀기'); }
+  else if(l===3){ h+='<div class="tip"><b>생각하며 읽기</b> 글에서 가장 하고 싶은 말이 무엇인지, 인물이 왜 그렇게 했는지 생각해 봐요. 답은 글 속에 힌트가 있어요.</div>'+rdText(u); go=quizBtn('문제 풀기'); }
+  else{ const G={speed:['⚡','번개 독해','물음을 보고 글에서 찾은 답을 빨리 골라요'],mem:['🃏','낱말 짝 맞추기','카드를 뒤집어 낱말과 뜻을 짝지어요'],ox:['OX','빨리 OX','물음과 답이 맞는지 빠르게 골라요']};
+    h+='<p class="lead">'+KID.name+'가 하고 싶은 놀이를 골라요. 하나만 끝내도 도장이 찍혀요.</p><div class="games">'+u.games.map(k=>'<button class="game" data-go="game:'+i+':'+k+'"><span class="glyph en">'+G[k][0]+'</span><b>'+G[k][1]+'</b><span>'+G[k][2]+'</span></button>').join('')+'</div>'; }
+  if(go) h+='<div class="row center" style="margin-top:18px">'+go+'</div>';
+  show(h+'</section>',u.color);
+}
+/* ---------- 국어독해: 문제 만들기 (글을 접어 두었다가 언제든 펼쳐 다시 볼 수 있어요) ---------- */
+function rdQuiz(u,l){
+  const M=u.rev?u.members:[u], POOLW=GRADES[u.g].units.filter(x=>!x.rev).flatMap(x=>x.words);
+  const peek=m=>'<details class="rdpeek"><summary>📖 글 다시 보기</summary>'+rdText(m)+'</details>';
+  const C=(m,inst,stim,ok,bad,ex)=>({t:'c',inst,stim:peek(m)+(stim||''),ch:shuffle([{h:ok,ok:1},...bad.map(h=>({h}))]),ex});
+  const Q={
+    f:(m,q)=>C(m,q.a[0],'',q.a[1],q.a.slice(2,4),'정답: '+q.a[1].replace(/^[^가-힣0-9]+/,'')),
+    main:(m,q)=>C(m,q.a[0],'',q.a[1],q.a.slice(2,4),'정답: '+q.a[1]),
+    why:(m,q)=>C(m,q.a[0],'',q.a[1],q.a.slice(2,4),'정답: '+q.a[1]),
+    ox:(m,q)=>C(m,'글의 내용과 맞으면 O, 틀리면 X를 고르세요.','<div class="wtext">'+esc(q.a[0])+'</div>',q.a[1]==='O'?'⭕ 맞아요':'❌ 틀려요',[q.a[1]==='O'?'❌ 틀려요':'⭕ 맞아요'],(q.a[1]==='O'?'맞아요. ':'틀려요. ')+q.a[0]),
+    seq:(m,q)=>C(m,'글에서 먼저 나온 일은 무엇인가요?','',q.a[0],[q.a[1]],'먼저: '+q.a[0]+' → 나중: '+q.a[1]),
+    mean:(m,w)=>C(m,'‘'+w.w+'’의 뜻을 고르세요.','<div class="kword">'+w.w+'</div>',w.d,shuffle(POOLW.filter(x=>x.d!==w.d)).slice(0,2).map(x=>x.d),w.w+': '+w.d),
+    back:(m,w)=>C(m,'뜻에 알맞은 낱말을 고르세요.','<div class="wtext">'+w.d+'</div>',w.w,shuffle(POOLW.filter(x=>x.w!==w.w)).slice(0,2).map(x=>x.w),w.w+': '+w.d),
+    cloze:(m,w)=>{ const s=m.sents.find(x=>x.includes(w.f)); if(!s) return Q.mean(m,w); const others=shuffle(m.words.filter(x=>x!==w).map(x=>x.f).concat(POOLW.filter(x=>x.f!==w.f).map(x=>x.f))).filter((x,k,a)=>a.indexOf(x)===k).slice(0,2);
+      return {t:'c',inst:'빈칸에 들어갈 알맞은 말을 고르세요.',stim:'<div class="wtext">'+esc(s).replace(w.f,'<span class="kblank">'+'□'.repeat(Math.min(5,[...w.f].length))+'</span>')+'</div>',ch:shuffle([{h:w.f,ok:1},...others.map(h=>({h}))]),ex:s}; }
+  };
+  const pickT=(tys,n)=>{ const all=shuffle(M.flatMap(m=>m.qs.filter(q=>tys.includes(q.ty)).map(q=>Q[q.ty](m,q)))); return all.slice(0,n); };
+  const pickW=(tys,n)=>{ const all=shuffle(M.flatMap(m=>m.words.flatMap(w=>tys.map(t=>Q[t](m,w))))); const seen=new Set(), out=[]; all.forEach(q=>{ if(out.length<n&&!seen.has(q.inst+q.ex)){ seen.add(q.inst+q.ex); out.push(q); } }); return out; };
+  if(u.rev){ if(l===0) return pickW(['mean','back','cloze'],8); if(l===1) return pickT(['f','ox','seq','main','why'],8); return shuffle([...pickW(['mean','cloze'],3),...pickT(['f','ox','seq','main','why'],7)]); }
+  if(l===0) return shuffle([...pickT(['f'],3),...pickT(['ox'],1)]);
+  if(l===1) return shuffle([...pickW(['mean'],3),...pickW(['cloze'],3)]);
+  if(l===2) return shuffle([...pickT(['seq'],2),...pickT(['ox'],3),...pickT(['f'],1)]);
+  if(l===3) return shuffle([...pickT(['main'],1),...pickT(['why'],2),...pickT(['ox'],1)]);
+  return shuffle([...pickT(['f'],2),...pickT(['ox'],2),...pickT(['seq'],1),...pickT(['main'],1),...pickT(['why'],1),...pickW(['mean','cloze'],2)]);
+}
+
 /* ================= 도우미 친구들: 이 프로그램을 위해 새로 그린 캐릭터예요. 배우는 내용에 맞는 친구가 나와서 도와줘요 ================= */
 const MAS_NAME={brush:'붓돌이',seal:'도장이',bird:'소리새',abc:'에이비',ten:'십돌이',calc:'셈돌이',tri:'세모',clockm:'똑딱이',star:'별이',book:'책돌이',drop:'궁금이',pencil:'꼼꼼이',cloud:'차근이',bloom:'방글이',flame:'씩씩이',acorn:'끈기'};
 /* 마음 친구들: 저마다 성격이 있어서, 공부할 때의 마음가짐을 알려 줘요 */
@@ -3586,6 +3759,7 @@ function masOf(u,l){
   if(!u) return 'star';
   if(u.kind==='ma'){ const id=u.rev?u.members[0].id:u.id; return id==='m3-shape'||id==='m5-rep'||id==='m5-make'?'tri':id==='m3-clock'?'clockm':id.startsWith('m1-')?'ten':'calc'; }
   if(u.kind==='ko') return (u.rev?u.members[0]:u).sub==='H'&&l===3?'seal':'book';
+  if(u.kind==='rd') return l===3?'drop':'book';
   if(u.kind==='wd') return l===2?'pencil':'book';
   if(u.kind==='st') return l===0||l===3?'bird':'abc';
   if(u.kind==='ph') return l===0?'bird':'abc';
@@ -3596,6 +3770,7 @@ const MAS_TIP={
   eng:['귀를 쫑긋! 소리를 잘 듣고, 큰 소리로 따라 말해 봐.','글자의 소리를 이어 붙이면 낱말이 돼. 나랑 같이 해 보자!','천천히, 또박또박 따라 써 보자. 쓰면서 소리도 내 봐.','배운 낱말이 문장 속에 숨어 있어. 찾으면서 읽어 보자.','놀면서 한 번 더! 어떤 놀이가 좋아?'],
   ko:['낱말의 뜻을 알면 글이 술술 읽혀. 하나씩 알아보자!','뜻과 낱말을 짝지으며 놀아 보자.','또박또박 예쁘게 써 보자. 쓰면서 읽으면 더 잘 외워져.','낱말이 문장 속에서 어떻게 쓰이는지 살펴보자.','이제 신나게 놀 시간이야!'],
   math:['그림을 잘 보면 답이 보여. 천천히 세어 보자!','숫자판을 꾹꾹 눌러 봐. 틀리면 다시 누르면 돼.','선 잇기, 징검다리, 색칠하기! 차례로 해 보자.','문제를 끝까지 듣고, 무엇을 묻는지 먼저 생각해 봐.','게임으로 실력을 뽐내 보자!'],
+  rd:['글을 천천히 소리 내어 읽어 봐. 다 읽고 나면 문제를 풀자!','모르는 낱말이 있었니? 뜻을 알면 글이 더 잘 보여.','무슨 일이 먼저 일어났는지 순서를 떠올려 봐.','“왜 그랬을까?” 하고 생각하면 글이 더 재미있어져.','이제 신나게 놀 시간이야!'],
   wd:['낱말의 뜻을 알면 글이 더 잘 읽혀. 예문을 소리 내어 읽어 보자!','짝이 되는 낱말을 찾아서 이어 보자.','또박또박 예쁘게 써 보자. 헷갈리는 글자는 천천히!','문장을 끝까지 읽으면 어떤 낱말이 어울리는지 보여.','이제 신나게 놀 시간이야!'],
   story:['그림을 보면서 이야기를 들어 봐. 모르는 낱말은 눌러서 들어 보자!','이야기에 나온 낱말이야. 그림이랑 같이 기억해 보자.','또박또박 따라 써 보자. 쓰면서 소리 내어 읽어 봐.','이야기를 잘 기억하고 있니? 차례를 떠올리며 풀어 보자!','이제 신나게 놀 시간이야!'],
   rev:'지금까지 배운 것을 보여 줄 시간이야. 서두르지 말고 천천히 풀어 봐!'
@@ -3604,7 +3779,7 @@ const HEART_TIP=[['drop','“왜 그럴까?” 하고 궁금해하면 더 오래
 const heartHTML=(k,text)=>'<div class="helper rv">'+'<p class="bubble"><b>'+MAS_NAME[k]+'</b> '+text+'</p>'+mascot(k,52)+'</div>';
 function helperHTML(u,l,text){ const k=masOf(u,l); return '<div class="helper">'+mascot(k,58)+'<p class="bubble"><b>'+MAS_NAME[k]+'</b> '+text+'</p></div>'; }
 /* 소개 화면, 단원 화면, 결과 화면, 게임 화면에 친구를 넣어요 */
-{ const _li=lessonIntro; lessonIntro=function(u,l){ _li(u,l); const st=$app.querySelector('.panel .stkline'); if(st&&!$app.querySelector('.helper')){ const subj=u.kind==='ma'?'math':u.kind==='ph'?'eng':u.kind==='ko'?'ko':u.kind==='st'?'story':u.kind==='wd'?'wd':'hanja', ht=u.rev?['pencil','아는 것부터 차례로 풀어 보자. 모르는 건 찍어도 괜찮아!']:HEART_TIP[l]||HEART_TIP[0];
+{ const _li=lessonIntro; lessonIntro=function(u,l){ _li(u,l); const st=$app.querySelector('.panel .stkline'); if(st&&!$app.querySelector('.helper')){ const subj=u.kind==='ma'?'math':u.kind==='ph'?'eng':u.kind==='ko'?'ko':u.kind==='st'?'story':u.kind==='wd'?'wd':u.kind==='rd'?'rd':'hanja', ht=u.rev?['pencil','아는 것부터 차례로 풀어 보자. 모르는 건 찍어도 괜찮아!']:HEART_TIP[l]||HEART_TIP[0];
     st.insertAdjacentHTML('afterend',helperHTML(u,l,u.rev?MAS_TIP.rev:MAS_TIP[subj][l]||MAS_TIP[subj][0])+heartHTML(ht[0],ht[1])); } };
   const _uv=unitView; unitView=function(u){ _uv(u); const hd=$app.querySelector('.uhead'); if(hd){ hd.classList.add('withmas'); hd.insertAdjacentHTML('afterbegin','<span class="uheadmas">'+mascot(masOf(u,0),70,true)+'</span>'); } };
   const _rs=resultScreen; resultScreen=function(u,l,stars,msg,again){ _rs(u,l,stars,msg,again); const h2=$app.querySelector('.result h2'), k=['','acorn','bloom','star'][stars]; if(h2) h2.insertAdjacentHTML('afterend','<div class="helper cheer">'+mascot(k,64,true)+'<p class="bubble"><b>'+MAS_NAME[k]+'</b> '+['','포기하지 않고 끝까지 한 게 제일 멋져! 한 번 더 하면 별이 늘어날 거야.','방글방글! 정말 잘했어. 조금만 더 하면 별 셋이야.','우아, 정말 대단해! 나도 깜짝 놀랐어!'][stars]+'</p></div>'); };
@@ -3826,7 +4001,7 @@ function gameKindsOf(u){ return (GKS[u.id]||u.games||(u.kind==='ph'?['mem','maze
 function gameHead(u,title,sub){
   return '<button class="back" data-go="lesson:'+UNITS.indexOf(u)+':4">← 놀이 고르기</button><section class="panel"><h2>'+title+'</h2><p class="lead">'+sub+'</p>';
 }
-function startGame(u,kind){ if(u.kind==='ma'||u.kind==='ko'||u.kind==='wd') return maGame(u,kind); ({mem:gameMem,ox:gameOx,maze:gameMaze,sort:gameSort,mole:gameMole})[kind](u); }
+function startGame(u,kind){ if(u.kind==='ma'||u.kind==='ko'||u.kind==='wd'||u.kind==='rd') return maGame(u,kind); ({mem:gameMem,ox:gameOx,maze:gameMaze,sort:gameSort,mole:gameMole})[kind](u); }
 
 /* 카드 뒤집기: 한자 카드와 뜻·소리 카드를 뒤집어 짝을 맞춰요. 처음 3초 동안 모두 보여 줘요. */
 function memBoard(ws,done,F){
@@ -4466,6 +4641,163 @@ new MutationObserver(ms=>{ ms.forEach(m=>m.addedNodes.forEach(nd=>{ if(nd.nodeTy
 document.addEventListener('gesturestart',e=>{ if(e.target.closest&&e.target.closest('canvas,.trace,.match,.mline,.dslots,.dbank')) e.preventDefault(); });
 restoreView();
 initCloud();
+</script>
+<script>
+/* ===== 책장 고침(10.15) =====
+   1) 사진 찍기(카메라가 바로 열려요)와 사진첩에서 고르기를 나눠요
+   2) 대충 찍은 사진에서도 책 표지 부분만 찾아 잘라요. 네모의 모서리를 끌어 직접 맞출 수도 있어요
+   3) 책 제목 말하기: 다 말하고 단추를 다시 눌러도 들은 말이 바로 적혀요. 들은 말을 아는 책 제목과 견주어 바르게 고쳐 주고, 비슷한 제목을 골라 쓸 수 있어요 */
+(function () {
+const BN = (typeof MAS_NAME !== 'undefined' && MAS_NAME.book) || (typeof BUDS !== 'undefined' && BUDS.book && BUDS.book.n) || '도우미';
+const hasB = w => { const s = String(w), c = s.charCodeAt(s.length - 1) - 0xAC00; return c >= 0 && c < 11172 && c % 28 !== 0; };
+const BNga = BN + (hasB(BN) ? '이' : '가');
+const AGE = (typeof MAS_NAME !== 'undefined') ? '일곱 살에서 초등학교 1학년' : '초등학교 3학년';
+const NORM = s => String(s || '').replace(/[\s.,!?·~'"“”‘’《》<>()\[\]\-_:;]/g, '').toLowerCase();
+function lev(a, b) { const m = a.length, n = b.length; if (!m) return n; if (!n) return m; let p = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) { const q = [i]; for (let j = 1; j <= n; j++) q[j] = Math.min(p[j] + 1, q[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = q; } return p[n]; }
+const sim = (a, b) => { a = NORM(a); b = NORM(b); if (!a || !b) return 0; if (a === b) return 1;
+  if (a.length >= 2 && (b.includes(a) || a.includes(b))) return 0.15 + 0.85 * Math.min(a.length, b.length) / Math.max(a.length, b.length);
+  return 1 - lev(a, b) / Math.max(a.length, b.length); };
+/* “제목은 ○○이에요”처럼 말해도 제목만 남겨요 */
+const cleanSaid = t => String(t || '').trim()
+  .replace(/^(음+|어+|그+)\s*/, '').replace(/^(이\s*)?(책\s*)?(의\s*)?(제목|이름)(은|는|이|가)?\s*/, '')
+  .replace(/\s*(입니다|이에요|예요|이요|이라고\s*해요|라고\s*해요|이라는\s*책|라는\s*책)\s*[.!?]*$/, '').replace(/[.?!,]+$/, '').trim();
+function known() { const L = []; (typeof RBOOKS !== 'undefined' ? RBOOKS : []).forEach(b => L.push({ t: b[0], rec: 1 }));
+  (STATE.reads || []).forEach(r => { if (r.title && !L.some(x => x.t === r.title)) L.push({ t: r.title }); }); return L; }
+function bestMatch(cands) { let best = null; const K = known(); cands.forEach(c => K.forEach(k => { const s = sim(c, k.t); if (!best || s > best.s) best = { s, t: k.t, rec: k.rec }; })); return best; }
+
+/* ---------- 사진: 불러오기, 책 찾기, 자르기 ---------- */
+function loadCanvas(file, max) { return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image();
+  im.onload = () => { const s = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); res(c); };
+  im.onerror = () => { URL.revokeObjectURL(u); rej(); }; im.src = u; }); }
+/* 사진 가장자리의 색을 바탕으로 보고, 바탕과 다른 부분(책)이 모인 가장 큰 덩어리를 찾아 그 네모를 돌려줘요 */
+function findBook(cv) {
+  const S = 160, k = Math.min(1, S / Math.max(cv.width, cv.height)), w = Math.max(8, Math.round(cv.width * k)), h = Math.max(8, Math.round(cv.height * k));
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(cv, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data;
+  const bx = Math.max(1, Math.round(w * 0.04)), by = Math.max(1, Math.round(h * 0.04)), B = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (x < bx || x >= w - bx || y < by || y >= h - by) { const i = (y * w + x) * 4; B.push([d[i], d[i + 1], d[i + 2]]); }
+  const med = ch => { const a = B.map(p => p[ch]).sort((p, q) => p - q); return a[a.length >> 1]; }, bg = [med(0), med(1), med(2)];
+  const dist = i => Math.hypot(d[i] - bg[0], d[i + 1] - bg[1], d[i + 2] - bg[2]);
+  const bd = B.map(p => Math.hypot(p[0] - bg[0], p[1] - bg[1], p[2] - bg[2])).sort((p, q) => p - q), T = Math.max(30, bd[Math.floor(bd.length * 0.85)] * 1.1 + 15);
+  /* 바탕과 색이 다른 점(M)을 줄마다, 칸마다 세어서 ‘책이 차지한 줄’을 찾아요. 나뭇결처럼 띄엄띄엄한 무늬는 한 줄의 일부만 차지해서 빠져요 */
+  const M = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) if (dist(i * 4) > T) M[i] = 1;
+  const span = (prof, n) => { const sm = prof.map((v, i) => (v + (prof[i - 1] ?? v) + (prof[i + 1] ?? v)) / 3), gap = Math.max(1, Math.round(n * 0.1)); let best = null, s = -1, miss = 0;
+    for (let i = 0; i <= n; i++) { const on = i < n && sm[i] > 0.3; if (on) { if (s < 0) s = i; miss = 0; } else if (s >= 0) { if (++miss > gap || i === n) { const e = i - miss; if (!best || e - s > best[1] - best[0]) best = [s, e]; s = -1; miss = 0; } } }
+    return best; };
+  const rowP = []; for (let y = 0; y < h; y++) { let c = 0; for (let x = 0; x < w; x++) c += M[y * w + x]; rowP.push(c / w); }
+  const ry = span(rowP, h);
+  let r = { x: 0.04, y: 0.04, w: 0.92, h: 0.92 };
+  if (ry) { const colP = []; for (let x = 0; x < w; x++) { let c = 0; for (let y = ry[0]; y <= ry[1]; y++) c += M[y * w + x]; colP.push(c / (ry[1] - ry[0] + 1)); }
+    const rx = span(colP, w);
+    if (rx) { const bw = (rx[1] - rx[0] + 1) / w, bh = (ry[1] - ry[0] + 1) / h; let fg = 0; for (let y = ry[0]; y <= ry[1]; y++) for (let x = rx[0]; x <= rx[1]; x++) fg += M[y * w + x];
+      const dens = fg / ((rx[1] - rx[0] + 1) * (ry[1] - ry[0] + 1));
+      /* 찾은 칸 안이 거의 바탕색이면(표지 그림만 잡힌 경우) 책이 사진을 꽉 채운 것으로 봐요 */
+      if (bw * bh > 0.1 && dens > 0.5) r = { x: rx[0] / w, y: ry[0] / h, w: bw, h: bh }; } }
+  const m = 0.015; r.x = Math.max(0, r.x - m); r.y = Math.max(0, r.y - m); r.w = Math.min(1 - r.x, r.w + 2 * m); r.h = Math.min(1 - r.y, r.h + 2 * m);
+  return r; }
+function cropThumb(cv, r, max) { const sx = r.x * cv.width, sy = r.y * cv.height, sw = r.w * cv.width, sh = r.h * cv.height, k = Math.min(1, max / Math.max(sw, sh)), c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k)); c.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.72); }
+function cropUI(host, cv, r) {
+  host.innerHTML = '<div class="rdcrop"><img src="' + cv.toDataURL('image/jpeg', 0.85) + '" alt="찍은 사진"><div class="rdcrect"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div>'
+    + '<p class="rdcrophint">✂️ 책 표지만 남도록 자동으로 잘랐어요. 모서리를 끌어 맞출 수 있어요.</p><div class="row center rdcropbtn"><button class="back" type="button" data-cr="auto">자동으로 맞추기</button><button class="back" type="button" data-cr="all">사진 전체 쓰기</button></div>';
+  const box = host.querySelector('.rdcrop'), R = host.querySelector('.rdcrect');
+  const put = () => { R.style.left = r.x * 100 + '%'; R.style.top = r.y * 100 + '%'; R.style.width = r.w * 100 + '%'; R.style.height = r.h * 100 + '%'; };
+  let drag = null;
+  R.addEventListener('pointerdown', e => { e.preventDefault(); const b = box.getBoundingClientRect(); drag = { h: e.target.dataset.h || 'move', x: e.clientX, y: e.clientY, r: Object.assign({}, r), W: b.width, H: b.height }; try { R.setPointerCapture(e.pointerId); } catch (_) {} });
+  R.addEventListener('pointermove', e => { if (!drag) return; const dx = (e.clientX - drag.x) / drag.W, dy = (e.clientY - drag.y) / drag.H, o = drag.r, MIN = 0.12; let x0 = o.x, y0 = o.y, x1 = o.x + o.w, y1 = o.y + o.h;
+    if (drag.h === 'move') { const nx = Math.min(1 - o.w, Math.max(0, o.x + dx)), ny = Math.min(1 - o.h, Math.max(0, o.y + dy)); x0 = nx; y0 = ny; x1 = nx + o.w; y1 = ny + o.h; }
+    else { if (drag.h.includes('w')) x0 = Math.min(x1 - MIN, Math.max(0, o.x + dx)); if (drag.h.includes('e')) x1 = Math.max(x0 + MIN, Math.min(1, o.x + o.w + dx));
+      if (drag.h.includes('n')) y0 = Math.min(y1 - MIN, Math.max(0, o.y + dy)); if (drag.h.includes('s')) y1 = Math.max(y0 + MIN, Math.min(1, o.y + o.h + dy)); }
+    r.x = x0; r.y = y0; r.w = x1 - x0; r.h = y1 - y0; put(); });
+  const up = () => { drag = null; }; R.addEventListener('pointerup', up); R.addEventListener('pointercancel', up);
+  host.querySelector('[data-cr="auto"]').onclick = () => { Object.assign(r, findBook(cv)); put(); };
+  host.querySelector('[data-cr="all"]').onclick = () => { Object.assign(r, { x: 0, y: 0, w: 1, h: 1 }); put(); };
+  put(); }
+
+/* ---------- 새 책 올리기 ---------- */
+readForm = function (box, file, thumb0, speak) {
+  const SRT = window.SpeechRecognition || window.webkitSpeechRecognition;
+  box.innerHTML = '<div class="rdform rdform2">' + (file ? '<div class="rdcropat" id="rd-crop"><p class="rdstat">사진을 불러오는 중이에요…</p></div>' : '') + '<div class="rdfields">'
+    + (SRT ? '<button class="btn sun rdmic" id="rd-mic" type="button">🎤 누르고 책 제목 말하기</button><p class="rdheard" id="rd-heard" hidden></p><div class="rdalts" id="rd-alts" hidden></div>' : '')
+    + '<label for="rd-title"><b>책 제목</b>' + (SRT ? ' <small>(잘못 들었으면 고쳐요)</small>' : '') + '</label><input id="rd-title" class="rdin" placeholder="' + (SRT ? '말하면 여기에 글자로 나와요' : '책 제목을 적어요') + '" autocomplete="off" enterkeyhint="done">'
+    + '<p class="rdstat" id="rd-stat"></p><p class="rdsum" id="rd-sum" hidden></p><div class="row"><button class="btn main" id="rd-save">책장에 꽂기</button><button class="btn" id="rd-cancel">그만두기</button></div></div></div>';
+  const T = document.getElementById('rd-title'), S = document.getElementById('rd-stat'), SUM = document.getElementById('rd-sum'); let info = { author: '', sum: '' }, asked = '';
+  const showSum = () => { const i = recIndex(T.value); const t = i >= 0 ? RBOOKS[i][6] : info.sum; SUM.hidden = !t; SUM.textContent = t || ''; if (i >= 0) S.textContent = '⭐ 추천 도서예요!'; };
+  const ask = async () => { const sm = await getSample(); if (!sm) { if (!T.value && file) S.textContent = '책 제목을 말하거나 적어 주세요.'; return; }
+    const title = T.value.trim(), useImg = !!(file && SAMPLEIMG && !title); if (!useImg && (!title || title === asked || recIndex(title) >= 0)) return; asked = title;
+    S.textContent = '🔎 ' + BNga + ' 책을 알아보는 중이에요…';
+    try { const prompt = (useImg ? '첨부한 사진은 어린이가 다 읽은 책의 표지입니다. 표지에 적힌 제목과 지은이를 읽어 주세요.' : '어린이가 다 읽은 책의 제목은 「' + title.slice(0, 80) + '」입니다.')
+        + ' 이 책을 알고 있다면 ' + AGE + ' 어린이가 이해할 쉬운 한국어 존댓말로 줄거리를 두 문장 이하로 짧게 소개해 주세요(결말은 밝히지 않기). 확실히 아는 책이 아니면 summary는 빈 문자열로 두고 지어내지 마세요. 반드시 JSON 하나로만 답하세요: {"title":"책 제목","author":"지은이","summary":"줄거리 또는 빈 문자열"}';
+      const r = await sm.json(prompt, useImg ? { images: [file] } : { modelTier: 'quick' });
+      if (r && typeof r === 'object') { if (useImg && r.title && !T.value) T.value = String(r.title).slice(0, 80); info = { author: String(r.author || '').slice(0, 60), sum: String(r.summary || '').slice(0, 400) }; }
+      S.textContent = info.sum ? BNga + ' 알려 준 줄거리예요. 책과 조금 다를 수 있어요.' : (T.value ? '줄거리는 찾지 못했어요. 그래도 책장에 꽂을 수 있어요.' : '제목을 읽지 못했어요. 말하거나 적어 주세요.'); showSum();
+    } catch (e) { S.textContent = T.value ? '' : '책 제목을 말하거나 적어 주세요.'; } };
+  T.onchange = () => { showSum(); ask(); }; T.oninput = showSum;
+
+  /* 사진: 책 부분만 잘라요 */
+  let CV = null; const CR = { x: 0, y: 0, w: 1, h: 1 };
+  if (file) loadCanvas(file, 1000).then(cv => { CV = cv; Object.assign(CR, findBook(cv)); const at = document.getElementById('rd-crop'); if (at) cropUI(at, cv, CR); })
+    .catch(() => { const at = document.getElementById('rd-crop'); if (at) at.innerHTML = '<p class="rdstat">사진을 열지 못했어요. 다른 사진을 골라 주세요.</p>'; });
+
+  /* 책 제목 말하기 */
+  const mic = document.getElementById('rd-mic'), heard = document.getElementById('rd-heard'), alts = document.getElementById('rd-alts');
+  let rec = null, lastText = '', allAlts = [], finishing = null;
+  const micIdle = () => { if (mic) { mic.textContent = T.value ? '🎤 다시 말하기' : '🎤 누르고 책 제목 말하기'; mic.classList.remove('on'); } };
+  const applyText = () => {
+    const cands = [...new Set([lastText, ...allAlts].map(cleanSaid).filter(Boolean))]; if (!cands.length) return false;
+    const m = bestMatch(cands); let title = cands[0];
+    if (m && m.s >= 0.72) { title = m.t; S.textContent = (m.rec ? '⭐ 추천 도서 ' : '') + '‘' + m.t + '’, 이 책이 맞나요?'; }
+    else S.textContent = '제목이 맞으면 “책장에 꽂기”를 눌러요. 틀리면 다시 말하거나 고쳐요.';
+    T.value = title.slice(0, 80);
+    if (heard) { heard.hidden = false; heard.textContent = '“' + cands[0] + '”라고 들었어요.'; }
+    const near = known().map(k => ({ t: k.t, s: Math.max(...cands.map(c => sim(c, k.t))) })).filter(k => k.s >= 0.5 && k.t !== title).sort((a, b) => b.s - a.s).slice(0, 2).map(k => k.t);
+    const chips = [...new Set([...cands.filter(c => c !== title), ...near])].slice(0, 4);
+    if (alts) { alts.hidden = !chips.length; alts.innerHTML = chips.length ? '<span>혹시 이 제목인가요? 누르면 바뀌어요.</span>' + chips.map(c => '<button type="button" class="rdalt">' + esc(c) + '</button>').join('') : ''; }
+    showSum(); return true; };
+  if (alts) alts.onclick = e => { const b = e.target.closest('.rdalt'); if (!b) return; T.value = b.textContent; alts.hidden = true; S.textContent = ''; showSum(); ask(); };
+  const finish = () => { clearTimeout(finishing); finishing = null; rec = null; micIdle();
+    if (!applyText()) S.textContent = '잘 듣지 못했어요. 단추를 누르고 다시 또박또박 말해 보세요.'; else ask(); };
+  const start = () => { lastText = ''; allAlts = [];
+    try { const r = new SRT(); rec = r; window.__rdRec = r; r.lang = 'ko-KR'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 5;
+      r.onresult = ev => { if (rec !== r) return; let fin = '', tmp = '';
+        for (let k = 0; k < ev.results.length; k++) { const x = ev.results[k]; if (x.isFinal) { fin += x[0].transcript; for (let j = 0; j < x.length; j++) allAlts.push(x[j].transcript); } else tmp += x[0].transcript; }
+        lastText = (fin || tmp).trim(); if (lastText) { T.value = cleanSaid(lastText).slice(0, 80); if (heard) { heard.hidden = false; heard.textContent = '“' + lastText + '”'; } } };
+      r.onerror = ev => { if (rec !== r) return;
+        if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed' || ev.error === 'audio-capture') { rec = null; clearTimeout(finishing); micIdle(); S.textContent = '마이크를 쓸 수 없어요. 아래 칸에 제목을 적어 주세요.'; } };
+      r.onend = () => { if (rec === r) finish(); };
+      r.start(); mic.textContent = '⏹ 다 말했으면 누르기'; mic.classList.add('on'); S.textContent = '책 제목을 또박또박 말해 보세요.'; if (alts) alts.hidden = true;
+    } catch (e) { rec = null; micIdle(); S.textContent = '마이크가 준비되지 않았어요. 잠시 뒤 다시 눌러 보세요.'; } };
+  const listen = () => { if (!SRT || !mic) return;
+    if (rec) { /* 다 말했어요: 들은 만큼 바로 적고, 마무리 소식이 늦게 오면 1.2초 뒤에 끝내요 */
+      const r = rec; try { r.stop(); } catch (e) {} mic.textContent = '✍️ 글자로 옮기는 중…';
+      finishing = setTimeout(() => { if (rec === r) { try { r.abort(); } catch (e) {} finish(); } }, 1200); return; }
+    const old = window.__rdRec; window.__rdRec = null;
+    if (old) { try { old.abort(); } catch (e) {} setTimeout(start, 300); } else start(); };   /* 앞의 듣기가 덜 끝났으면 깨끗이 끝내고 잠깐 뒤에 다시 들어요 */
+  if (mic) mic.onclick = listen;
+  if (file) ask(); else if (speak && SRT) listen(); else { if (speak && !SRT) S.textContent = '이 기기에서는 말하기를 쓸 수 없어요. 제목을 적어 주세요.'; T.focus(); }
+  document.getElementById('rd-cancel').onclick = () => { try { if (rec) rec.abort(); } catch (e) {} rec = null; box.innerHTML = ''; };
+  document.getElementById('rd-save').onclick = () => { const title = T.value.trim(); if (!title) { S.textContent = '책 제목을 말하거나 적어 주세요.'; T.focus(); return; }
+    try { if (rec) rec.abort(); } catch (e) {} rec = null;
+    const thumb = CV ? cropThumb(CV, CR, 300) : (thumb0 || '');
+    const i = recIndex(title), id = 'r' + Date.now().toString(36), r = { id, d: dkey(new Date()), title: i >= 0 ? RBOOKS[i][0] : title.slice(0, 80), author: i >= 0 ? RBOOKS[i][1] : info.author, sum: i >= 0 ? RBOOKS[i][6] : info.sum, rec: i >= 0 ? RBOOKS[i][3] : '', note: '' };
+    (STATE.reads = STATE.reads || []).push(r); if (thumb) savePic(id, thumb); persist(); readDone(r, i >= 0); };
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+/* ---------- 책장 화면: 사진 찍기 / 사진첩 / 말하기 / 적기 ---------- */
+const _rv = readView;
+readView = function () { const res = _rv.apply(this, arguments);
+  try { const inp = document.getElementById('rd-file'), row = inp && inp.closest('.row'); if (row) {
+    row.className = 'rdbtns';
+    row.innerHTML = '<label class="btn main rdpick">📷 사진 찍기<input type="file" id="rd-cam" accept="image/*" capture="environment" hidden></label>'
+      + '<label class="btn rdpick">🖼️ 사진첩에서 고르기<input type="file" id="rd-gal" accept="image/*" hidden></label>'
+      + '<button class="btn sun" id="rd-say" type="button">🎤 책 제목 말하기</button><button class="btn" id="rd-type" type="button">✏️ 제목 적기</button>';
+    const box = document.getElementById('rd-new'), pickF = e => { const f = e.target.files && e.target.files[0]; if (f) readForm(box, f, '', false); e.target.value = ''; };
+    document.getElementById('rd-cam').onchange = pickF; document.getElementById('rd-gal').onchange = pickF;
+    document.getElementById('rd-say').onclick = () => readForm(box, null, '', true); document.getElementById('rd-type').onclick = () => readForm(box, null, '', false); } } catch (e) {}
+  return res; };
+window.__shelf = { findBook, cleanSaid, bestMatch, sim };
+})();
 </script>
 </body>
 </html>
