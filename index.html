@@ -1343,6 +1343,34 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 .rdpeek summary{cursor:pointer; font-weight:700; color:var(--u); padding:4px 0}
 .rdpeek .rdtext{margin:6px 0 0}
 .rdpeek .rdpara{font-size:1.05rem; line-height:1.8}
+</style><style>/* 카드 글자 넘침 막기 + 낱말 짝 잇기 */
+.mcard .f{overflow:hidden; word-break:keep-all; overflow-wrap:anywhere; line-height:1.2}
+.mtwrap{display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr); gap:10px; margin:12px 0}
+.mtcol{display:flex; flex-direction:column; gap:8px; min-width:0}
+.mtc{position:relative; min-height:54px; border:1.5px solid var(--ink); border-radius:10px; background:var(--card); color:var(--ink); padding:8px 10px; font:inherit; font-weight:700; font-size:1.02rem; line-height:1.35; text-align:center; word-break:keep-all; overflow-wrap:anywhere; touch-action:manipulation; -webkit-tap-highlight-color:transparent}
+.mtl .mtc{font-size:1.15rem; flex:1}
+.mtr .mtc{text-align:left; font-weight:600; flex:1}
+.mtc.sel{background:#FFE08A; border-width:2.5px}
+.mtc.ok{background:var(--okbg); border-color:var(--ok)}
+.mtc.ok::after{content:var(--mtn); position:absolute; top:-7px; right:-6px; min-width:20px; height:20px; border-radius:10px; background:var(--ok); color:#fff; font-size:.75rem; line-height:20px; text-align:center}
+.mtc.mtno{border-color:#E4572E}
+</style><style>/* 번개 고르기 초시계 */
+.spdtop{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:4px 0 8px}
+.spdtop .meter{margin:0; text-align:left}
+.swatch{position:relative; flex:none; width:66px; height:72px; display:grid; place-items:center}
+.swatch svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
+.swatch .swk{fill:var(--ink)}
+.swatch .swbg{fill:var(--card); stroke:var(--line); stroke-width:5}
+.swatch .swfg{fill:none; stroke:var(--sun,#F2B134); stroke-width:5; stroke-linecap:round; stroke-dasharray:100; stroke-dashoffset:0; transform:rotate(-90deg); transform-origin:24px 29px}
+.swatch b{position:relative; margin-top:9px; font-size:1.6rem; line-height:1; font-variant-numeric:tabular-nums; color:var(--ink)}
+.swatch small{position:absolute; bottom:9px; font-size:.68rem; font-weight:700; color:var(--ink); opacity:.6}
+.swatch.hurry .swfg{stroke:var(--no,#E4572E)}
+.swatch.hurry b{color:var(--no,#E4572E)}
+.swatch.hurry:not(.stop){animation:swpulse 1s steps(1) infinite}
+@keyframes swpulse{0%{transform:scale(1.08) rotate(-4deg)}50%{transform:scale(1) rotate(4deg)}}
+.swatch:not(.hurry):not(.stop){animation:swtick 1s steps(1) infinite}
+@keyframes swtick{0%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.swatch{animation:none!important}}
 </style></head>
 <body>
 <div id="app"></div>
@@ -1982,7 +2010,7 @@ SUBJ.ko={name:'어휘',sub:'1학년 낱말과 한자 낱말',mark:'가나다',or
 KOORDER.forEach(g=>ALLG.push(g));
 const KO_LESSONS={G:[['낱말 알기','낱말의 뜻과 쓰임을 알아봐요'],['낱말 놀이','선 잇기, 글자 맞추기, 색칠하기'],['따라 쓰기','낱말을 또박또박 써요'],['문장 속 낱말','문장에 알맞은 낱말을 찾아요'],['놀이 한마당','게임으로 한 번 더 다져요']],
  H:[['낱말 알기','한자가 든 낱말의 뜻을 알아봐요'],['낱말 놀이','선 잇기, 글자 맞추기, 색칠하기'],['따라 쓰기','낱말을 또박또박 써요'],['한자 풀이','글자의 뜻으로 낱말을 풀어요'],['놀이 한마당','게임으로 한 번 더 다져요']]};
-KOORDER.forEach(g=>GRADES[g].units.forEach(u=>{ u.speedQ=n=>{ const P=GRADES[u.g].units.filter(x=>!x.rev).flatMap(x=>x.words); return Array.from({length:n},()=>{ const w=RP(u.words), H=u.sub==='H', a=H?w.w:(w.form||w.w), o=shuffle([...new Set(P.map(x=>H?x.w:(x.form||x.w)).filter(x=>x!==a))]).slice(0,2); return H?{lab:'글자의 뜻을 합치면 어떤 낱말일까요?',p:w.parts,a,ch:shuffle([a,...o])}:{lab:'빈칸에 들어갈 낱말은?',p:w.s.replace(/\[.+?\]/,'□□'),a,ch:shuffle([a,...o])}; }); };
+KOORDER.forEach(g=>GRADES[g].units.forEach(u=>{ u.speedQ=n=>{ const P=GRADES[u.g].units.filter(x=>!x.rev).flatMap(x=>x.words); return Array.from({length:n},()=>{ const w=RP(u.words), H=u.sub==='H', a=H?w.w:(w.form||w.w), o=shuffle([...new Set(P.map(x=>H?x.w:(x.form||x.w)).filter(x=>x!==a))]).slice(0,2); if(Math.random()<.5){ const a2=w.w, o2=shuffle([...new Set(P.map(x=>x.w).filter(x=>x!==a2))]).slice(0,2); return {lab:'뜻에 알맞은 낱말은?',p:w.d,a:a2,ch:shuffle([a2,...o2])}; } return H?{lab:'글자의 뜻을 합치면 어떤 낱말일까요?',p:w.parts,a,ch:shuffle([a,...o])}:{lab:'빈칸에 들어갈 낱말은?',p:w.s.replace(/\[.+?\]/,'□□'),a,ch:shuffle([a,...o])}; }); };
   u.games=['speed','ox']; u.fact=()=>{ const w=RP(u.words); return RP([{q:w.d,a:w.w},u.sub==='H'?{q:w.parts,a:w.w}:{q:w.s.replace(/\[.+?\]/,'□□'),a:w.w}]); }; }));
 
 /* ---------- 마무리 평가 단원: 단원 몇 개를 묶어 배운 것을 한꺼번에 확인해요 ---------- */
@@ -2144,39 +2172,39 @@ const RDG=[
   q:[['f','민지는 어디에 눈사람을 만들었나요?','마당','교실','바닷가'],['f','민지가 하나 더 만든 것은 무엇인가요?','작은 눈사람','눈썰매','연'],['f','마지막에 두 눈사람은 어떻게 보였나요?','나란히 서서 웃는 것 같았어요','울고 있었어요','녹아 버렸어요'],['ox','눈사람은 처음에 혼자였어요.','O'],['ox','비가 많이 내렸어요.','X'],
    ['seq','눈사람을 만들었어요.','작은 눈사람을 하나 더 만들었어요.'],['main','이 이야기에 알맞은 제목은 무엇일까요?','눈사람의 친구','여름 바다','민지의 생일 케이크'],['why','민지가 눈사람을 하나 더 만든 까닭은 무엇일까요?','눈사람이 쓸쓸해 보여서','눈이 그쳐서','엄마가 시켜서']]}
 ]],
-['1단계','ERI 100~200 · 두 문단의 글','#2C6E8C',[
- {t:'내 짝꿍 지우',g:'이야기',i:'🖍️',p:['오늘 새 짝꿍이 생겼어요. 이름은 지우예요. 지우는 말이 없고 조용했어요. 나는 지우와 친해지고 싶었어요.','쉬는 시간에 지우가 그림을 그리고 있었어요. “와, 고양이를 정말 잘 그린다!” 내가 말하자 지우가 활짝 웃었어요. 우리는 함께 고양이 그림을 그렸어요. 이제 지우는 나의 좋은 친구예요.'],
+['1단계','ERI 100~200 · 두세 문단의 글','#2C6E8C',[
+ {t:'내 짝꿍 지우',g:'이야기',i:'🖍️',p:['오늘 새 짝꿍이 생겼어요. 이름은 지우예요. 지우는 말이 없고 조용했어요. 나는 지우와 친해지고 싶었어요.','쉬는 시간에 지우가 그림을 그리고 있었어요. “와, 고양이를 정말 잘 그린다!” 내가 말하자 지우가 활짝 웃었어요. 우리는 함께 고양이 그림을 그렸어요. 이제 지우는 나의 좋은 친구예요.','다음 날 아침, 지우가 먼저 “안녕!” 하고 인사했어요. 지우는 나에게 작은 쪽지를 건네주었어요. 쪽지에는 웃고 있는 고양이 두 마리가 그려져 있었어요. “이건 너랑 나야.” 나는 쪽지를 필통 속에 소중히 넣어 두었어요.'],
   w:'짝꿍;옆자리에 앉는 친구;짝꿍이|조용하다;시끄럽지 않고 고요하다;조용했어요|활짝;얼굴에 웃음을 크게 띤 모양;활짝',
-  q:[['f','새 짝꿍의 이름은 무엇인가요?','지우','민지','서준'],['f','지우가 그린 것은 무엇인가요?','고양이','강아지','자동차'],['f','쉬는 시간에 지우는 무엇을 하고 있었나요?','그림 그리기','책 읽기','줄넘기'],['ox','지우는 처음에 말이 많고 시끄러웠어요.','X'],['ox','두 아이는 함께 그림을 그렸어요.','O'],
+  q:[['f','새 짝꿍의 이름은 무엇인가요?','지우','민지','서준'],['f','지우가 그린 것은 무엇인가요?','고양이','강아지','자동차'],['f','쉬는 시간에 지우는 무엇을 하고 있었나요?','그림 그리기','책 읽기','줄넘기'],['ox','지우는 처음에 말이 많고 시끄러웠어요.','X'],['ox','두 아이는 함께 그림을 그렸어요.','O'],['f','지우가 준 쪽지에는 무엇이 그려져 있었나요?','웃고 있는 고양이 두 마리','커다란 강아지 한 마리','밤하늘의 별'],['ox','다음 날 아침 지우가 먼저 인사했어요.','O'],
    ['seq','새 짝꿍이 생겼어요.','함께 고양이 그림을 그렸어요.'],['seq','지우가 그림을 그리고 있었어요.','지우가 활짝 웃었어요.'],['main','이 이야기의 중심 내용은 무엇인가요?','새 짝꿍 지우와 친구가 되었어요','고양이를 키우게 되었어요','그림 대회에서 상을 받았어요'],['why','지우가 활짝 웃은 까닭은 무엇일까요?','그림을 잘 그린다고 칭찬을 들어서','선물을 받아서','집에 가는 시간이라서'],['why','이야기 속 ‘나’는 어떤 친구일까요?','먼저 다가가 칭찬해 주는 친구','혼자 놀기만 하는 친구','친구를 놀리는 친구']]},
- {t:'고슴도치의 가시',g:'설명글',i:'🦔',p:['고슴도치의 등에는 뾰족한 가시가 많이 나 있어요. 가시는 고슴도치를 지켜 주는 갑옷과 같아요.','무서운 동물이 다가오면 고슴도치는 몸을 공처럼 동그랗게 말아요. 그러면 가시가 바깥으로 곤두서서 다른 동물이 함부로 건드리지 못해요. 고슴도치는 밤에 나와서 벌레를 잡아먹어요.'],
+ {t:'고슴도치의 가시',g:'설명글',i:'🦔',p:['고슴도치의 등에는 뾰족한 가시가 많이 나 있어요. 가시는 고슴도치를 지켜 주는 갑옷과 같아요.','무서운 동물이 다가오면 고슴도치는 몸을 공처럼 동그랗게 말아요. 그러면 가시가 바깥으로 곤두서서 다른 동물이 함부로 건드리지 못해요. 고슴도치는 밤에 나와서 벌레를 잡아먹어요.','낮에는 덤불이나 나뭇잎 더미 속에 숨어서 잠을 자요. 날씨가 몹시 추워지는 겨울이 오면 따뜻한 곳에 들어가 긴 겨울잠을 자요. 봄이 오면 다시 깨어나 먹이를 찾으러 나와요.'],
   w:'뾰족하다;끝이 가늘고 날카롭다;뾰족한|곤두서다;꼿꼿하게 거꾸로 서다;곤두서서|함부로;생각 없이 마구;함부로',
-  q:[['f','고슴도치의 등에는 무엇이 나 있나요?','뾰족한 가시','부드러운 털','날개'],['f','무서운 동물이 오면 고슴도치는 어떻게 하나요?','몸을 동그랗게 말아요','하늘로 날아가요','큰 소리로 울어요'],['f','고슴도치는 언제 나와서 먹이를 찾나요?','밤','아침','한낮'],['ox','고슴도치의 가시는 갑옷과 같다고 했어요.','O'],['ox','고슴도치는 풀만 먹어요.','X'],
+  q:[['f','고슴도치의 등에는 무엇이 나 있나요?','뾰족한 가시','부드러운 털','날개'],['f','무서운 동물이 오면 고슴도치는 어떻게 하나요?','몸을 동그랗게 말아요','하늘로 날아가요','큰 소리로 울어요'],['f','고슴도치는 언제 나와서 먹이를 찾나요?','밤','아침','한낮'],['ox','고슴도치의 가시는 갑옷과 같다고 했어요.','O'],['ox','고슴도치는 풀만 먹어요.','X'],['f','고슴도치는 추운 겨울에 무엇을 하나요?','긴 겨울잠을 자요','바다에서 헤엄쳐요','새집을 지어요'],['ox','고슴도치는 낮에 덤불 속에 숨어서 잠을 자요.','O'],
    ['seq','등에 가시가 있다는 내용','밤에 벌레를 잡아먹는다는 내용'],['main','이 글은 무엇을 알려 주나요?','고슴도치가 가시로 몸을 지키는 방법','고슴도치를 키우는 방법','벌레의 종류'],['why','가시를 갑옷과 같다고 한 까닭은 무엇일까요?','몸을 지켜 주니까','반짝반짝 예쁘니까','아주 무거우니까']]},
- {t:'선생님께',g:'편지',i:'✉️',p:['김민정 선생님께. 선생님, 안녕하세요? 저는 1학년 2반 서연이에요.','지난주에 제가 운동장에서 넘어졌을 때 선생님께서 보건실에 데려가 주셨지요. 그때 정말 고마웠어요. 이제 무릎이 다 나았어요. 앞으로 뛸 때는 조심할게요. 선생님, 사랑해요! 서연 올림.'],
+ {t:'선생님께',g:'편지',i:'✉️',p:['김민정 선생님께. 선생님, 안녕하세요? 저는 1학년 2반 서연이에요.','지난주에 제가 운동장에서 넘어졌을 때 선생님께서 보건실에 데려가 주셨지요. 그때 정말 고마웠어요. 이제 무릎이 다 나았어요.','선생님께서 “다친 곳은 깨끗이 씻고 약을 발라야 빨리 낫는단다.” 하고 말씀해 주셨지요. 그래서 집에서도 엄마와 함께 약을 잘 발랐어요. 앞으로 뛸 때는 조심할게요. 선생님, 사랑해요! 서연 올림.'],
   w:'보건실;학교에서 아플 때 가는 곳;보건실에|낫다;아픈 것이 없어지다;나았어요|올림;편지 끝에 보내는 사람 이름 뒤에 쓰는 말;올림',
-  q:[['f','이 편지는 누가 썼나요?','서연','김민정 선생님','민지'],['f','서연이는 어디에서 넘어졌나요?','운동장','교실','집'],['f','선생님께서 서연이를 데려가 주신 곳은 어디인가요?','보건실','도서관','급식실'],['ox','서연이의 무릎은 이제 다 나았어요.','O'],['ox','이 편지는 친구에게 쓴 편지예요.','X'],
+  q:[['f','이 편지는 누가 썼나요?','서연','김민정 선생님','민지'],['f','서연이는 어디에서 넘어졌나요?','운동장','교실','집'],['f','선생님께서 서연이를 데려가 주신 곳은 어디인가요?','보건실','도서관','급식실'],['ox','서연이의 무릎은 이제 다 나았어요.','O'],['ox','이 편지는 친구에게 쓴 편지예요.','X'],['f','다친 곳은 어떻게 해야 빨리 낫는다고 하셨나요?','깨끗이 씻고 약을 발라야 해요','그냥 두어야 해요','계속 뛰어야 해요'],['ox','서연이는 집에서 엄마와 함께 약을 발랐어요.','O'],
    ['seq','운동장에서 넘어졌어요.','무릎이 다 나았어요.'],['main','서연이가 이 편지를 쓴 까닭은 무엇인가요?','선생님께 고마운 마음을 전하려고','숙제를 내려고','생일에 초대하려고'],['why','서연이가 앞으로 하겠다고 다짐한 것은 무엇인가요?','뛸 때 조심할게요','운동장에 안 갈게요','보건실에 매일 갈게요']]},
  {t:'구름',g:'동시',i:'☁️',p:['하늘에 둥실 흰 구름\n솜사탕처럼 몽실몽실\n바람이 불면\n양이 되었다가\n토끼가 되었다가\n어느새 커다란 고래가 되었어요'],
   w:'둥실;가볍게 떠 있는 모양;둥실|몽실몽실;통통하고 보드라운 모양;몽실몽실|어느새;어느 틈인지 모르는 사이에;어느새',
   q:[['f','구름을 무엇처럼 몽실몽실하다고 했나요?','솜사탕','돌멩이','얼음'],['f','마지막에 구름은 무엇이 되었나요?','커다란 고래','양','토끼'],['f','구름은 무슨 색이라고 했나요?','흰색','검은색','빨간색'],['ox','바람이 불면 구름 모양이 바뀌어요.','O'],['ox','구름이 강아지가 되었다고 했어요.','X'],
    ['seq','양이 되었어요.','커다란 고래가 되었어요.'],['seq','토끼가 되었어요.','고래가 되었어요.'],['main','이 시는 무엇을 노래했나요?','모양이 바뀌는 구름','비 오는 날','밤하늘의 별'],['why','구름 모양이 바뀐 까닭은 무엇인가요?','바람이 불어서','해가 져서','비가 와서']]},
- {t:'물은 어디로 갈까요?',g:'설명글',i:'💧',p:['비가 내리면 빗물은 땅으로 스며들거나 강으로 흘러가요. 강물은 흘러흘러 바다로 가요.','햇볕이 뜨겁게 내리쬐면 바닷물은 수증기가 되어 하늘로 올라가요. 하늘로 올라간 수증기는 모여서 구름이 돼요. 구름이 무거워지면 다시 비가 되어 내려요. 이렇게 물은 돌고 돌아요.'],
+ {t:'물은 어디로 갈까요?',g:'설명글',i:'💧',p:['비가 내리면 빗물은 땅으로 스며들거나 강으로 흘러가요. 강물은 흘러흘러 바다로 가요.','햇볕이 뜨겁게 내리쬐면 바닷물은 수증기가 되어 하늘로 올라가요. 하늘로 올라간 수증기는 모여서 구름이 돼요. 구름이 무거워지면 다시 비가 되어 내려요. 이렇게 물은 돌고 돌아요.','우리가 마시고 씻는 물도 이렇게 돌고 도는 물이에요. 하지만 깨끗한 물은 그리 많지 않아요. 그래서 이를 닦을 때에는 컵에 물을 받아 쓰고, 쓰지 않을 때에는 수도꼭지를 꼭 잠가요.'],
   w:'스며들다;물이 속으로 배어 들어가다;스며들거나|수증기;물이 데워져 공기 속으로 날아간 것;수증기가|내리쬐다;햇볕이 세게 비치다;내리쬐면',
-  q:[['f','강물은 흘러서 어디로 가나요?','바다','산','하늘'],['f','바닷물은 무엇이 되어 하늘로 올라가나요?','수증기','얼음','모래'],['f','수증기가 모이면 무엇이 되나요?','구름','바람','무지개'],['ox','구름이 무거워지면 비가 내려요.','O'],['ox','물은 한 번 바다에 가면 다시는 움직이지 않아요.','X'],
+  q:[['f','강물은 흘러서 어디로 가나요?','바다','산','하늘'],['f','바닷물은 무엇이 되어 하늘로 올라가나요?','수증기','얼음','모래'],['f','수증기가 모이면 무엇이 되나요?','구름','바람','무지개'],['ox','구름이 무거워지면 비가 내려요.','O'],['ox','물은 한 번 바다에 가면 다시는 움직이지 않아요.','X'],['f','이를 닦을 때 물을 아끼려면 어떻게 하나요?','컵에 물을 받아 써요','물을 계속 틀어 둬요','물을 아예 쓰지 않아요'],['ox','쓰지 않을 때에는 수도꼭지를 꼭 잠가요.','O'],
    ['seq','바닷물이 수증기가 돼요.','수증기가 모여 구름이 돼요.'],['seq','구름이 돼요.','비가 되어 내려요.'],['main','이 글의 중심 내용은 무엇인가요?','물은 모습을 바꾸며 돌고 돌아요','바다에는 물고기가 많아요','비 오는 날에는 우산을 써요'],['why','바닷물이 하늘로 올라가려면 무엇이 필요할까요?','뜨거운 햇볕','차가운 눈','커다란 배']]},
- {t:'해님과 바람의 내기',g:'이야기',i:'🌞',p:['해님과 바람이 누가 더 힘이 센지 내기를 했어요. “저기 걸어가는 나그네의 외투를 먼저 벗기는 쪽이 이기는 거야.”','바람이 먼저 쌩쌩 세게 불었어요. 그러자 나그네는 외투를 더 꽉 여몄어요. 이번에는 해님이 따뜻하게 햇볕을 비추었어요. 나그네는 “아, 덥다!” 하며 외투를 벗었어요. 내기에서 해님이 이겼어요.'],
+ {t:'해님과 바람의 내기',g:'이야기',i:'🌞',p:['해님과 바람이 누가 더 힘이 센지 내기를 했어요. “저기 걸어가는 나그네의 외투를 먼저 벗기는 쪽이 이기는 거야.”','바람이 먼저 쌩쌩 세게 불었어요. 그러자 나그네는 외투를 더 꽉 여몄어요. 이번에는 해님이 따뜻하게 햇볕을 비추었어요. 나그네는 “아, 덥다!” 하며 외투를 벗었어요. 내기에서 해님이 이겼어요.','바람은 고개를 갸웃했어요. “나는 그렇게 세게 불었는데 왜 졌을까?” 해님이 빙그레 웃으며 말했어요. “세게 밀어붙인다고 다 되는 건 아니야. 때로는 따뜻한 마음이 더 큰 힘을 낸단다.” 바람은 그 말을 오래오래 생각했어요.'],
   w:'내기;누가 이기는지 겨루는 일;내기를|나그네;길을 떠나 이곳저곳을 다니는 사람;나그네의|여미다;벌어진 옷깃을 바로 합치다;여몄어요',
-  q:[['f','해님과 바람은 무엇을 했나요?','내기','숨바꼭질','달리기 시합'],['f','나그네의 외투를 벗긴 것은 누구인가요?','해님','바람','구름'],['f','바람이 불자 나그네는 어떻게 했나요?','외투를 꽉 여몄어요','외투를 벗었어요','집으로 뛰어갔어요'],['ox','바람이 내기에서 이겼어요.','X'],['ox','해님은 따뜻하게 햇볕을 비추었어요.','O'],
+  q:[['f','해님과 바람은 무엇을 했나요?','내기','숨바꼭질','달리기 시합'],['f','나그네의 외투를 벗긴 것은 누구인가요?','해님','바람','구름'],['f','바람이 불자 나그네는 어떻게 했나요?','외투를 꽉 여몄어요','외투를 벗었어요','집으로 뛰어갔어요'],['ox','바람이 내기에서 이겼어요.','X'],['ox','해님은 따뜻하게 햇볕을 비추었어요.','O'],['f','해님은 무엇이 더 큰 힘을 낸다고 했나요?','따뜻한 마음','차가운 바람','커다란 목소리'],['ox','바람은 자기가 왜 졌는지 궁금해했어요.','O'],
    ['seq','바람이 세게 불었어요.','해님이 햇볕을 비추었어요.'],['main','이 이야기에서 배울 점은 무엇일까요?','억지로 하는 것보다 따뜻하게 대하는 것이 더 힘이 세요','바람이 가장 힘이 세요','외투는 꼭 입어야 해요'],['why','나그네가 외투를 벗은 까닭은 무엇인가요?','더워서','추워서','외투가 찢어져서']]},
- {t:'줄넘기 연습',g:'일기',i:'🤸',p:['11월 5일 흐림. 학교에서 줄넘기 시험이 있다고 했다. 나는 아직 줄넘기를 다섯 번밖에 못 한다.','저녁마다 아빠와 놀이터에서 연습을 했다. 처음에는 줄에 발이 자꾸 걸렸다. 그래도 포기하지 않았다. 오늘은 열다섯 번이나 넘었다! 아빠가 “역시 연습이 최고야!” 하고 박수를 쳐 주셨다.'],
+ {t:'줄넘기 연습',g:'일기',i:'🤸',p:['11월 5일 흐림. 학교에서 줄넘기 시험이 있다고 했다. 나는 아직 줄넘기를 다섯 번밖에 못 한다.','저녁마다 아빠와 놀이터에서 연습을 했다. 처음에는 줄에 발이 자꾸 걸렸다. 그래도 포기하지 않았다. 오늘은 열다섯 번이나 넘었다! 아빠가 “역시 연습이 최고야!” 하고 박수를 쳐 주셨다.','내일은 드디어 줄넘기 시험 날이다. 조금 떨리지만 걱정은 되지 않는다. 그동안 열심히 연습했으니까 스무 번에 도전해 볼 거다. 잠들기 전에 줄넘기를 가방 옆에 잘 챙겨 두었다.'],
   w:'포기하다;하던 일을 그만두다;포기하지|연습;잘하려고 되풀이해서 익히는 것;연습을|역시;생각한 대로 정말;역시',
-  q:[['f','줄넘기 연습은 누구와 했나요?','아빠','엄마','선생님'],['f','처음에는 줄넘기를 몇 번 할 수 있었나요?','다섯 번','열다섯 번','스무 번'],['f','오늘은 몇 번 넘었나요?','열다섯 번','다섯 번','백 번'],['ox','처음부터 줄넘기를 잘했다.','X'],['ox','연습은 놀이터에서 했다.','O'],
+  q:[['f','줄넘기 연습은 누구와 했나요?','아빠','엄마','선생님'],['f','처음에는 줄넘기를 몇 번 할 수 있었나요?','다섯 번','열다섯 번','스무 번'],['f','오늘은 몇 번 넘었나요?','열다섯 번','다섯 번','백 번'],['ox','처음부터 줄넘기를 잘했다.','X'],['ox','연습은 놀이터에서 했다.','O'],['f','시험에서 몇 번에 도전해 보기로 했나요?','스무 번','다섯 번','백 번'],['ox','잠들기 전에 줄넘기를 가방 옆에 챙겨 두었다.','O'],
    ['seq','줄에 발이 자꾸 걸렸다.','열다섯 번이나 넘었다.'],['main','이 글에서 배울 점은 무엇일까요?','포기하지 않고 연습하면 잘할 수 있어요','어려운 것은 안 하는 게 좋아요','놀이터는 저녁에만 가요'],['why','아빠가 박수를 쳐 주신 까닭은 무엇일까요?','연습해서 실력이 많이 늘었으니까','시험이 끝나서','줄을 새로 사서']]},
- {t:'나뭇잎 색이 바뀌어요',g:'설명글',i:'🍁',p:['여름에 초록색이던 나뭇잎이 가을이 되면 빨갛게, 노랗게 물들어요. 왜 그럴까요?','나뭇잎 속에는 초록색을 내는 물질이 있어요. 날씨가 추워지면 이 물질이 줄어들어요. 그러면 숨어 있던 노란색이나 빨간색이 드러나요. 그래서 가을 산은 알록달록 고운 색으로 바뀌어요.'],
-  w:'물들다;빛깔이 옮아서 묻거나 배다;물들어요|드러나다;가려 있던 것이 보이게 되다;드러나요|알록달록;여러 빛깔이 고르지 않게 섞인 모양;알록달록',
-  q:[['f','여름에 나뭇잎은 무슨 색인가요?','초록색','빨간색','하얀색'],['f','날씨가 추워지면 무엇이 줄어드나요?','초록색을 내는 물질','나무의 뿌리','햇볕'],['f','가을 산은 어떻게 바뀌나요?','알록달록 고운 색','온통 하얀색','깜깜한 색'],['ox','가을이 되면 나뭇잎이 물들어요.','O'],['ox','날씨가 더워지면 나뭇잎이 빨개져요.','X'],
-   ['seq','초록색을 내는 물질이 줄어들어요.','노란색이나 빨간색이 드러나요.'],['main','이 글은 무엇을 알려 주나요?','가을에 나뭇잎 색이 바뀌는 까닭','나무를 심는 방법','여름에 하는 놀이'],['why','글쓴이가 “왜 그럴까요?” 하고 물은 까닭은 무엇일까요?','읽는 사람이 궁금해하며 읽게 하려고','답을 몰라서','화가 나서']]}
+ {t:'나뭇잎 색이 바뀌어요',g:'설명글',i:'🍁',p:['여름에 초록색이던 나뭇잎이 가을이 되면 빨갛게, 노랗게 물들어요. 은행나무 잎은 노랗게, 단풍나무 잎은 빨갛게 바뀌어요. 왜 그럴까요?','나뭇잎 속에는 초록색을 내는 물질이 있어요. 이 물질은 햇볕을 받아 나무가 먹고 자랄 양분을 만들어요. 날씨가 추워지면 이 물질이 줄어들어요. 그러면 숨어 있던 노란색이나 빨간색이 드러나요. 그래서 가을 산은 알록달록 고운 색으로 바뀌어요.','겨울이 가까워지면 나무는 잎을 하나둘 떨어뜨려요. 잎이 없으면 물을 적게 써서 추운 겨울을 잘 견딜 수 있어요. 땅에 떨어진 낙엽은 천천히 썩어서 흙을 기름지게 만들어요. 봄이 오면 나무는 다시 연둣빛 새잎을 틔워요.'],
+  w:'물들다;빛깔이 옮아서 묻거나 배다;물들어요|드러나다;가려 있던 것이 보이게 되다;드러나요|알록달록;여러 빛깔이 고르지 않게 섞인 모양;알록달록|낙엽;나무에서 떨어진 잎;낙엽은',
+  q:[['f','여름에 나뭇잎은 무슨 색인가요?','초록색','빨간색','하얀색'],['f','날씨가 추워지면 무엇이 줄어드나요?','초록색을 내는 물질','나무의 뿌리','햇볕'],['f','가을 산은 어떻게 바뀌나요?','알록달록 고운 색','온통 하얀색','깜깜한 색'],['f','은행나무 잎은 가을에 무슨 색이 되나요?','노란색','파란색','검은색'],['f','초록색을 내는 물질은 무엇을 만드나요?','나무가 자랄 양분','달콤한 꿀','나무의 그림자'],['f','나무가 겨울 전에 잎을 떨어뜨리는 까닭은 무엇인가요?','물을 적게 써서 겨울을 견디려고','잎이 너무 무거워서','새들이 잎을 싫어해서'],['ox','가을이 되면 나뭇잎이 물들어요.','O'],['ox','날씨가 더워지면 나뭇잎이 빨개져요.','X'],['ox','떨어진 낙엽은 흙을 기름지게 만들어요.','O'],
+   ['seq','초록색을 내는 물질이 줄어들어요.','노란색이나 빨간색이 드러나요.'],['seq','나뭇잎이 알록달록 물들어요.','나무가 잎을 떨어뜨려요.'],['main','이 글은 무엇을 알려 주나요?','가을에 나뭇잎 색이 바뀌는 까닭','나무를 심는 방법','여름에 하는 놀이'],['why','글쓴이가 “왜 그럴까요?” 하고 물은 까닭은 무엇일까요?','읽는 사람이 궁금해하며 읽게 하려고','답을 몰라서','화가 나서']]}
 ]]];
 const RDORDER=[], RD_LESSONS=[['글 읽기','글을 읽고 누가, 무엇을 했는지 찾아요'],['낱말 알기','글에 나온 낱말의 뜻을 알아봐요'],['내용 확인','차례와 맞고 틀림을 살펴요'],['생각하며 읽기','중심 내용과 까닭을 생각해요'],['놀이 한마당','게임으로 한 번 더 다져요']];
 RDG.forEach((V,vi)=>{ const g=601+vi; RDORDER.push(g);
@@ -3390,8 +3418,9 @@ const PAINT=u=>(el,done)=>{ const M=u.rev?u.members:[u], by={}; let g=0; while(g
 function maGame(u,kind){
   const ui=UNITS.indexOf(u);
   if(kind==='maze') return gameMaze(u);
+  if(kind==='mem'&&memLong(u)) return matchGame(u);
   if(kind==='mem'){ show(gameHead(u,'카드 짝 맞추기','카드를 뒤집어 문제와 답을 짝지어요.')+'<div id="membox"></div></section>',u.color);
-    return memBoard(u.memf?u.memf():(()=>{ const all=maFacts(u,12), sh=all.filter(x=>String(x.q).replace(/<[^>]+>/g,'').length<=10); return sh.length>=4?sh.slice(0,6):all.slice(0,4); })(),tries=>resultScreen(u,4,tries<=9?3:tries<=14?2:1,tries+'번 만에 짝을 모두 찾았어요.','game:'+ui+':mem'),{a:w=>'<span class="mq">'+w.q+'</span>',b:w=>'<b class="mans">'+w.a+'</b>',name:w=>(w.qs||w.q)+' → '+w.a,back:u.kind==='ma'?'<span class="en">123</span>':'<span>말</span>'}); }
+    return memBoard((()=>{ for(let k=0;k<6;k++){ const ps=memPairs(u); if(!pairsLong(ps)) return ps; } return memPairs(u); })(),tries=>resultScreen(u,4,tries<=9?3:tries<=14?2:1,tries+'번 만에 짝을 모두 찾았어요.','game:'+ui+':mem'),{a:w=>'<span class="mq">'+w.q+'</span>',b:w=>'<b class="mans">'+w.a+'</b>',name:w=>(w.qs||w.q)+' → '+w.a,back:u.kind==='ma'?'<span class="en">123</span>':'<span>말</span>'}); }
   if(kind==='mole'){ const order=maFacts(u,8), N=Math.min(8,Math.max(order.length,6)); let i=0, miss=0;
     const draw=()=>{ const f=order.length>=6?order[i]:u.fact(), pool=order.length>=3?order:[u.fact(),u.fact(),u.fact(),u.fact()], ds=[]; shuffle(pool).forEach(x=>{ if(ds.length<2&&String(x.a)!==String(f.a)&&!ds.some(y=>String(y.a)===String(x.a))) ds.push(x); });
       if(u.id==='m3-shape') ['네모','세모','동그라미'].forEach(n=>{ if(ds.length<2&&n!==f.a&&!ds.some(y=>y.a===n)) ds.push({a:n}); });
@@ -3410,15 +3439,27 @@ function maGame(u,kind){
         setTimeout(()=>{ i++; if(i<N) draw(); else{ const sec=Math.round((Date.now()-t0)/1000); resultScreen(u,4,right>=9?3:right>=6?2:1,N+'문제 중 '+right+'개를 '+sec+'초 만에 맞혔어요.','game:'+ui+':ox'); } },ok?650:1500); }; };
     return draw(); }
   /* 번개 고르기: 짧은 문제를 보고 큰 단추 셋 중에서 빨리 골라요. 6초가 지나면 다음 문제로 넘어가요 */
-  if(kind==='speed'){ const N=10, qs=u.speedQ(N); let i=0, right=0; const t0=Date.now();
-    const draw=()=>{ const q=qs[i], long=String(q.p).replace(/<[^>]+>/g,'').length>8; let over=false, tt=null;
-      show(gameHead(u,'번개 고르기','문제를 보고 알맞은 답을 빨리 눌러요!')+'<div class="meter">'+(i+1)+' / '+N+' , 맞힌 개수 '+right+'</div><div class="spdbar"><i id="spdt"></i></div><div class="stim"><div class="lead" style="margin:0 0 6px">'+q.lab+'</div><div class="'+(long?'wtext':'kword')+'">'+q.p+'</div></div><div class="spd">'+q.ch.map(c=>'<button class="spdb" type="button">'+c+'</button>').join('')+'</div><p class="meter" id="msg">&nbsp;</p></section>',u.color);
-      const bar=document.getElementById('spdt'); requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.transition='width 6s linear'; bar.style.width='0%'; }));
-      const fin=(ok,b)=>{ if(over) return; over=true; clearTimeout(tt); if(!document.getElementById('spdt')) return; if(ok) right++;
+  if(kind==='speed'){
+    /* 같은 문제가 다시 나오지 않도록 여러 번 뽑아 겹치는 것을 빼고, 서로 다른 문제 수만큼만 내요 (최대 10문제) */
+    const seen=new Set(), qs=[]; let g=0;
+    while(qs.length<10&&g++<6) u.speedQ(40).forEach(q=>{ const k=MTXT(q.lab)+'|'+MTXT(q.p)+'|'+MTXT(q.a); if(qs.length<10&&!seen.has(k)){ seen.add(k); qs.push(q); } });
+    const N=qs.length; let i=0, right=0; const t0=Date.now();
+    const draw=()=>{ const q=qs[i], long=MLEN(q.p)>8; let over=false, tt=null, tk=null;
+      /* 문제 글이 길수록 시간을 조금 더 줘요 (7~12초) */
+      const T=Math.min(12,Math.max(7,Math.round(5+(MLEN(q.p)+q.ch.reduce((s,c)=>s+MLEN(c),0))/7)));
+      show(gameHead(u,'번개 고르기','문제를 보고 알맞은 답을 빨리 눌러요!')+'<div class="spdtop"><div class="meter">'+(i+1)+' / '+N+' , 맞힌 개수 '+right+'</div><div class="swatch" id="sw" aria-label="남은 시간"><svg viewBox="0 0 48 52" aria-hidden="true"><rect class="swk" x="19" y="0" width="10" height="6" rx="2"/><rect class="swk" x="36" y="7" width="7" height="4" rx="1.5" transform="rotate(45 39.5 9)"/><circle class="swbg" cx="24" cy="29" r="20"/><circle class="swfg" id="swfg" cx="24" cy="29" r="20" pathLength="100"/></svg><b id="swn">'+T+'</b><small>초</small></div></div><div class="stim"><div class="lead" style="margin:0 0 6px">'+q.lab+'</div><div class="'+(long?'wtext':'kword')+'">'+q.p+'</div></div><div class="spd">'+q.ch.map(c=>'<button class="spdb" type="button">'+c+'</button>').join('')+'</div><p class="meter" id="msg">&nbsp;</p></section>',u.color);
+      const fg=document.getElementById('swfg'), sw=document.getElementById('sw'), num=document.getElementById('swn'); let left=T;
+      /* 초시계 테두리가 1초마다 줄어들어요 */
+      const ring=()=>{ fg.style.transition='stroke-dashoffset 1s linear'; fg.style.strokeDashoffset=String(Math.min(100,(T-left+1)/T*100)); };
+      setTimeout(ring,30);
+      const tick=()=>{ try{ if(SFX.on&&SFX.armed&&SFX.ctx&&SFX.ctx.state==='running') SFX.tone(left<=3?1760:1320,0,.035,'square',left<=3?.05:.03); }catch(e){} };   /* 째깍 */
+      tick(); tk=setInterval(()=>{ if(!document.getElementById('swn')){ clearInterval(tk); return; } left--; if(left<=0){ clearInterval(tk); return; } num.textContent=left; if(left<=3) sw.classList.add('hurry'); tick(); ring(); },1000);
+      const fin=(ok,b)=>{ if(over) return; over=true; clearTimeout(tt); clearInterval(tk); if(!document.getElementById('swn')) return; if(ok) right++;
+        fg.style.transition='none'; sw.classList.add('stop'); if(!b) num.textContent='0';
         $app.querySelectorAll('.spdb').forEach(x=>{ x.disabled=true; if(x.textContent===q.a) x.classList.add('ok'); }); if(b&&!ok) b.classList.add('bad');
-        document.getElementById('msg').innerHTML=ok?'<b style="color:var(--ok)">번개처럼 빨라요! ⚡</b>':'<b style="color:var(--no)">정답은 ‘'+q.a+'’예요</b>';
-        setTimeout(()=>{ if(!document.getElementById('spdt')) return; i++; i<N?draw():resultScreen(u,4,right>=9?3:right>=6?2:1,N+'문제 중 '+right+'개를 맞혔어요. ('+Math.round((Date.now()-t0)/1000)+'초)','game:'+ui+':speed'); },ok?600:1400); };
-      tt=setTimeout(()=>fin(false,null),6000);
+        document.getElementById('msg').innerHTML=ok?'<b style="color:var(--ok)">번개처럼 빨라요! ⚡</b>':'<b style="color:var(--no)">'+(b?'아쉬워요!':'시간이 다 됐어요! ⏰')+'</b> 초록색이 정답이에요';
+        setTimeout(()=>{ if(!document.getElementById('swn')) return; i++; i<N?draw():resultScreen(u,4,right>=N*.9?3:right>=N*.6?2:1,N+'문제 중 '+right+'개를 맞혔어요. ('+Math.round((Date.now()-t0)/1000)+'초)','game:'+ui+':speed'); },ok?700:1600); };
+      tt=setTimeout(()=>fin(false,null),T*1000);
       $app.querySelector('.spd').onclick=e=>{ const b=e.target.closest('.spdb'); if(b) fin(b.textContent===q.a,b); }; };
     return draw(); }
   if(kind==='sortg'){ const items=shuffle(SHK.flatMap(k=>shuffle(OBJ[k]).slice(0,3).map(o=>({o,k})))); let i=0, miss=0;
@@ -3998,6 +4039,39 @@ function gameKindsOf(u){ return (GKS[u.id]||u.games||(u.kind==='ph'?['mem','maze
     if(bs.length){ GKS[u.id]=bs.map(b=>b.dataset.go.split(':')[2]); const N=bs.length, need=Math.floor(N/2)+1, n=((STATE.gdone||{})[u.id]||[]).filter(k=>k!=='mole').length;
       $app.querySelectorAll('.lead').forEach(p=>{ if(/하나만 끝내도/.test(p.textContent)) p.innerHTML=p.innerHTML.replace('하나만 끝내도 도장이 찍혀요.','놀이 '+N+'개 가운데 <b>'+need+'개 이상</b>을 끝내면 도장이 찍혀요. (놀이마다 절반 넘게 맞히면 끝낸 거예요. 지금 '+n+'개 끝냄)'); }); } } }catch(e){}
   return r; }; }
+/* ---------- 카드 짝 맞추기 점검: 카드에 들어갈 글이 길면(뜻풀이 등) 카드 대신 '낱말 짝 잇기'로 바꿔요 ---------- */
+const MTXT=s=>String(s==null?'':s).replace(/<[^>]+>/g,'').replace(/&[a-z]+;/g,'·').trim();
+const MLEN=s=>[...MTXT(s)].length;
+const MEM_MAX=8;   /* 휴대폰 카드 한 장(4칸 줄)에 글자가 넘치지 않고 들어가는 길이 */
+function memPairs(u){ return u.memf?u.memf():(()=>{ const all=maFacts(u,12), sh=all.filter(x=>MTXT(x.q).length<=10); return sh.length>=4?sh.slice(0,6):all.slice(0,4); })(); }
+const pairsLong=ps=>ps.some(p=>MLEN(p.q)>MEM_MAX||MLEN(p.a)>MEM_MAX);
+const MEMLONG={};
+function memLong(u){ if(u.id in MEMLONG) return MEMLONG[u.id]; let long=false; try{ for(let k=0;k<5&&!long;k++) long=pairsLong(memPairs(u)); }catch(e){} return MEMLONG[u.id]=long; }
+const MATCH_G=u=>u.kind==='ma'?{g:['🔗','문제 짝 잇기','답을 누르고, 그 답이 나오는 문제를 찾아 이어요'],lead:'왼쪽 답을 누르고, 그 답이 나오는 문제를 오른쪽에서 찾아 눌러요.'}:{g:['🔗','낱말 짝 잇기','왼쪽 낱말을 누르고, 알맞은 뜻을 찾아 이어요'],lead:'왼쪽 낱말을 누르고, 그 낱말에 알맞은 뜻을 오른쪽에서 찾아 눌러요.'};
+/* 짝 잇기: 짧은 쪽(낱말·그림)은 왼쪽, 긴 쪽(뜻풀이)은 오른쪽에 한 줄씩 넉넉하게 보여 줘요 */
+function matchGame(u){
+  const ui=UNITS.indexOf(u), seenQ=new Set(), seenA=new Set(), ps=[]; let g=0;
+  while(ps.length<5&&g++<12){ memPairs(u).forEach(p=>{ const q=MTXT(p.q), a=MTXT(p.a); if(ps.length<5&&q&&a&&!seenQ.has(q)&&!seenA.has(a)){ seenQ.add(q); seenA.add(a); ps.push(p); } }); }
+  const qLong=ps.reduce((s,p)=>s+MLEN(p.q),0)>ps.reduce((s,p)=>s+MLEN(p.a),0);
+  const L=k=>qLong?ps[k].a:ps[k].q, R=k=>qLong?ps[k].q:ps[k].a, lo=shuffle(ps.map((p,k)=>k)), ro=shuffle(ps.map((p,k)=>k));
+  show(gameHead(u,MATCH_G(u).g[1],MATCH_G(u).lead)+'<div class="meter" id="mtm">'+ps.length+'쌍을 이어요</div><div class="mtwrap"><div class="mtcol mtl">'+lo.map(k=>'<button class="mtc" type="button" data-k="'+k+'">'+J(L(k))+'</button>').join('')+'</div><div class="mtcol mtr">'+ro.map(k=>'<button class="mtc" type="button" data-k="'+k+'">'+J(R(k))+'</button>').join('')+'</div></div></section>',u.color);
+  const box=$app.querySelector('.mtwrap'), mt=document.getElementById('mtm'); let sel=null, found=0, miss=0;
+  box.onclick=e=>{ const b=e.target.closest('.mtc'); if(!b||b.classList.contains('ok')) return;
+    const left=!!b.closest('.mtl');
+    if(!sel||sel.left===left){ if(sel) sel.b.classList.remove('sel'); sel={b,left}; b.classList.add('sel'); return; }
+    const a=sel.b, k1=a.dataset.k, k2=b.dataset.k; a.classList.remove('sel'); sel=null;
+    if(k1===k2){ [a,b].forEach(x=>{ x.classList.add('ok'); x.style.setProperty('--mtn','"'+(found+1)+'"'); }); found++; const p=ps[+k1];
+      mt.innerHTML='<b style="color:var(--ok)">짝이에요!</b> '+MTXT(qLong?p.a:p.q)+' ('+found+' / '+ps.length+')';
+      if(found===ps.length){ box.onclick=null; setTimeout(()=>{ if(document.body.contains(mt)) resultScreen(u,4,miss<=1?3:miss<=3?2:1,ps.length+'쌍을 모두 이었어요.'+(miss?' (틀린 횟수 '+miss+'번)':' 한 번도 안 틀렸어요!'),'game:'+ui+':mem'); },900); } }
+    else{ miss++; [a,b].forEach(x=>{ x.classList.add('shake','mtno'); setTimeout(()=>x.classList.remove('shake','mtno'),450); }); mt.textContent='짝이 아니에요. 다시 찾아봐요.'; } };
+}
+/* 카드 글자가 카드 밖으로 나가지 않도록, 넘치면 글자 크기를 줄여요 */
+function memFit(box){ box.querySelectorAll('.mcard .f').forEach(f=>{ const t=f.firstElementChild||f; let n=0, s=parseFloat(getComputedStyle(t).fontSize)||16;
+  while((f.scrollHeight>f.clientHeight+1||f.scrollWidth>f.clientWidth+1)&&n++<14){ s*=.9; t.style.fontSize=s.toFixed(1)+'px'; t.style.lineHeight='1.15'; } }); }
+/* 놀이 고르기 화면: 글이 긴 단원은 '카드 짝 맞추기' 대신 '낱말 짝 잇기'로 보여 줘요 */
+{ const _li2=lessonIntro; lessonIntro=function(u,l){ const r=_li2.apply(this,arguments);
+  try{ if(l===4&&memLong(u)) $app.querySelectorAll('[data-go$=":mem"]').forEach(b=>{ if(!b.classList.contains('game')) return; const G=MATCH_G(u).g; b.innerHTML='<span class="glyph en">'+G[0]+'</span><b>'+G[1]+'</b><span>'+G[2]+'</span>'; }); }catch(e){}
+  return r; }; }
 function gameHead(u,title,sub){
   return '<button class="back" data-go="lesson:'+UNITS.indexOf(u)+':4">← 놀이 고르기</button><section class="panel"><h2>'+title+'</h2><p class="lead">'+sub+'</p>';
 }
@@ -4011,6 +4085,7 @@ function memBoard(ws,done,F){
   let open=[], found=0, tries=0, lock=true;
   box.innerHTML='<div class="row center"><button class="btn main" id="memgo">시작</button></div><div class="meter" id="mt">시작을 누르면 카드를 3초 동안 보여 줘요</div><div class="mem" style="--cols:'+(cards.length>10?4:cards.length>8?5:4)+'">'+cards.map((c,k)=>'<button class="mcard" data-k="'+k+'" aria-label="카드"><span class="mflip"><span class="mback">'+F.back+'</span><span class="f">'+c.h+'</span></span></button>').join('')+'</div>';
   const mt=document.getElementById('mt'), goBtn=document.getElementById('memgo'), all=[...box.querySelectorAll('.mcard')];
+  memFit(box);
   goBtn.onclick=()=>{
     goBtn.disabled=true; all.forEach(c=>c.classList.add('up'));
     let left=3; mt.textContent='잘 기억해요! '+left;
