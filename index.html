@@ -5383,5 +5383,132 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
 }
 </script>
 <!-- ===== 오늘의 왜 끝 ===== -->
+<!-- ===== 복습 상자 시작 ===== -->
+<script>
+/* ===== 복습 상자 (서이): 배운 낱말과 수 세기를 잊기 전에 다시 만나요 =====
+   1) 🗣️ 낱말 복습: 어휘·낱말 탐험에서 첫 차시를 끝낸 묶음의 낱말만 모아 1·2·4·7·14일 간격으로 다시 물어요.
+      문제는 소리로 읽어 줘요(낱말 듣고 고르기, 뜻 듣고 고르기, 문장 빈칸).
+   2) 🔢 수 세기 복습: 날마다 5문제 (개수 세기, 더 많은 쪽, 다음 수, 그림 더하기·빼기, 더 큰 수).
+   3) 👪 부모님 리포트: 최근 7일 기록과 낱말 단계.
+   복습을 끝내면 학습 하나로 쳐서 게임 열림 규칙에도 들어가요. 기록은 STATE.rv에 모여요. */
+(function(){
+  const DAY=d=>{ d=d||new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5); };
+  const TODAY=()=>DAY();
+  const RV=()=>{ const R=STATE.rv=STATE.rv||{}; R.w=R.w||{}; R.st=R.st||{}; R.dn=R.dn||{}; return R; };
+  const E=s=>esc(String(s));
+  const mix=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  const dstr=n=>{ const d=new Date(n*864e5); return (d.getUTCMonth()+1)+'월 '+d.getUTCDate()+'일'; };
+  const INT=[1,2,4,7,14,30];
+  const credit=()=>{ try{ const k=dkey(new Date()); STATE.days[k]=(STATE.days[k]||0)+1; grantGame(); }catch(e){} };
+  /* 짧은 효과음 */
+  let AC=null; const tone=ok=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); const t=AC.currentTime; (ok?[660,880,1175]:[300,200]).forEach((f,i)=>{ const o=AC.createOscillator(), g=AC.createGain(); o.type='triangle'; o.frequency.value=f; g.gain.setValueAtTime(.08,t+i*.09); g.gain.exponentialRampToValueAtTime(.001,t+i*.09+.18); o.connect(g); g.connect(AC.destination); o.start(t+i*.09); o.stop(t+i*.09+.2); }); }catch(e){} };
+  const talk=t=>{ try{ say(t); }catch(e){} };
+
+  /* ---------- 1) 낱말 복습 ---------- */
+  const WG=[301,302,303,304,305,311,312,313,314,501,502,503,504];
+  function learned(){ const out=[], seen={};
+    WG.forEach(g=>{ const G=GRADES[g]; if(!G) return; G.units.forEach(u=>{ if(!prog[u.id+'-0']) return; (u.words||[]).forEach(w=>{ if(!w||!w.w||seen[w.w]) return; seen[w.w]=1; let s=w.s||''; if(!s&&u.items){ const it=u.items.find(x=>x.w===w.w); if(it) s=it.s||''; } out.push({k:w.w,w:w.w,d:w.d||'',s,form:w.form||'',u}); }); }); });
+    return out; }
+  function sync(){ const R=RV(), L=learned(), d=TODAY(); if(!R.spread){ L.forEach((x,i)=>{ if(!R.w[x.k]) R.w[x.k]={b:0,d:d+Math.floor(i/6),n:0}; }); R.spread=1; } else L.forEach(x=>{ if(!R.w[x.k]) R.w[x.k]={b:0,d:d+1,n:0}; }); return L; }
+  const due=()=>{ const R=RV(), d=TODAY(); return sync().filter(x=>R.w[x.k].d<=d).sort((a,b)=>(R.w[a.k].d-R.w[b.k].d)||(R.w[a.k].b-R.w[b.k].b)); };
+  const stage=b=>b>=4?'🌳':b>=2?'🌿':'🌱';
+  function mark(k,ok){ const R=RV(), x=R.w[k]; if(!x) return; const d=TODAY(); x.n++; if(ok){ x.b=Math.min(5,x.b+1); x.d=d+INT[Math.min(INT.length-1,x.b-1)]; } else { x.b=0; x.d=d+1; } }
+  function wordQ(x,pool){ const o2=mix(pool.filter(y=>y.k!==x.k)).slice(0,2), opts=mix([x,...o2]);
+    const blank=x.s&&/\[.+\]/.test(x.s), kinds=['listen'].concat(x.d?['mean','mean']:[]).concat(blank?['sent','sent']:[]), t=kinds[Math.floor(Math.random()*kinds.length)];
+    if(t==='sent'){ const ans=x.s.match(/\[(.+?)\]/)[1], show_=x.s.replace(/\[.+?\]/,'<u class="rvs-gap">　?　</u>'), alt=o2.map(y=>y.form||y.w);
+      return {k:x.k,q:'빈칸에 알맞은 말을 골라요',stim:'<p class="rvs-sent">'+E(x.s.replace(/\[.+?\]/,'@@')).replace('@@','<u class="rvs-gap">　?　</u>')+'</p>',speak:x.s.replace(/\[.+?\]/,'뭐뭐'),opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.s.replace(/[\[\]]/g,'')+' ('+x.w+')'}; }
+    if(t==='mean') return {k:x.k,q:'이 뜻을 가진 낱말을 골라요',stim:'<p class="rvs-mean">“'+E(x.d)+'”</p>',speak:x.d,opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.w+' : '+x.d};
+    return {k:x.k,q:'🔊 소리를 듣고 같은 낱말을 골라요',stim:'<div class="rvs-ear">👂</div>',speak:x.w,opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.w+(x.d?' : '+x.d:'')}; }
+
+  /* ---------- 2) 수 세기 복습 ---------- */
+  const EM=['🍎','🐥','⭐','🍓','🚗','🐟','🌸','🎈'];
+  const row=(n,e)=>'<div class="rvs-em">'+Array(n).fill(e).join('')+'</div>';
+  const near=(n,lo,hi)=>{ const s=new Set([n]); while(s.size<3){ const v=n+rnd(-3,3); if(v>=lo&&v<=hi) s.add(v); } return mix([...s]); };
+  const NUMG=[
+    ()=>{ const n=rnd(4,15), e=EM[rnd(0,7)]; return {q:'모두 몇 개일까요? 하나씩 세어 봐요',stim:row(n,e),speak:'모두 몇 개일까요?',opts:near(n,1,20).map(v=>({t:String(v),ok:v===n})),ex:'모두 '+n+'개예요.'}; },
+    ()=>{ let a=rnd(3,9), b=rnd(3,9); if(a===b) b=a+1; const e1=EM[rnd(0,3)], e2=EM[rnd(4,7)]; return {q:'어느 쪽이 더 많을까요?',stim:'<div class="rvs-two"><div>'+row(a,e1)+'</div><div>'+row(b,e2)+'</div></div>',speak:'어느 쪽이 더 많을까요?',opts:[{t:e1+' 쪽',ok:a>b},{t:e2+' 쪽',ok:b>a}],ex:e1+' '+a+'개, '+e2+' '+b+'개. '+(a>b?e1:e2)+' 쪽이 더 많아요.'}; },
+    ()=>{ const n=rnd(3,28); return {q:n+' 다음 수는 무엇일까요?',stim:'<div class="rvs-line">'+[n-1,n].map(v=>'<b>'+v+'</b>').join('')+'<b class="q">?</b></div>',speak:n+' 다음 수는 무엇일까요?',opts:near(n+1,1,30).map(v=>({t:String(v),ok:v===n+1})),ex:n+' 다음 수는 '+(n+1)+'이에요.'}; },
+    ()=>{ const a=rnd(1,6), b=rnd(1,9-a), e=EM[rnd(0,7)]; return {q:'모두 몇 개가 될까요?',stim:'<div class="rvs-sum">'+row(a,e)+'<b>+</b>'+row(b,e)+'</div><p class="rvs-eq">'+a+' + '+b+' = ?</p>',speak:a+' 더하기 '+b+'는 얼마일까요?',opts:near(a+b,1,12).map(v=>({t:String(v),ok:v===a+b})),ex:a+' + '+b+' = '+(a+b)}; },
+    ()=>{ const a=rnd(4,9), b=rnd(1,a-1), e=EM[rnd(0,7)]; return {q:b+'개를 먹었어요. 몇 개 남았을까요?',stim:'<div class="rvs-em">'+Array(a).fill(e).map((x,i)=>i<b?'<s>'+x+'</s>':x).join('')+'</div><p class="rvs-eq">'+a+' − '+b+' = ?</p>',speak:a+'개에서 '+b+'개를 먹었어요. 몇 개 남았을까요?',opts:near(a-b,0,10).map(v=>({t:String(v),ok:v===a-b})),ex:a+' − '+b+' = '+(a-b)}; },
+    ()=>{ let a=rnd(2,30), b=rnd(2,30); if(a===b) b=a+2; return {q:'더 큰 수를 골라요',stim:'',speak:'더 큰 수를 골라요',opts:[{t:String(a),ok:a>b},{t:String(b),ok:b>a}],ex:Math.max(a,b)+'이 '+Math.min(a,b)+'보다 커요.'}; }
+  ];
+
+  /* ---------- 문제 풀기 화면 (큰 단추, 문제를 소리로 읽어 줘요) ---------- */
+  function play(kind,title,color,qs){ let i=0, right=0;
+    const paint=()=>{ const q=qs[i];
+      let h='<button class="back" data-go="rv:box">← 복습 상자</button><div class="meter">'+(i+1)+' / '+qs.length+'</div><section class="panel rvs">'
+        +'<p class="rvs-q">'+E(q.q)+(canSpeak?' <button class="rvs-say" type="button" id="rvsay" aria-label="다시 듣기">🔊</button>':'')+'</p>'+(q.stim||'')
+        +'<div class="rvs-opts">'+q.opts.map((o,j)=>'<button class="rvs-opt" type="button" data-j="'+j+'">'+E(o.t)+'</button>').join('')+'</div><div id="rvsfb"></div></section>';
+      show(h,color); talk(q.speak||q.q); const sb=document.getElementById('rvsay'); if(sb) sb.onclick=()=>talk(q.speak||q.q);
+      let tries=0; $app.querySelectorAll('.rvs-opt').forEach(b=>b.onclick=()=>{ const o=q.opts[+b.dataset.j];
+        if(!o.ok){ tries++; b.disabled=true; b.classList.add('no'); tone(false); if(tries===1&&q.k) mark(q.k,false); if(tries===1) note(kind,false); document.getElementById('rvsfb').innerHTML='<p class="rvs-fbno">다시 한 번 골라 봐요!</p>'; return; }
+        if(tries===0){ right++; if(q.k) mark(q.k,true); note(kind,true); }
+        b.classList.add('ok'); $app.querySelectorAll('.rvs-opt').forEach(x=>x.disabled=true); tone(true); talk(q.ex);
+        document.getElementById('rvsfb').innerHTML='<div class="rvs-fbok"><b>'+(tries?'맞았어요!':'딩동댕! 🎉')+'</b><p>'+E(q.ex)+'</p></div><div class="row center"><button class="btn main" id="rvsnx">'+(i<qs.length-1?'다음 ▶':'끝내기')+'</button></div>';
+        document.getElementById('rvsnx').onclick=()=>{ i++; if(i<qs.length) paint(); else end(); }; }); };
+    const end=()=>{ const R=RV(); R.dn[kind]=TODAY(); persist();
+      show('<section class="panel result rvs"><div class="big">'+(kind==='word'?'🗣️':'🔢')+'</div><h2>'+E(title)+' 끝!</h2><p>'+qs.length+'문제 중 <b>'+right+'문제</b>를 한 번에 맞혔어요.</p>'+(kind==='word'?'<p class="rvs-note">맞힌 낱말은 며칠 뒤에, 틀린 낱말은 내일 다시 만나요.</p>':'')+'<div class="row center"><button class="btn main" data-go="rv:box">복습 상자로</button><button class="btn" data-go="start">처음 화면</button></div></section>',color);
+      talk(KID.name+', 잘했어요!'); credit(); };
+    paint(); }
+  function note(kind,ok){ const R=RV(), d=TODAY(), S=R.st[d]=R.st[d]||{}, a=S[kind]=S[kind]||[0,0]; a[1]++; if(ok) a[0]++; Object.keys(R.st).forEach(k=>{ if(+k<d-40) delete R.st[k]; }); }
+  function startWord(){ const L=sync(), D=due().slice(0,6); if(!D.length) return boxView(L.length?'오늘 복습할 낱말이 없어요! 🎉':'아직 배운 낱말이 없어요. 어휘나 낱말 탐험의 첫 차시를 끝내면 여기에 모여요.');
+    const pool=L.length>=3?L:learnedAll(); play('word','낱말 복습','#E0457B',D.map(x=>wordQ(x,pool))); }
+  function learnedAll(){ const out=[]; WG.forEach(g=>{ const G=GRADES[g]; if(G) G.units.forEach(u=>(u.words||[]).forEach(w=>{ if(w&&w.w) out.push({k:w.w,w:w.w,d:w.d||'',s:w.s||'',form:w.form||'',u}); })); }); return out; }
+  function startNum(){ const gens=mix(NUMG).slice(0,5); play('num','수 세기 복습','#2FA36B',gens.map(g=>g())); }
+
+  /* ---------- 3) 부모님 리포트 · 낱말장 ---------- */
+  function report(){ const R=RV(), d=TODAY(), L=sync(); let w=[0,0], n=[0,0];
+    for(let x=d-6;x<=d;x++){ const S=R.st[x]||{}; if(S.word){ w[0]+=S.word[0]; w[1]+=S.word[1]; } if(S.num){ n[0]+=S.num[0]; n[1]+=S.num[1]; } }
+    const studied=Object.keys(STATE.days||{}).filter(k=>{ const p=k.split('-'); return DAY(new Date(+p[0],+p[1]-1,+p[2]))>d-7; }).length;
+    const pct=a=>a[1]?Math.round(a[0]/a[1]*100)+'% ('+a[0]+'/'+a[1]+')':'기록 없음';
+    const tree=L.filter(x=>R.w[x.k].b>=4).length, leaf=L.filter(x=>R.w[x.k].b>=2&&R.w[x.k].b<4).length, sprout=L.length-tree-leaf;
+    const weak=L.filter(x=>R.w[x.k].n>=2&&R.w[x.k].b===0).slice(0,8);
+    show('<button class="back" data-go="rv:box">← 복습 상자</button><section class="panel rvs"><h2>👪 부모님 리포트</h2><p class="rvs-note">최근 7일 · 기록은 복습 상자를 만든 날부터 쌓여요.</p>'
+      +'<div class="rvs-tiles"><div><b>'+studied+'일</b><span>공부한 날</span></div><div><b>'+L.length+'개</b><span>배운 낱말</span></div><div><b>'+pct(w).split(' ')[0]+'</b><span>낱말 복습 정답률</span></div><div><b>'+pct(n).split(' ')[0]+'</b><span>수 세기 정답률</span></div></div>'
+      +'<h3>낱말 자라는 단계</h3><p>🌳 완전히 내 것 '+tree+'개 · 🌿 자라는 중 '+leaf+'개 · 🌱 새싹 '+sprout+'개</p>'
+      +'<h3>자꾸 헷갈리는 낱말</h3>'+(weak.length?'<p>'+weak.map(x=>'<b>'+E(x.w)+'</b>').join(' · ')+'</p><p class="rvs-note">생활 속 대화에서 한 번씩 써 주면 금방 익혀요.</p>':'<p>아직 없어요. 👍</p>')
+      +'<h3>낱말 복습</h3><p>'+pct(w)+'</p><h3>수 세기 복습</h3><p>'+pct(n)+'</p></section>','#1B2750'); }
+  function bookView(){ const R=RV(), L=sync(), d=TODAY(); const by={'🌱':[],'🌿':[],'🌳':[]}; L.forEach(x=>by[stage(R.w[x.k].b)].push(x));
+    show('<button class="back" data-go="rv:box">← 복습 상자</button><section class="panel rvs"><h2>📒 내 낱말장</h2><p>배운 낱말 <b>'+L.length+'개</b></p>'
+      +['🌱','🌿','🌳'].filter(s=>by[s].length).map(s=>'<h3>'+s+' '+({'🌱':'새싹','🌿':'자라는 중','🌳':'완전히 내 것'})[s]+'</h3><div class="rvs-words">'+by[s].map(x=>'<button class="rvs-word'+(R.w[x.k].d<=d?' due':'')+'" type="button" data-say="'+E(x.w)+'">'+E(x.w)+'</button>').join('')+'</div>').join('')
+      +(L.length?'':'<p>어휘나 낱말 탐험의 첫 차시를 끝내면 낱말이 여기에 모여요.</p>')+'</section>','#E0457B');
+    $app.querySelectorAll('.rvs-word').forEach(b=>b.onclick=()=>talk(b.dataset.say)); }
+
+  /* ---------- 복습 상자 ---------- */
+  function items(){ const R=RV(), d=TODAY(), L=sync(), D=due().length;
+    return [['word','🗣️','낱말 복습',L.length?(D?'오늘 '+Math.min(6,D)+'개 · 배운 낱말 '+L.length+'개':'오늘 복습 끝! ✅'):'첫 차시를 끝내면 열려요',D>0,'#E0457B'],
+      ['num','🔢','수 세기 복습',R.dn.num===d?'오늘 복습 끝! ✅':'날마다 5문제',R.dn.num!==d,'#2FA36B'],
+      ['rep','👪','부모님 리포트','최근 7일 기록',false,'#1B2750']]; }
+  function boxView(msg){ VIEW='rv'; const it=items();
+    show('<button class="back" data-go="start">← 처음 화면</button><section class="panel rvs"><h2>🧰 복습 상자</h2><p class="lead">배운 것을 잊기 전에 다시 만나요!</p>'+(msg?'<p class="rvs-msg">'+E(msg)+'</p>':'')
+      +'<div class="rvs-grid">'+it.map(x=>'<button class="rvs-item'+(x[4]?' due':'')+'" style="--k:'+x[5]+'" data-go="rv:'+x[0]+'"><span class="ic">'+x[1]+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span></button>').join('')+'</div><div class="row center" style="margin-top:12px"><button class="btn" data-go="rv:book">📒 내 낱말장</button></div></section>','#3D7BF2'); }
+  function homeCard(){ const it=items(), n=it.filter(x=>x[4]).length;
+    return '<section class="rvs-home"><button class="rvs-head" data-go="rv:box"><span>🧰 <b>복습 상자</b></span><small>'+(n?'오늘 할 복습 '+n+'개':'오늘 복습 끝! ✅')+'</small><span class="go">›</span></button><div class="rvs-chips">'+it.slice(0,2).map(x=>'<button class="rvs-chip'+(x[4]?' due':'')+'" style="--k:'+x[5]+'" data-go="rv:'+x[0]+'">'+x[1]+' '+x[2]+'</button>').join('')+'</div></section>'; }
+
+  const css=document.createElement('style');
+  css.textContent='.rvs-home{margin:12px 0;border:2px solid #3D7BF2;border-radius:16px;background:#F3F7FF;padding:10px 12px;box-shadow:0 3px 0 #3D7BF2}.rvs-head{width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;font-size:1.1rem}.rvs-head small{margin-left:auto;opacity:.7;font-size:.85rem}.rvs-head .go{font-size:1.4rem;color:#3D7BF2;font-weight:800}'
+   +'.rvs-chips{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.rvs-chip{font:inherit;font-weight:700;padding:11px 6px;border-radius:12px;border:1.5px solid #D5DEEF;background:#fff;color:#3a4256}.rvs-chip.due{border-color:var(--k);color:var(--k);box-shadow:0 0 0 2px color-mix(in srgb,var(--k) 20%,transparent)}'
+   +'.rvs-grid{display:grid;gap:10px;margin-top:12px}.rvs-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;text-align:left;font:inherit;color:inherit;background:#fff;border:2px solid #E3E7EF;border-radius:16px;padding:14px}.rvs-item b{display:block;font-size:1.15rem}.rvs-item small{opacity:.7}.rvs-item.due{border-color:var(--k);box-shadow:0 3px 0 var(--k)}.rvs-item .ic{font-size:2.2rem}'
+   +'.rvs-msg{background:#E3F6EA;border-radius:12px;padding:10px 12px;font-weight:700}.rvs-note{opacity:.8;line-height:1.6;word-break:keep-all}'
+   +'.rvs-q{font-size:1.35rem;font-weight:800;line-height:1.5;word-break:keep-all;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rvs-say{font-size:1.4rem;border:0;background:#FFF1C9;border-radius:50%;width:46px;height:46px}'
+   +'.rvs-ear{font-size:4rem;text-align:center;margin:8px 0}.rvs-mean{font-size:1.35rem;line-height:1.6;background:#FFF8E6;border-radius:14px;padding:12px 14px;word-break:keep-all}.rvs-sent{font-size:1.35rem;line-height:1.7;word-break:keep-all}.rvs-gap{display:inline-block;min-width:3em;border-bottom:3px solid #E0457B;text-decoration:none;text-align:center;color:#E0457B}'
+   +'.rvs-opts{display:grid;gap:10px;margin-top:14px}.rvs-opt{font:inherit;font-size:1.5rem;font-weight:800;padding:16px 12px;border-radius:16px;border:2.5px solid #E2D3B2;background:#fff;color:inherit;touch-action:manipulation}.rvs-opt.ok{background:#E3F6EA;border-color:#2E8B57}.rvs-opt.no{background:#FDE8E8;border-color:#D9534F;opacity:.6}'
+   +'.rvs-fbok{background:#E3F6EA;border-radius:14px;padding:10px 14px;margin-top:10px}.rvs-fbok p{margin:4px 0 0;font-size:1.1rem}.rvs-fbno{color:#D9534F;font-weight:800;font-size:1.1rem;margin-top:8px}'
+   +'.rvs-em{font-size:2.1rem;line-height:1.35;letter-spacing:.06em;text-align:center;word-break:break-all;margin:8px 0}.rvs-em s{opacity:.25;text-decoration:none}.rvs-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rvs-two>div{background:#F7F9FC;border-radius:14px;padding:6px}.rvs-two .rvs-em{font-size:1.7rem}'
+   +'.rvs-line{display:flex;justify-content:center;gap:10px;margin:10px 0}.rvs-line b{font-size:2rem;min-width:2em;text-align:center;background:#F3F7FF;border-radius:12px;padding:8px}.rvs-line b.q{background:#FFF1C9;color:#E0457B}'
+   +'.rvs-sum{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}.rvs-sum>b{font-size:2rem}.rvs-eq{text-align:center;font-size:1.6rem;font-weight:800;margin:6px 0}'
+   +'.rvs-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.rvs-tiles div{background:#F3F7FF;border-radius:12px;padding:10px;text-align:center}.rvs-tiles b{display:block;font-size:1.4rem}.rvs-tiles span{font-size:.8rem;opacity:.7}'
+   +'.rvs-words{display:flex;flex-wrap:wrap;gap:6px}.rvs-word{font:inherit;font-size:1.1rem;font-weight:700;padding:8px 12px;border-radius:999px;border:1.5px solid #E3E7EF;background:#fff;color:inherit}.rvs-word.due{border-color:#E0457B;color:#E0457B}';
+  document.head.appendChild(css);
+
+  { const _st=start; start=function(){ const r=_st.apply(this,arguments); try{ if(!CURSUBJ&&!$app.querySelector('.rvs-home')){ const at=$app.querySelector('.todaybox'); if(at) at.insertAdjacentHTML('afterend',homeCard()); } }catch(e){} return r; }; }
+  { const _ri=routeInner; routeInner=function(v,a,b){ if(v==='rv'){ VIEW='rv'; if(a==='word') return startWord(); if(a==='num') return startNum(); if(a==='rep') return report(); if(a==='book') return bookView(); return boxView(); } return _ri.apply(this,arguments); }; }
+  window.__rv={RV,sync,due,startWord,startNum,report,boxView,NUMG};
+  try{ const o=JSON.parse(sessionStorage.getItem('seoi-hanja-view')||'null'); if(o&&o.v==='rv'&&(o.a==='box'||o.a==='rep'||o.a==='book')) routeInner('rv',o.a); else if(VIEW==='start') start(CURSUBJ); }catch(e){}
+})();
+
+</script>
+<!-- ===== 복습 상자 끝 ===== -->
 </body>
 </html>
