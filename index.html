@@ -5596,5 +5596,232 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
 })();
 </script>
 <!-- ===== 조사 다듬기 끝 ===== -->
+<!-- ===== 생일 이벤트 시작 ===== -->
+<script>
+{
+const BDSIB={call:'채이 언니',m:10,d:18};
+/* ===== 생일 이벤트: 아이 생일(KID.bday) 하루에만 =====
+   - 공부방을 열면 생일 축하 창이 떠요. 공부 도우미들이 모여서 폭죽을 터뜨리며 축하해요. (🎵 생일 노래도 들을 수 있어요)
+   - 🎁 생일 선물: 게임 하나를 바로 100초 동안 할 수 있어요 (생일에 한 번).
+   - 생일에는 공부를 해서 열리는 게임도 60초가 아니라 100초예요.
+   - 처음 화면 맨 위에 생일 카드가 있어서 축하 창을 다시 열 수 있어요. 다음 날이 되면 저절로 사라져요. */
+(function(){
+  const today=()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); };
+  const isMine=()=>{ const d=new Date(); return !!(KID.bday&&d.getMonth()+1===KID.bday.m&&d.getDate()===KID.bday.d); };
+  /* 형제의 생일에도 함께 축하하고 게임을 100초로 (BDSIB: 같은 집 다른 아이의 호칭·생일) */
+  const isSib=()=>{ const d=new Date(); return !!(typeof BDSIB!=='undefined'&&d.getMonth()+1===BDSIB.m&&d.getDate()===BDSIB.d); };
+  const isBday=()=>isMine()||isSib();
+  const SEC=100;
+  const P=(n,k)=>{ try{ return typeof BUD==='function'?BUD(k,'happy'):mascot(k,n,true); }catch(e){ return '🎈'; } };
+  /* 도우미마다 자기 말투로 축하해요 ({T}: 생일인 아이 이름). 키는 채이의 과목 도우미, 서이의 그림 친구 */
+  const SAY={
+    kor:'또박또박 크게 말할게! {T}, 생일 축하해!', read:'꼼꼼히 찾아봐도 오늘의 주인공은 {T}!', math:'케이크도 척척 나누고, 축하는 곱하기 100!',
+    sci:'궁금증이 풀렸어! 오늘 지구에서 제일 행복한 사람은 {T}!', soc:'온 동네에 두루두루 알려야지! 오늘은 {T}의 생일!',
+    hist:'{T}의 탄신을 감축드리옵니다~ 경사로세, 경사로세!', eng:'Happy Birthday! 해피 버스데이, {T}!',
+    voca:'오늘의 낱말은 birthday! 뜻은 “{T}가 주인공인 날”!', lis:'귀를 쫑긋! 모두의 축하 노래가 들리지?',
+    gram:'생일 규칙은 딱 하나! 오늘은 무조건 행복하기!', hanja:'생일(生日)을 감축하노라~ 날 생, 날 일이니라!',
+    mor:'태어나 줘서 정말 고마워. 늘 곁에서 응원할게.', code:'만약 오늘이 생일이라면? → 축하를 무한 반복! 🔁',
+    econ:'알뜰히 모아 둔 축하, 오늘 몽땅 {T}에게 줄게!', art:'오늘의 {T}를 그리면 세상에서 제일 예쁜 그림!',
+    bird:'짹짹! 생일 축하 노래를 불러 줄게~ 🎵', brush:'붓으로 크게 쓸게! 생일 축하해, {T}!', calc:'하나, 둘, 셋! 축하 박수 백 번 짝짝!',
+    book:'오늘 이야기의 주인공은 바로 {T}!', abc:'Happy Birthday! A, B, C… 축하해!', pencil:'꼼꼼히 적었어요. 오늘은 {T}의 생일!',
+    drop:'궁금해! {T}의 생일 소원은 뭐야?', bloom:'방글방글~ 꽃처럼 활짝 웃는 하루 보내!'
+  };
+  const T=()=>isMine()?KID.name:BDSIB.call;
+  const say=k=>(SAY[k]||'생일 축하해, {T}!').replace(/\{T\}/g,T());
+  const crew=()=>{ if(typeof BUD==='function'&&typeof BUDS!=='undefined') return Object.keys(SUBJ).filter(k=>BUDS[k]).map(k=>({h:P(56,k),n:BUDS[k].n,w:say(k)}));
+    /* 서이: 과목마다 그림 친구 (오늘의 학습에 나오는 친구와 같아요) */
+    const MK2={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop',sg:'bloom'};
+    if(typeof mascot==='function') return Object.keys(MK2).map(k=>({h:P(56,MK2[k]),n:(typeof MAS_NAME!=='undefined'&&MAS_NAME[MK2[k]])||'',w:say(MK2[k])})); return []; };
+
+  const css=document.createElement('style');
+  css.textContent='#bd-modal{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at 50% 30%,#2b1b52 0%,#120a26 75%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow:auto;padding:calc(18px + env(safe-area-inset-top,0px)) 14px calc(18px + env(safe-area-inset-bottom,0px));color:#fff;text-align:center}'
+   +'#bd-cv{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9001}'
+   +'#bd-modal .bdin{position:relative;z-index:9002;max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}'
+   +'.bdcake{font-size:4.2rem;line-height:1;animation:bdbob 1.4s ease-in-out infinite}'
+   +'.bdttl{font-family:"Jua",sans-serif;font-size:clamp(1.8rem,8vw,2.6rem);line-height:1.25;margin:0;background:linear-gradient(90deg,#ffd166,#ff8fab,#a0c4ff,#caffbf);-webkit-background-clip:text;background-clip:text;color:transparent;word-break:keep-all}'
+   +'.bdsub{margin:0;font-size:1.05rem;line-height:1.6;opacity:.92;word-break:keep-all}'
+   +'.bdphoto{width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid #ffd166;box-shadow:0 0 24px rgba(255,209,102,.7)}'
+   +'.bdcrew{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px;width:100%;margin-top:4px;padding-bottom:30px}'
+   +'.bdbud{display:flex;flex-direction:column;align-items:center;min-width:0;animation:bdjump 1.1s ease-in-out infinite}.bdbud:nth-child(3n+2){margin-top:34px}.bdbud svg{width:56px;height:56px}.bdbud b{font-size:.75rem;opacity:.85;margin-top:2px}'
+   +'.bdbud i{position:relative;font-style:normal;font-size:.78rem;line-height:1.35;background:#fff;color:#4a2d7a;border-radius:12px;padding:4px 8px;margin-bottom:6px;max-width:100%;white-space:normal;word-break:keep-all;text-align:center;font-weight:700}.bdbud i::after{content:\"\";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:#fff}'
+   +'@keyframes bdjump{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px) rotate(-4deg)}}@keyframes bdbob{50%{transform:scale(1.12) rotate(4deg)}}'
+   +'.bdbtns{display:grid;gap:8px;width:100%;max-width:340px;margin-top:6px}.bdbtns button{font:inherit;font-size:1.08rem;font-weight:800;border:0;border-radius:16px;padding:14px;min-height:52px;cursor:pointer;touch-action:manipulation}'
+   +'.bdgift{background:linear-gradient(90deg,#ffd166,#ff8fab);color:#3b1f00;box-shadow:0 4px 16px rgba(255,143,171,.5)}.bdsong{background:#a0c4ff;color:#14213d}.bdclose{background:rgba(255,255,255,.14);color:#fff}'
+   +'.bdcard{position:relative;width:100%;display:flex;align-items:center;gap:12px;margin:10px 0;padding:12px 14px;border-radius:18px;border:0;text-align:left;font:inherit;color:#fff;background:linear-gradient(110deg,#ff8fab,#b388ff 55%,#7cc4ff);box-shadow:0 4px 0 #8a5cf0;cursor:pointer;touch-action:manipulation}'
+   +'.bdcard .ic{font-size:2.4rem}.bdcard b{display:block;font-family:"Jua",sans-serif;font-size:1.2rem}.bdcard small{opacity:.95}.bdcard .go{margin-left:auto;font-size:1.5rem}';
+  document.head.appendChild(css);
+
+  /* 폭죽: 불꽃이 하늘로 올라가 팡 터지고, 색종이가 흩날려요 */
+  let FX=null;
+  function fireworks(){ const cv=document.createElement('canvas'); cv.id='bd-cv'; document.body.appendChild(cv); const g=cv.getContext('2d'), DPR=Math.min(2,devicePixelRatio||1);
+    const fit=()=>{ cv.width=innerWidth*DPR; cv.height=innerHeight*DPR; g.setTransform(DPR,0,0,DPR,0,0); }; fit(); addEventListener('resize',fit);
+    const COLS=['#ffd166','#ff8fab','#a0c4ff','#caffbf','#ffadad','#bdb2ff','#ffffff','#fdffb6'], rk=[], pt=[], cf=[]; let t=0, on=true;
+    const launch=()=>{ const W=innerWidth, H=innerHeight; rk.push({x:W*(.15+Math.random()*.7),y:H+10,vy:-(8+Math.random()*4),ty:H*(.15+Math.random()*.3),c:COLS[Math.random()*COLS.length|0]}); };
+    const boom=(x,y,c)=>{ const n=60+(Math.random()*30|0); for(let i=0;i<n;i++){ const a=Math.random()*6.283, v=1.5+Math.random()*4.5; pt.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:60+Math.random()*30,c:Math.random()<.3?'#fff':c}); } bang(); };
+    for(let i=0;i<70;i++) cf.push({x:Math.random()*innerWidth,y:-Math.random()*innerHeight,v:1+Math.random()*2,a:Math.random()*6,s:5+Math.random()*6,c:COLS[Math.random()*COLS.length|0]});
+    const step=()=>{ if(!on) return; t++; g.clearRect(0,0,cv.width,cv.height); if(t%28===0&&t<60*30) launch(); if(t<4) launch();
+      rk.forEach(r=>{ r.y+=r.vy; r.vy*=.985; g.fillStyle=r.c; g.beginPath(); g.arc(r.x,r.y,3,0,6.283); g.fill(); if(r.y<=r.ty){ r.dead=1; boom(r.x,r.y,r.c); } });
+      for(let i=rk.length-1;i>=0;i--) if(rk[i].dead) rk.splice(i,1);
+      pt.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.06; p.vx*=.985; p.l--; g.globalAlpha=Math.max(0,p.l/80); g.fillStyle=p.c; g.fillRect(p.x-1.5,p.y-1.5,3,3); }); g.globalAlpha=1;
+      for(let i=pt.length-1;i>=0;i--) if(pt[i].l<=0) pt.splice(i,1);
+      cf.forEach(c=>{ c.y+=c.v; c.a+=.05; c.x+=Math.sin(c.a)*.8; if(c.y>innerHeight+10){ c.y=-10; c.x=Math.random()*innerWidth; } g.save(); g.translate(c.x,c.y); g.rotate(c.a); g.fillStyle=c.c; g.fillRect(-c.s/2,-c.s/4,c.s,c.s/2); g.restore(); });
+      requestAnimationFrame(step); };
+    step(); FX={stop:()=>{ on=false; removeEventListener('resize',fit); cv.remove(); }}; }
+  /* 소리: 펑! 그리고 생일 노래 */
+  let AC=null; const ac=()=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; };
+  function bang(){ const c=AC; if(!c||c.state!=='running') return; try{ const t=c.currentTime, n=c.createBufferSource(), b=c.createBuffer(1,c.sampleRate*.4,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+    const f=c.createBiquadFilter(), gg=c.createGain(); f.type='lowpass'; f.frequency.value=1400; gg.gain.value=.25; n.buffer=b; n.connect(f); f.connect(gg); gg.connect(c.destination); n.start(t); }catch(e){} }
+  function song(){ const c=ac(); if(!c) return; const t0=c.currentTime+.1, Q=.42;
+    /* 생일 축하 노래 (오래전부터 누구나 부르는 노래) */
+    const N=[[67,.75],[67,.25],[69,1],[67,1],[72,1],[71,2],[67,.75],[67,.25],[69,1],[67,1],[74,1],[72,2],[67,.75],[67,.25],[79,1],[76,1],[72,1],[71,1],[69,2],[77,.75],[77,.25],[76,1],[72,1],[74,1],[72,2]];
+    let t=t0; N.forEach(([m,d])=>{ const o=c.createOscillator(), o2=c.createOscillator(), g=c.createGain(), f=440*Math.pow(2,(m-69)/12); o.type='triangle'; o2.type='sine'; o.frequency.value=f; o2.frequency.value=f*2;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.18,t+.03); g.gain.exponentialRampToValueAtTime(.001,t+d*Q*1.6); const g2=c.createGain(); g2.gain.value=.25; o.connect(g); o2.connect(g2); g2.connect(g); g.connect(c.destination); o.start(t); o2.start(t); o.stop(t+d*Q*1.7); o2.stop(t+d*Q*1.7); t+=d*Q; }); }
+
+  function openModal(){ if(document.getElementById('bd-modal')) return; const S=STATE.bday=STATE.bday||{}; S.shown=today(); try{ persist(); }catch(e){}
+    const giftLeft=S.gift!==today(), cr=crew();
+    const m=document.createElement('div'); m.id='bd-modal'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','생일 축하');
+    m.innerHTML='<div class="bdin">'+(isMine()&&KID.photo?'<img class="bdphoto" src="'+KID.photo+'" alt="'+KID.name+'">':'')+'<div class="bdcake">🎂</div>'+(isMine()?'<h2 class="bdttl">'+KID.name+'야, 생일 축하해!</h2><p class="bdsub">오늘은 세상에 하나뿐인 '+KID.name+'가 태어난 날이에요.<br>공부 도우미 친구들이 모두 모여 축하해요! 🎉</p>':'<h2 class="bdttl">오늘은 '+BDSIB.call+'의 생일!</h2><p class="bdsub">'+KID.name+'도 함께 축하해요! 🎉<br>'+BDSIB.call+' 생일이라 '+KID.name+'에게도 생일 선물 게임이 있어요.</p>')
+      +'<div class="bdcrew">'+cr.map((b,i)=>'<div class="bdbud" style="animation-delay:'+(i*.12).toFixed(2)+'s"><i>'+b.w+'</i>'+b.h+'<b>'+(b.n||'')+'</b></div>').join('')+'</div>'
+      +'<div class="bdbtns">'+(giftLeft?'<button type="button" class="bdgift" id="bdgift">🎁 생일 선물 열기: 게임 '+SEC+'초</button>':'<p class="bdsub">🎁 생일 선물 게임은 벌써 열었어요. 오늘은 공부해서 여는 게임도 '+SEC+'초예요!</p>')+'<button type="button" class="bdsong" id="bdsong">🎵 생일 노래 듣기</button><button type="button" class="bdclose" id="bdclose">고마워요! 공부하러 갈게요</button></div></div>';
+    document.body.appendChild(m); document.body.style.overflow='hidden'; fireworks();
+    m.addEventListener('pointerdown',()=>ac(),{once:true});
+    const close=()=>{ if(FX) FX.stop(); FX=null; m.remove(); document.body.style.overflow=''; try{ if(VIEW==='start') start(); }catch(e){} };
+    document.getElementById('bdclose').onclick=close;
+    document.getElementById('bdsong').onclick=()=>{ song(); };
+    const gb=document.getElementById('bdgift'); if(gb) gb.onclick=()=>{ ac(); S.gift=today(); try{ persist(); }catch(e){} close(); giftGame(); }; }
+  /* 생일 선물: 게임을 바로 열어요 (다른 게임으로 바꿀 수도 있어요) */
+  function giftGame(){ try{ const M=mgState(); const ks=Object.keys(MGAMES); const k=ks[Math.floor(Math.random()*ks.length)]; M.pend={k,sec:SEC}; persist(); mgOffer(); }catch(e){} }
+
+  /* 생일에는 게임 시간이 100초 */
+  { const _mp=mgPlay; mgPlay=function(k,sec){ return _mp.call(this,k,isBday()?Math.max(sec||0,SEC):sec); }; }
+  { const _gg=grantGame; grantGame=function(){ const r=_gg.apply(this,arguments); try{ if(isBday()){ const M=mgState(); if(M.pend) M.pend.sec=SEC; } }catch(e){} return r; }; }
+  /* 처음 화면 맨 위 생일 카드 */
+  { const _st=start; start=function(){ const r=_st.apply(this,arguments);
+      try{ if(isBday()&&!CURSUBJ&&!$app.querySelector('.bdcard')){ const S=STATE.bday||{}; const card='<button type="button" class="bdcard" id="bdcard"><span class="ic">🎂</span><span><b>오늘은 '+(isMine()?KID.name:BDSIB.call)+'의 생일!</b><small>'+(S.gift===today()?'오늘은 게임이 '+SEC+'초예요 · 눌러서 축하 다시 보기':'🎁 생일 선물이 기다려요 · 눌러서 열기')+'</small></span><span class="go">›</span></button>';
+          const at=$app.querySelector('.nwbanner')||$app.querySelector('.whybanner')||$app.querySelector('.todaybox'); if(at) at.insertAdjacentHTML('beforebegin',card); const b=document.getElementById('bdcard'); if(b) b.onclick=openModal; } }catch(e){}
+      return r; }; }
+  window.__bday={openModal,isBday,isMine,isSib,giftGame};
+  if(isBday()){ try{ if(VIEW==='start') start(CURSUBJ); }catch(e){} const S=STATE.bday||{}; if(S.shown!==today()) setTimeout(openModal,600); }
+})();
+
+}
+</script>
+<!-- ===== 생일 이벤트 끝 ===== -->
+<!-- ===== 게임 뽑기 시작 ===== -->
+<script>
+/* ===== 게임 뽑기 기계 (심플 스타일): 학습 2개를 끝내 게임이 열리면, 먼저 뽑기 기계가 나와요 =====
+   1) 손잡이 주위에 빛나는 고리·돌리는 화살표·손가락이 나타나고 "손잡이를 돌려줘!" 말풍선이 손잡이를 가리켜요
+   2) 손잡이를 톡 누르면 한 바퀴 돌며 캡슐이 섞이고, 하나가 출구로 떨어져요 → 이번엔 말풍선이 출구를 가리켜요
+   3) 캡슐을 누르면 커다란 캡슐이 떠오르고, 한 번 더 누르면 열리면서 이번 게임 카드가 짠! → '게임 열기' */
+(function(){
+  const css=document.createElement('style');
+  css.textContent='#gacha{position:fixed;inset:0;z-index:8500;display:flex;flex-direction:column;align-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#fff6f9 0%,#f2efff 100%);color:#2b2350;overflow:hidden;touch-action:manipulation;font-family:"Jua","Gowun Dodum",system-ui,sans-serif}'
+   +'#gacha .ghead{font-size:1.5rem;letter-spacing:.01em;text-align:center}#gacha .gsub{margin:4px 0 0;font-size:.95rem;color:#8a83a8;text-align:center}'
+   +'#gacha .gmain{position:relative;flex:1;width:100%;max-width:420px;min-height:0}'
+   +'#gacha canvas{position:absolute;inset:0;width:100%;height:100%;display:block}'
+   +'#gacha .gcall{position:absolute;top:0;left:0;padding:11px 20px;border:0;border-radius:999px;font:inherit;font-size:1.2rem;color:#fff;background:#2b2350;white-space:nowrap;box-shadow:0 8px 20px rgba(43,35,80,.25);cursor:pointer;touch-action:manipulation;animation:gbob 1.2s ease-in-out infinite;transition:left .35s}'
+   +'#gacha .gcall::before{content:"";position:absolute;top:-9px;left:var(--tx,50%);margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#2b2350}'
+   +'#gacha .gcall.busy{animation:none;opacity:.75}@keyframes gbob{50%{transform:translateY(-4px)}}'
+   +'#gacha .gbtn{font:inherit;font-size:1.25rem;color:#fff;border:0;border-radius:999px;padding:14px 22px;min-height:54px;background:#ff6b8b;box-shadow:0 8px 20px rgba(255,107,139,.4);cursor:pointer;touch-action:manipulation;transition:transform .15s}#gacha .gbtn:active{transform:scale(.96)}'
+   +'#gacha .greveal{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(250,247,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}#gacha .greveal.on{display:flex}'
+   +'#gacha .bigcap{position:relative;width:160px;height:160px;border-radius:50%;cursor:pointer;animation:gfloat 2.4s ease-in-out infinite;box-shadow:0 24px 40px rgba(43,35,80,.18)}'
+   +'#gacha .bigcap .t,#gacha .bigcap .b{position:absolute;left:0;width:100%;height:50%;transition:transform .6s cubic-bezier(.18,.89,.32,1.28),opacity .5s}#gacha .bigcap .t{top:0;border-radius:80px 80px 0 0;background:var(--gc)}#gacha .bigcap .b{bottom:0;border-radius:0 0 80px 80px;background:#fff}'
+   +'#gacha .bigcap .t::after{content:"";position:absolute;left:24%;top:22%;width:26%;height:30%;border-radius:50%;background:rgba(255,255,255,.45)}'
+   +'#gacha .bigcap .seam{position:absolute;top:50%;left:0;width:100%;height:6px;margin-top:-3px;background:rgba(43,35,80,.12);z-index:2;transition:opacity .3s}'
+   +'#gacha .bigcap.open{animation:none}#gacha .bigcap.open .t{transform:translateY(-110px) rotate(-18deg);opacity:0}#gacha .bigcap.open .b{transform:translateY(110px) rotate(16deg);opacity:0}#gacha .bigcap.open .seam{opacity:0}'
+   +'@keyframes gfloat{50%{transform:translateY(-12px)}}'
+   +'#gacha .gtap{font-size:1.1rem;color:#2b2350;padding:8px 18px;border-radius:999px;background:#fff;box-shadow:0 6px 16px rgba(43,35,80,.12);animation:gbob 1.2s ease-in-out infinite}'
+   +'#gacha .gcard{display:none;flex-direction:column;align-items:center;gap:6px;width:min(300px,86vw);padding:24px 20px 20px;border-radius:28px;background:#fff;box-shadow:0 24px 50px rgba(43,35,80,.18);transform:scale(.6);opacity:0;transition:all .5s cubic-bezier(.18,.89,.32,1.28)}'
+   +'#gacha .gcard.on{display:flex;transform:scale(1);opacity:1}'
+   +'#gacha .gtag{padding:4px 14px;border-radius:12px;font-size:.85rem;background:#fff1c2;color:#8a5a00}'
+   +'#gacha .gicon{font-size:80px;line-height:1.1;animation:gpop .6s ease}@keyframes gpop{0%{transform:scale(0) rotate(-20deg)}80%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1)}}'
+   +'#gacha .gname{font-size:1.6rem;text-align:center;word-break:keep-all}#gacha .gsec{font-size:.95rem;color:#8a83a8;margin-bottom:8px}';
+  document.head.appendChild(css);
+  const COLS=['#ff6b8b','#4dabf7','#51cf66','#ffc928','#9775fa','#ff922b'];
+  let AC=null; const ac=()=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; };
+  const tone=(f,t,d,type,v)=>{ const c=AC; if(!c) return; const o=c.createOscillator(), g=c.createGain(); o.type=type||'square'; o.frequency.setValueAtTime(f,c.currentTime+t); g.gain.setValueAtTime(v||.06,c.currentTime+t); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+d); o.connect(g); g.connect(c.destination); o.start(c.currentTime+t); o.stop(c.currentTime+t+d+.02); };
+  const sRatchet=()=>{ for(let i=0;i<12;i++) tone(820+(i%2)*260,i*.07,.035,'square',.045); };
+  const sDrop=()=>{ tone(320,0,.12,'sine',.16); tone(230,.16,.1,'sine',.12); tone(270,.28,.08,'sine',.08); };
+  const sPop=()=>{ tone(180,0,.08,'triangle',.18); [523,659,784,1047,1319].forEach((f,i)=>tone(f,.08+i*.08,.26,'triangle',.08)); };
+  const buzz=p=>{ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} };
+  let busy=false;
+  function show(done){ const M=mgState(), p=M.pend; if(!p||busy){ done(); return; } busy=true;
+    const G=MGAMES[p.k]||['🎮','게임'], gc=COLS[Math.floor(Math.random()*COLS.length)];
+    const el=document.createElement('div'); el.id='gacha'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','게임 뽑기');
+    el.innerHTML='<div class="ghead">게임 뽑기</div><p class="gsub">공부 두 개 완료! 어떤 게임이 나올까요?</p>'
+      +'<div class="gmain"><canvas></canvas><button type="button" class="gcall" id="gcall">손잡이를 돌려줘!</button></div>'
+      +'<div class="greveal" id="grev"><div class="bigcap" id="gbig" style="--gc:'+gc+'"><div class="t"></div><div class="seam"></div><div class="b"></div></div><div class="gtap" id="gtap">캡슐을 톡! 눌러 열어요</div>'
+      +'<div class="gcard" id="gcard"><span class="gtag">🎉 이번 게임</span><div class="gicon">'+G[0]+'</div><div class="gname">'+G[1]+'</div><div class="gsec">'+p.sec+'초 동안 할 수 있어요</div><button type="button" class="gbtn" id="gopen" style="width:100%">게임 열기 ▶</button></div></div>';
+    document.body.appendChild(el); document.body.style.overflow='hidden';
+    const cv=el.querySelector('canvas'), g=cv.getContext('2d'), call=el.querySelector('#gcall');
+    let W=300, H=460, DPR=1; const fit=()=>{ const r=cv.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width||300; H=r.height||460; cv.width=W*DPR; cv.height=H*DPR; g.setTransform(DPR,0,0,DPR,0,0); };
+    fit(); addEventListener('resize',fit);
+    /* 기계 크기와 자리: 아래쪽에 말풍선 자리(70px)를 남겨요 */
+    const geo=()=>{ const s=Math.min(W/290,(H-80)/400), R=108*s, cx=W/2, top=Math.max(4,(H-80-400*s)/2), cy=top+R, bodyTop=cy+R+6*s, bodyBot=bodyTop+170*s;
+      return {s,R,cx,cy,bodyTop,bodyBot,kx:cx-50*s,ky:bodyTop+78*s,hx:cx+58*s,hy:bodyTop+78*s}; };
+    let caps=[], hAng=0, turning=false, drop=null, state='idle', t=0, run=true;
+    { const q=geo(); for(let i=0;i<22;i++){ const a=Math.random()*6.283, d=Math.random()*(q.R-24*q.s); caps.push({x:q.cx+Math.cos(a)*d,y:q.cy+Math.sin(a)*d,vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3,a:Math.random()*6.283,va:(Math.random()-.5)*.08,c:COLS[i%COLS.length]}); } }
+    const capsule=(x,y,r,c,ang)=>{ g.save(); g.translate(x,y); g.rotate(ang||0); g.beginPath(); g.arc(0,0,r,Math.PI,0); g.fillStyle=c; g.fill(); g.beginPath(); g.arc(0,0,r,0,Math.PI); g.fillStyle='#fbfaff'; g.fill(); g.beginPath(); g.arc(0,0,r-.9,0,6.283); g.lineWidth=Math.max(1.6,r*.12); g.strokeStyle='rgba(60,50,110,.45)'; g.stroke(); g.fillStyle='rgba(43,35,80,.14)'; g.fillRect(-r,-1.2,r*2,2.4); g.beginPath(); g.arc(-r*.35,-r*.42,r*.22,0,6.283); g.fillStyle='rgba(255,255,255,.5)'; g.fill(); g.restore(); };
+    const rr=(x,y,w,h,r)=>{ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); };
+    /* 눈길을 끄는 표시: 퍼지는 고리 + 손가락 */
+    const attention=(x,y,r0,s)=>{ for(let k=0;k<2;k++){ const ph=(t*.9+k*.5)%1; g.beginPath(); g.arc(x,y,r0+ph*26*s,0,6.283); g.strokeStyle='rgba(255,107,139,'+(.55*(1-ph))+')'; g.lineWidth=3*s; g.stroke(); }
+      g.save(); g.font=Math.round(34*s)+'px sans-serif'; g.textAlign='center'; g.textBaseline='top'; g.fillText('👆',x+r0*.55,y+r0*.45+Math.abs(Math.sin(t*4))*8*s); g.restore(); };
+    let lastCall='';
+    const placeCall=(tx,y)=>{ const key=Math.round(tx)+','+Math.round(y)+call.textContent; if(key===lastCall) return; lastCall=key;
+      const w=call.offsetWidth, L=Math.max(0,Math.min(W-w,tx-w/2)); call.style.left=L+'px'; call.style.top=y+'px'; call.style.setProperty('--tx',Math.max(22,Math.min(w-22,tx-L))+'px'); };
+    const frame=()=>{ if(!run) return; t+=1/60; const q=geo(), s=q.s, cr=15.5*s; g.clearRect(0,0,W,H);
+      /* 바닥 그림자 */
+      g.beginPath(); g.ellipse(q.cx,q.bodyBot+6*s,128*s,12*s,0,0,6.283); g.fillStyle='rgba(43,35,80,.08)'; g.fill();
+      /* 몸통: 둥근 네모 하나 + 아래 띠 */
+      rr(q.cx-118*s,q.bodyTop,236*s,170*s,30*s); g.fillStyle='#ff6b8b'; g.fill();
+      g.save(); g.clip(); g.fillStyle='#f25579'; g.fillRect(q.cx-118*s,q.bodyBot-26*s,236*s,26*s); g.restore();
+      /* 구슬 받침 */
+      rr(q.cx-70*s,q.cy+q.R-12*s,140*s,22*s,11*s); g.fillStyle='#f25579'; g.fill();
+      /* 출구 */
+      rr(q.hx-34*s,q.hy-30*s,68*s,60*s,16*s); g.fillStyle='#3a2f5c'; g.fill();
+      /* 유리 구슬 */
+      g.beginPath(); g.arc(q.cx,q.cy,q.R,0,6.283); g.fillStyle='rgba(226,222,250,.55)'; g.fill();
+      caps.forEach(c=>{ c.x+=c.vx; c.y+=c.vy; c.a+=c.va; c.vy+=.15*s; const dx=c.x-q.cx, dy=c.y-q.cy, d=Math.hypot(dx,dy)||1; if(d+cr>q.R){ const o=d+cr-q.R, nx=dx/d, ny=dy/d; c.x-=nx*o; c.y-=ny*o; const dot=c.vx*nx+c.vy*ny; c.vx=(c.vx-2*dot*nx)*.72; c.vy=(c.vy-2*dot*ny)*.72; } });
+      /* 캡슐끼리 부딪히면 서로 밀어내요 (한곳에 겹쳐 쌓이지 않게) */
+      for(let i=0;i<caps.length;i++) for(let j=i+1;j<caps.length;j++){ const A=caps[i], B=caps[j], dx=B.x-A.x, dy=B.y-A.y, d=Math.hypot(dx,dy)||.01, m=2*cr-d; if(m>0){ const nx=dx/d, ny=dy/d; A.x-=nx*m/2; A.y-=ny*m/2; B.x+=nx*m/2; B.y+=ny*m/2; const rv=(B.vx-A.vx)*nx+(B.vy-A.vy)*ny; if(rv<0){ const k=rv*.85; A.vx+=k*nx; A.vy+=k*ny; B.vx-=k*nx; B.vy-=k*ny; } } }
+      caps.forEach(c=>{ const dx=c.x-q.cx, dy=c.y-q.cy, d=Math.hypot(dx,dy)||1; if(d+cr>q.R){ const o=d+cr-q.R; c.x-=dx/d*o; c.y-=dy/d*o; } capsule(c.x,c.y,cr,c.c,c.a); });
+      g.beginPath(); g.arc(q.cx,q.cy,q.R,0,6.283); g.lineWidth=5*s; g.strokeStyle='#fff'; g.stroke(); g.lineWidth=1.2; g.strokeStyle='rgba(43,35,80,.12)'; g.beginPath(); g.arc(q.cx,q.cy,q.R+2.5*s,0,6.283); g.stroke();
+      g.beginPath(); g.arc(q.cx,q.cy,q.R-14*s,-Math.PI*.8,-Math.PI*.55); g.lineWidth=8*s; g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.85)'; g.stroke(); g.lineCap='butt';
+      /* 손잡이: 하얀 동그라미 + 돌아가는 막대 */
+      const kr=34*s;
+      if(state==='idle'){ /* 돌리는 방향 화살표 */ const a0=t*1.6, r=kr+12*s; g.beginPath(); g.arc(q.kx,q.ky,r,a0,a0+Math.PI*1.25); g.lineWidth=3.5*s; g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.95)'; g.stroke(); g.lineCap='butt';
+        const ea=a0+Math.PI*1.25, ex=q.kx+Math.cos(ea)*r, ey=q.ky+Math.sin(ea)*r, tg=ea+Math.PI/2; g.beginPath(); g.moveTo(ex+Math.cos(tg)*9*s,ey+Math.sin(tg)*9*s); g.lineTo(ex+Math.cos(tg+2.4)*8*s,ey+Math.sin(tg+2.4)*8*s); g.lineTo(ex+Math.cos(tg-2.4)*8*s,ey+Math.sin(tg-2.4)*8*s); g.closePath(); g.fillStyle='#fff'; g.fill(); }
+      g.beginPath(); g.arc(q.kx,q.ky,kr,0,6.283); g.fillStyle='#fff'; g.shadowColor='rgba(43,35,80,.25)'; g.shadowBlur=10*s; g.shadowOffsetY=4*s; g.fill(); g.shadowColor='transparent';
+      g.save(); g.translate(q.kx,q.ky); g.rotate(hAng); rr(-25*s,-7*s,50*s,14*s,7*s); g.fillStyle='#ff6b8b'; g.fill(); g.beginPath(); g.arc(0,0,5*s,0,6.283); g.fillStyle='#fff'; g.fill(); g.restore();
+      /* 떨어진 캡슐 (출구 안에서만 보여요) */
+      if(drop){ drop.vy+=.7*s; drop.x+=drop.vx; drop.y+=drop.vy; const fy=q.hy+30*s-19*s; if(drop.y>=fy){ drop.y=fy; drop.vy*=-.35; drop.vx*=.6; if(Math.abs(drop.vy)<1) drop.vy=0; } if(drop.x<q.hx-12*s){ drop.x=q.hx-12*s; drop.vx*=-.5; } if(drop.x>q.hx+12*s){ drop.x=q.hx+12*s; drop.vx*=-.5; }
+        g.save(); rr(q.hx-34*s,q.hy-30*s,68*s,60*s,16*s); g.clip(); capsule(drop.x,drop.y,19*s,gc,0); g.restore(); }
+      /* 지금 눌러야 할 곳을 반짝여요 */
+      if(state==='idle') attention(q.kx,q.ky,kr+6*s,s);
+      if(state==='dropped') attention(q.hx,q.hy,40*s,s);
+      const tx=state==='dropped'?q.hx:q.kx; placeCall(tx,q.bodyBot+22*s);
+      requestAnimationFrame(frame); };
+    requestAnimationFrame(frame);
+    const finish=()=>{ run=false; removeEventListener('resize',fit); el.remove(); document.body.style.overflow=''; busy=false; p.rev=1; try{ persist(); }catch(e){} done(); };
+    const reveal=()=>{ if(state!=='dropped') return; state='reveal'; const rv=el.querySelector('#grev'); rv.classList.add('on'); const big=el.querySelector('#gbig');
+      const openIt=()=>{ if(big.classList.contains('open')) return; ac(); big.classList.add('open'); el.querySelector('#gtap').style.display='none'; sPop(); buzz(60);
+        setTimeout(()=>{ big.style.display='none'; el.querySelector('#gcard').classList.add('on'); },380); };
+      big.onclick=openIt; el.querySelector('#gtap').onclick=openIt; el.querySelector('#gopen').onclick=finish; };
+    const turn=()=>{ if(state!=='idle'||turning) return; ac(); turning=true; state='turning'; call.textContent='드르륵 드르륵…'; call.classList.add('busy'); sRatchet(); buzz([20,40,20,40,20]);
+      caps.forEach(c=>{ c.vx=(Math.random()-.5)*16; c.vy=-Math.random()*12-4; });
+      const a0=hAng, t0=performance.now(), D=1100; const an=now=>{ const k=Math.min(1,(now-t0)/D), e=1-Math.pow(1-k,3); hAng=a0+Math.PI*2*e; if(k<1) requestAnimationFrame(an); else { turning=false; const q=geo(); drop={x:q.hx,y:q.hy-50*q.s,vx:(Math.random()-.5)*2,vy:2}; state='dropped'; sDrop(); buzz(40);
+          call.textContent='캡슐을 톡! 꺼내 봐'; call.classList.remove('busy'); } }; requestAnimationFrame(an); };
+    call.onclick=()=>{ if(state==='idle') turn(); else if(state==='dropped') reveal(); };
+    cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top, q=geo();
+      if(state==='dropped'&&Math.hypot(x-q.hx,y-q.hy)<60*q.s) return reveal();
+      if(state==='idle'&&Math.hypot(x-q.kx,y-q.ky)<62*q.s) turn(); });
+  }
+  /* 원래 '게임 시간' 창을 띄우기 전에 뽑기부터: 이번에 열린 게임을 아직 뽑지 않았다면 */
+  const _mo=mgOffer; mgOffer=function(){ try{ const M=mgState(), p=M.pend; if(p&&!p.rev&&!document.getElementById('mg-modal')&&!document.getElementById('bp-modal')&&!document.getElementById('gacha')){ const self=this, args=arguments; return show(()=>_mo.apply(self,args)); } }catch(e){} return _mo.apply(this,arguments); };
+  window.__gacha={show};
+})();
+
+</script>
+<!-- ===== 게임 뽑기 끝 ===== -->
 </body>
 </html>
