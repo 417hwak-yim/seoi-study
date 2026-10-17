@@ -1385,11 +1385,13 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 .rdalt{border:2px solid #2FA36B; background:#fff; color:#1B2750; border-radius:999px; padding:5px 12px; font:inherit; font-weight:700; touch-action:manipulation}
 </style><style>/* 게임 중에는 뒤의 공부방 화면을 잠깐 숨겨서 게임이 버벅이지 않게 해요 */body.mgon>*:not(#mg-modal):not(script):not(style){display:none!important}</style><style>/* 한글 따라 쓰기: 글자마다 큰 칸 */.ktrace{position:relative;display:grid;grid-template-columns:repeat(var(--c),var(--s));grid-auto-rows:var(--s);width:max-content;max-width:100%;margin:6px auto 0;border:2px solid var(--ink);border-radius:10px;background:var(--card);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}.kcell{position:relative;display:grid;place-items:center;border:1px solid var(--line);background:linear-gradient(90deg,transparent calc(50% - .5px),color-mix(in srgb,var(--line) 70%,transparent) calc(50% - .5px) calc(50% + .5px),transparent 0),linear-gradient(transparent calc(50% - .5px),color-mix(in srgb,var(--line) 70%,transparent) calc(50% - .5px) calc(50% + .5px),transparent 0)}.kcell i{font-style:normal;font-weight:700;font-size:calc(var(--s) * .74);line-height:1;color:var(--line);pointer-events:none}.ktrace canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}</style><style id="subjtabs-hide">/* 과목 안에서는 다른 과목으로 가는 단추 줄을 숨기고 '처음 화면' 단추만 남겨요 */.subjtabs .stab:not(.home){display:none!important}</style>
 <style id="justify-text">
-/* 문장으로 된 지문과 설명은 양쪽 정렬: 낱말이 줄 끝에서 잘리지 않게(keep-all) 하고, 줄마다 낱말 사이를 고르게 벌려 양쪽 끝을 맞춰요.
+/* 문장으로 된 지문과 설명은 양쪽 정렬: 한글 책처럼 글자 단위로 줄 끝까지 채워서(낱말 사이가 크게 벌어지지 않게) 양쪽 끝을 맞춰요. 영어 낱말은 중간에서 끊지 않아요.
    보기 단추·낱말 카드·영어 낱말 설명처럼 짧은 글은 그대로 두어요. */
 .kpas,.kpas p,.sit p,.rdtext p,.rdpara,.wtext,.nwbody p,.tqtext,.thint,.tsol li,.tback li,.hjsen,.glbox,.mtxt,.fb p,.rdnote,.cbsum,.rdsum,
 .wtx p,.wbub p,.wsum p,.wfun p,.xpmodel p,.stp-q,.whyp p,.newsp .nwbody p{
-  text-align:justify!important;text-justify:inter-word;word-break:keep-all;overflow-wrap:break-word;hyphens:none}
+  text-align:justify!important;text-justify:inter-word;word-break:normal!important;line-break:strict;overflow-wrap:break-word;hyphens:none}
+/* 위 글들의 안쪽 글자(문장 조각 span 등)도 같은 방식으로 줄을 채워요 */
+.kpas *,.rdtext p *,.wtext *,.nwbody p *,.wtx p *,.wbub p *,.whyp p *,.mtxt *,.tqtext *{word-break:normal!important}
 .rdtext p,.rdpara,.nwbody p{text-align-last:left}
 /* 개념 상자(.tip)는 칸이 좁고 가려진 낱말·굵은 낱말이 많아 양쪽 정렬을 하면 띄어쓰기가 크게 벌어져요. 왼쪽 정렬로 둬요 (양쪽 정렬 목록에서 뺐어요) */
 .tip{text-align:left}
