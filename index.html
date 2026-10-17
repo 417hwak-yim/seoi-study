@@ -1397,7 +1397,7 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 button,.btn,[data-go],.choice,.tile,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 input,textarea,select{font-size:max(16px,1em)}
-</style><style id="rdmulti-css">.rdcrect{transition:left .25s,top .25s,width .25s,height .25s}.rdcrect.pick{box-shadow:0 0 0 4px #FFC83A,0 0 0 9999px rgba(0,0,0,.35)}.rdprevbtn .btn.sun{font-size:.9rem;padding:8px 12px;min-height:40px}</style>
+</style><style id="rdmulti-css">.rddupw{margin:8px 0;padding:10px 12px;border-radius:12px;background:#FFE3E0;border:2px solid #E5533D;color:#8A1F11;line-height:1.55;animation:rddw .5s}.rddupw small{color:#8A1F11}@keyframes rddw{0%{transform:scale(.96)}60%{transform:scale(1.02)}}.rddup{margin:10px 0;padding:12px;border-radius:14px;background:#FFF4D6;border:2px solid #F5B700}.rddup>b{display:block;margin-bottom:6px}.rddrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin:4px 0}.rddupask{display:block;color:#8a5a00;line-height:1.6}.rddupask .row{margin-top:8px}.rdpicedit{margin:10px 0;padding:12px;border:2px dashed #2FA36B;border-radius:16px;background:#fff}.rdflash{animation:rdfl 1.2s}@keyframes rdfl{0%,60%{box-shadow:0 0 0 4px #FFC83A}}.rdrepick{margin:6px 0}.rdcrect{transition:left .25s,top .25s,width .25s,height .25s}.rdcrect.pick{box-shadow:0 0 0 4px #FFC83A,0 0 0 9999px rgba(0,0,0,.35)}.rdprevbtn .btn.sun{font-size:.9rem;padding:8px 12px;min-height:40px}</style>
 </head>
 <body>
 <div id="app"></div>
@@ -4663,7 +4663,7 @@ function readCard(r,pics){
   const i=r.rec?RBOOKS.findIndex(b=>b[3]===r.rec):-1;
   return '<article class="rdcard" data-id="'+r.id+'">'+coverHTML(r.title,r.author,i,pics[r.id])+'<div class="rdbody"><b>'+esc(r.title)+'</b>'+(r.author?'<small>'+esc(r.author)+'</small>':'')+'<small>'+r.d.replace(/^(\d+)-0?(\d+)-0?(\d+)$/,'$1년 $2월 $3일')+'에 읽음'+(i>=0?' · <span class="rdrec">⭐ 추천 도서</span>':'')+'</small>'
     +(r.sum?'<p class="rdsum">'+esc(r.sum)+'</p>':'')+(r.note?'<p class="rdnote"><span>💬 '+KID.name+'의 생각</span>'+esc(r.note)+'</p>':'')
-    +'<div class="row"><button class="back" data-note="'+r.id+'">'+(r.note?'✏️ 생각 고치기':'💬 느낀 점 남기기')+'</button><button class="back" data-del="'+r.id+'">지우기</button></div></div></article>';
+    +'<div class="row"><button class="back" data-note="'+r.id+'">'+(r.note?'✏️ 생각 고치기':'💬 느낀 점 남기기')+'</button><button class="back" data-pic="'+r.id+'">📷 사진 바꾸기</button><button class="back" data-del="'+r.id+'">지우기</button></div></div></article>';
 }
 function readView(){
   const R=(STATE.reads=STATE.reads||[]), pics=readPics(), recN=R.filter(r=>r.rec).length;
@@ -4980,31 +4980,43 @@ function edgeScore(cv, r) { const E = edgeMap(cv), w = E.w, h = E.h, X0 = Math.r
   if (r.w > 0.97 && r.h > 0.97) return 0.2;   /* 사진 전체는 마지막 수단 */
   return (lineV(E, Math.max(0, X0), Y0, Y1) + lineV(E, X1, Y0, Y1) + lineH(E, Math.max(0, Y0), X0, X1) + lineH(E, Y1, X0, X1)) / 4; }
 /* 여러 권이 찍힌 사진: 누른 자리에서 왼쪽·오른쪽·위·아래로 가며 가장 가까운 '길고 곧은 테두리'를 찾아 그 책의 네모를 만들어요 */
-function findAt(cv, u, v) { const E = edgeMap(cv), w = E.w, h = E.h, tx = Math.round(u * w), ty = Math.round(v * h);
-  const cl = (a, lo, hi) => Math.max(lo, Math.min(hi, a));
+function findAt(cv, u, v) {
+  /* 작게 줄인 사진에서 일해요 */
+  const S = 260, k = Math.min(1, S / Math.max(cv.width, cv.height)), w = Math.max(16, Math.round(cv.width * k)), h = Math.max(16, Math.round(cv.height * k));
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(cv, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data;
+  const tx = Math.min(w - 2, Math.max(1, Math.round(u * w))), ty = Math.min(h - 2, Math.max(1, Math.round(v * h))), cl = (a, lo, hi) => Math.max(lo, Math.min(hi, a));
+  const px = (x, y, ch) => d[(y * w + x) * 4 + ch];
+  /* 책의 바깥 테두리는 '위에서 아래까지 같은 쪽으로 색이 바뀌는 곧은 선'이에요.
+     표지 안의 그림 테두리는 책 높이의 일부에만 있고, 그림 속 무늬는 바뀌는 쪽이 들쭉날쭉해서 점수가 낮아요 */
+  /* 책이 조금 비스듬해도 같은 선으로 봐요: 줄마다 앞뒤 3칸 안에서 가장 크게 바뀌는 곳을 봐요 */
+  const DR = 2, dx = (x, y, ch) => px(Math.min(w - 1, x + 1), y, ch) - px(Math.max(0, x - 1), y, ch), dy = (x, y, ch) => px(x, Math.min(h - 1, y + 1), ch) - px(x, Math.max(0, y - 1), ch);
+  const colScore = (x, y0, y1) => { let best = 0; for (let ch = 0; ch < 3; ch++) { let p = 0, n = 0, m = 0; for (let y = y0; y <= y1; y++) { let df = 0; for (let o = -DR; o <= DR; o++) { const xx = x + o; if (xx < 1 || xx > w - 2) continue; const v = dx(xx, y, ch); if (Math.abs(v) > Math.abs(df)) df = v; } m++; if (df > 14) p++; else if (df < -14) n++; } best = Math.max(best, Math.max(p, n) / Math.max(1, m)); } return best; };
+  const rowScore = (y, x0, x1) => { let best = 0; for (let ch = 0; ch < 3; ch++) { let p = 0, n = 0, m = 0; for (let x = x0; x <= x1; x++) { let df = 0; for (let o = -DR; o <= DR; o++) { const yy = y + o; if (yy < 1 || yy > h - 2) continue; const v = dy(x, yy, ch); if (Math.abs(v) > Math.abs(df)) df = v; } m++; if (df > 14) p++; else if (df < -14) n++; } best = Math.max(best, Math.max(p, n) / Math.max(1, m)); } return best; };
   const scan = (from, to, step, f) => { let mx = 0; const sc = []; for (let i = from; step > 0 ? i <= to : i >= to; i += step) { const s = f(i); sc.push([i, s]); if (s > mx) mx = s; }
-    const need = Math.max(0.42, mx * 0.93);   /* 가장 뚜렷한 선에 가까운 것만(책 안쪽 무늬 선은 빼요) */ const hit = sc.find(p => p[1] >= need); return hit ? hit[0] : null; };
-  let x0 = null, x1 = null, y0 = null, y1 = null, Y0 = cl(ty - Math.round(h * 0.15), 0, h - 1), Y1 = cl(ty + Math.round(h * 0.15), 0, h - 1), X0, X1;
-  for (let round = 0; round < 2; round++) {
-    const gx = Math.round(w * 0.05), gy = Math.round(h * 0.05);
-    x0 = scan(tx - gx, 1, -1, x => lineV(E, x, Y0, Y1)); x1 = scan(tx + gx, w - 2, 1, x => lineV(E, x, Y0, Y1));
-    X0 = x0 == null ? cl(tx - Math.round(w * 0.2), 0, w - 1) : x0; X1 = x1 == null ? cl(tx + Math.round(w * 0.2), 0, w - 1) : x1;
-    const ix = Math.round((X1 - X0) * 0.02), a = X0 + ix, b = X1 - ix;   /* 책 너비 전체에 걸친 가로선이 책의 위·아래 끝이에요 */
-    y0 = scan(ty - gy, 1, -1, y => lineH(E, y, a, b)); y1 = scan(ty + gy, h - 2, 1, y => lineH(E, y, a, b));
-    const nY0 = y0 == null ? cl(ty - Math.round(h * 0.25), 0, h - 1) : y0, nY1 = y1 == null ? cl(ty + Math.round(h * 0.25), 0, h - 1) : y1, iy = Math.round((nY1 - nY0) * 0.03);
-    Y0 = nY0 + iy; Y1 = nY1 - iy; if (round === 1) { Y0 = nY0; Y1 = nY1; } }
-  const m = 0.006, r = { x: X0 / w - m, y: Y0 / h - m, w: (X1 - X0) / w + 2 * m, h: (Y1 - Y0) / h + 2 * m };
-  r.x = cl(r.x, 0, 1); r.y = cl(r.y, 0, 1); r.w = Math.min(1 - r.x, Math.max(0.12, r.w)); r.h = Math.min(1 - r.y, Math.max(0.12, r.h)); return r; }
-function cropThumb(cv, r, max) { const sx = r.x * cv.width, sy = r.y * cv.height, sw = r.w * cv.width, sh = r.h * cv.height, k = Math.min(1, max / Math.max(sw, sh)), c = document.createElement('canvas');
+    const need = Math.max(0.35, mx - 0.03); const k0 = sc.findIndex(p => p[1] >= need);   /* 가장 뚜렷한 선(책 끝)만, 비슷하면 가까운 것 */
+    if (k0 < 0) return null; let k1 = k0; while (k1 + 1 < sc.length && sc[k1 + 1][1] >= sc[k0][1] - 0.06) k1++;   /* 이어진 높은 칸의 가운데가 실제 테두리예요 */
+    return Math.round((sc[k0][0] + sc[k1][0]) / 2); };
+  const gx = Math.max(2, Math.round(w * 0.04)), gy = Math.max(2, Math.round(h * 0.04));
+  /* 처음엔 사진 위에서 아래까지 전체를 보고(책 테두리가 그림 테두리보다 길어요), 찾은 위·아래 끝으로 다시 맞춰요 */
+  let Y0 = 0, Y1 = h - 1, X0 = 0, X1 = w - 1;
+  for (let round = 0; round < 3; round++) {
+    const iy = Math.round((Y1 - Y0) * 0.05);
+    const l = scan(tx - gx, 1, -1, x => colScore(x, Y0 + iy, Y1 - iy)), r = scan(tx + gx, w - 2, 1, x => colScore(x, Y0 + iy, Y1 - iy));
+    X0 = l == null ? cl(tx - Math.round(w * 0.2), 0, w - 1) : l; X1 = r == null ? cl(tx + Math.round(w * 0.2), 0, w - 1) : r;
+    const ix = Math.round((X1 - X0) * 0.02);
+    const t = scan(ty - gy, 1, -1, y => rowScore(y, X0 + ix, X1 - ix)), b = scan(ty + gy, h - 2, 1, y => rowScore(y, X0 + ix, X1 - ix));
+    Y0 = t == null ? cl(ty - Math.round(h * 0.25), 0, h - 1) : t; Y1 = b == null ? cl(ty + Math.round(h * 0.25), 0, h - 1) : b; }
+  const m = 0.006, R = { x: X0 / w - m, y: Y0 / h - m, w: (X1 - X0) / w + 2 * m, h: (Y1 - Y0) / h + 2 * m };
+  R.x = cl(R.x, 0, 1); R.y = cl(R.y, 0, 1); R.w = Math.min(1 - R.x, Math.max(0.1, R.w)); R.h = Math.min(1 - R.y, Math.max(0.1, R.h)); return R; }function cropThumb(cv, r, max) { const sx = r.x * cv.width, sy = r.y * cv.height, sw = r.w * cv.width, sh = r.h * cv.height, k = Math.min(1, max / Math.max(sw, sh)), c = document.createElement('canvas');
   c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k)); c.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.72); }
 /* 자른 결과를 작게 먼저 보여 주고, 필요할 때만 '직접 맞추기'로 크게 열어요 */
-function cropUI(host, cv, r) {
+function cropUI(host, cv, r, mode) {
   const preview = () => { host.innerHTML = '<div class="rdprev"><img src="' + cropThumb(cv, r, 360) + '" alt="자른 책 표지"><div class="rdprevtxt"><b>✂️ 책 표지만 잘랐어요</b><span>이대로 책장에 꽂혀요.</span>'
       + '<div class="rdprevbtn"><button class="btn sun" type="button" data-cr="multi">📚 여러 권 중에서 고르기</button><button class="back" type="button" data-cr="edit">✂️ 직접 맞추기</button><button class="back" type="button" data-cr="all">사진 전체 쓰기</button></div></div></div>';
     host.querySelector('[data-cr="edit"]').onclick = () => editor(false); host.querySelector('[data-cr="multi"]').onclick = () => editor(true); host.querySelector('[data-cr="all"]').onclick = () => { Object.assign(r, { x: 0, y: 0, w: 1, h: 1 }); preview(); }; };
   const editor = multi => {
   host.innerHTML = '<div class="rdcrop"><img src="' + cv.toDataURL('image/jpeg', 0.85) + '" alt="찍은 사진"><div class="rdcrect"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div>'
-    + '<p class="rdcrophint">' + (multi ? '📚 <b>읽은 책을 톡!</b> 누르면 그 책에 네모가 맞춰져요. 모서리를 끌어 고칠 수도 있어요.' : '모서리를 끌어 책 표지에 맞춰요. 여러 권이면 읽은 책을 톡 눌러도 돼요.') + '</p><div class="row center rdcropbtn"><button class="btn main" type="button" data-cr="ok">✔ 다 맞췄어요</button><button class="back" type="button" data-cr="auto">자동으로 맞추기</button><button class="back" type="button" data-cr="all">사진 전체 쓰기</button></div>';
+    + '<p class="rdcrophint">' + (multi ? '📚 책이 여러 권이면 <b>읽은 책을 톡!</b> 누르세요. 그 책만 네모로 잡혀요.<br>한 권만 찍었으면 바로 <b>‘다 맞췄어요’</b>를 눌러요.' : '모서리를 끌어 책 표지에 맞춰요. 여러 권이면 읽은 책을 톡 눌러도 돼요.') + '</p><div class="row center rdcropbtn"><button class="btn main" type="button" data-cr="ok">✔ 다 맞췄어요</button><button class="back" type="button" data-cr="auto">자동으로 맞추기</button><button class="back" type="button" data-cr="all">사진 전체 쓰기</button></div>';
   const box = host.querySelector('.rdcrop'), R = host.querySelector('.rdcrect');
   host.querySelector('[data-cr="ok"]').onclick = preview;
   const put = () => { R.style.left = r.x * 100 + '%'; R.style.top = r.y * 100 + '%'; R.style.width = r.w * 100 + '%'; R.style.height = r.h * 100 + '%'; };
@@ -5019,10 +5031,10 @@ function cropUI(host, cv, r) {
   host.querySelector('[data-cr="auto"]').onclick = () => { Object.assign(r, findBook(cv)); put(); };
   /* 네모 밖(사진)을 톡 누르면 그 자리의 책을 찾아 네모를 옮겨요 */
   box.addEventListener('click', e => { if (e.target.closest('.rdcrect')) return; const b = box.getBoundingClientRect(); Object.assign(r, findAt(cv, (e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height)); put(); R.classList.add('pick'); setTimeout(() => R.classList.remove('pick'), 500); });
-  if (multi) { R.style.opacity = '.35'; box.addEventListener('click', () => { R.style.opacity = ''; }, { once: true }); }
+
   host.querySelector('[data-cr="all"]').onclick = () => { Object.assign(r, { x: 0, y: 0, w: 1, h: 1 }); put(); };
   put(); };
-  preview(); }
+  if (mode === 'pick') editor(true); else preview(); }   /* 사진을 올리면 바로 '읽은 책을 톡!' 화면부터 보여 줘요 */
 
 /* ---------- 새 책 올리기 ---------- */
 readForm = function (box, file, thumb0, speak) {
@@ -5033,7 +5045,11 @@ readForm = function (box, file, thumb0, speak) {
     + '<div class="rdkbd" id="rd-kbd" hidden><button class="btn" type="button" id="rd-kbdbtn">⌨️ 키보드 마이크로 말하기</button><p>글자판이 열리면 <b>🎤 마이크 단추</b>를 누르고 책 제목을 말해요. 말한 대로 한글로 적혀요.</p></div>'
     + '<p class="rdstat" id="rd-stat"></p><p class="rdsum" id="rd-sum" hidden></p><div class="row"><button class="btn main" id="rd-save">책장에 꽂기</button><button class="btn" id="rd-cancel">그만두기</button></div></div></div>';
   const T = document.getElementById('rd-title'), S = document.getElementById('rd-stat'), SUM = document.getElementById('rd-sum'); let info = { author: '', sum: '' }, asked = '';
-  const showSum = () => { const i = recIndex(T.value); const t = i >= 0 ? RBOOKS[i][6] : info.sum; SUM.hidden = !t; SUM.textContent = t || ''; if (i >= 0) S.textContent = '⭐ 추천 도서예요!'; };
+  const showSum = () => { const i = recIndex(T.value); const t = i >= 0 ? RBOOKS[i][6] : info.sum; SUM.hidden = !t; SUM.textContent = t || ''; if (i >= 0) S.textContent = '⭐ 추천 도서예요!'; dupWarn(); };
+  /* 제목을 말하거나 적는 바로 그때, 이미 책장에 있는 책이면 주의 표시를 보여 줘요 */
+  const dupWarn = () => { let W = document.getElementById('rd-dupw'); if (!W) { W = document.createElement('div'); W.id = 'rd-dupw'; W.className = 'rddupw'; W.setAttribute('role', 'alert'); S.insertAdjacentElement('beforebegin', W); }
+    const v = T.value.trim(), ri = v ? recIndex(v) : -1, ft = ri >= 0 ? RBOOKS[ri][0] : v, dup = ft ? (STATE.reads || []).find(x => sameBook(x.title, ft)) : null;
+    W.hidden = !dup; if (dup) W.innerHTML = '⚠️ <b>주의!</b> 《' + esc(dup.title) + '》' + (hasB(dup.title) ? '은' : '는') + ' <b>' + dstr(dup.d) + '</b>에 이미 읽고 책장에 꽂은 책이에요.<br><small>다시 읽은 거라면 그대로 꽂아도 돼요. 다른 책이면 제목을 고쳐 주세요.</small>'; };
   const ask = async () => { const sm = await getSample(); if (!sm) { if (!T.value && file) S.textContent = '책 제목을 말하거나 적어 주세요.'; return; }
     const title = T.value.trim(), useImg = !!(file && SAMPLEIMG && !title); if (!useImg && (!title || title === asked || recIndex(title) >= 0)) return; asked = title;
     S.textContent = '🔎 ' + BNga + ' 책을 알아보는 중이에요…';
@@ -5048,7 +5064,10 @@ readForm = function (box, file, thumb0, speak) {
 
   /* 사진: 책 부분만 잘라요 */
   let CV = null; const CR = { x: 0, y: 0, w: 1, h: 1 };
-  if (file) loadCanvas(file, 1000).then(cv => { CV = cv; Object.assign(CR, findBook(cv)); const at = document.getElementById('rd-crop'); if (at) cropUI(at, cv, CR); })
+  if (file) loadCanvas(file, 1000).then(cv => { CV = cv; Object.assign(CR, findBook(cv)); const at = document.getElementById('rd-crop'); if (at) { Object.assign(CR, { x: 0, y: 0, w: 1, h: 1 }); cropUI(at, cv, CR, 'pick');   /* 처음엔 사진 전체: 아이가 책을 톡 누르면 그 책만 잡아요 */
+      /* 올리는 중에 사진을 바꿔요: 적어 둔 제목은 그대로 둬요 */
+      const re = document.createElement('div'); re.className = 'row center rdrepick'; re.innerHTML = '<button class="back" type="button">🔄 다른 사진으로 바꾸기</button>'; at.insertAdjacentElement('afterend', re);
+      re.firstChild.onclick = () => { const keep = T.value; const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; try { if (rec) rec.abort(); } catch (e) {} rec = null; readForm(box, f, thumb0, false); const t2 = document.getElementById('rd-title'); if (t2 && keep) { t2.value = keep; t2.dispatchEvent(new Event('input')); } }; inp.click(); }; } })
     .catch(() => { const at = document.getElementById('rd-crop'); if (at) at.innerHTML = '<p class="rdstat">사진을 열지 못했어요. 다른 사진을 골라 주세요.</p>'; });
 
   /* 책 제목 말하기 */
@@ -5065,7 +5084,7 @@ readForm = function (box, file, thumb0, speak) {
   const applyText = () => {
     const cands = [...new Set([lastText, ...allAlts].map(cleanSaid).filter(Boolean))]; if (!cands.length) return false;
     const m = bestMatch(cands); let title = cands[0];
-    if (m && m.s >= 0.72) { title = m.t; S.textContent = (m.rec ? '⭐ 추천 도서 ' : '') + '‘' + m.t + '’, 이 책이 맞나요?'; }
+    if (m && m.s >= 0.72) { title = m.t; S.textContent = (m.rec ? '⭐ 추천 도서 ' : '') + '‘' + m.t + '’, 이 책이 맞나요?' + (CV ? ' 사진에 여러 권이 있으면 이 책을 톡! 눌러요.' : ''); }
     else S.textContent = '제목이 맞으면 “책장에 꽂기”를 눌러요. 틀리면 다시 말하거나 고쳐요.';
     T.value = title.slice(0, 80);
     if (heard) { heard.hidden = false; heard.textContent = '“' + cands[0] + '”라고 들었어요.'; }
@@ -5101,7 +5120,12 @@ readForm = function (box, file, thumb0, speak) {
   if (mic) mic.onclick = listen;
   if (file) ask(); else if (speak && SRT) listen(); else { if (speak && !SRT) showKbd('이 브라우저에서는 바로 말하기를 쓸 수 없어요. 아래 키보드 마이크로 말하면 한글로 적혀요.'); T.focus(); }
   document.getElementById('rd-cancel').onclick = () => { try { if (rec) rec.abort(); } catch (e) {} rec = null; box.innerHTML = ''; };
+  let dupOk = false;
   document.getElementById('rd-save').onclick = () => { const title = T.value.trim(); if (!title) { S.textContent = '책 제목을 말하거나 적어 주세요.'; T.focus(); return; }
+    /* 이미 책장에 있는 책이면 한 번 물어봐요 */
+    const ri = recIndex(title), ft = ri >= 0 ? RBOOKS[ri][0] : title, dup = (STATE.reads || []).find(x => sameBook(x.title, ft));
+    if (dup && !dupOk) { S.innerHTML = '<span class="rddupask">⚠️ 《' + esc(dup.title) + '》' + (hasB(dup.title) ? '은' : '는') + ' ' + dstr(dup.d) + '에 이미 책장에 꽂았어요.<br>또 읽었으면 한 번 더 꽂을 수 있어요.<span class="row"><button class="btn sun" type="button" id="rd-dupyes">또 읽었어요! 꽂기</button><button class="btn" type="button" id="rd-dupno">그만두기</button></span></span>';
+      document.getElementById('rd-dupyes').onclick = () => { dupOk = true; document.getElementById('rd-save').click(); }; document.getElementById('rd-dupno').onclick = () => { box.innerHTML = ''; }; S.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     try { if (rec) rec.abort(); } catch (e) {} rec = null;
     const thumb = CV ? cropThumb(CV, CR, 300) : (thumb0 || '');
     const i = recIndex(title), id = 'r' + Date.now().toString(36), r = { id, d: dkey(new Date()), title: i >= 0 ? RBOOKS[i][0] : title.slice(0, 80), author: i >= 0 ? RBOOKS[i][1] : info.author, sum: i >= 0 ? RBOOKS[i][6] : info.sum, rec: i >= 0 ? RBOOKS[i][3] : '', note: '' };
@@ -5121,7 +5145,38 @@ readView = function () { const res = _rv.apply(this, arguments);
     document.getElementById('rd-cam').onchange = pickF; document.getElementById('rd-gal').onchange = pickF;
     document.getElementById('rd-say').onclick = () => readForm(box, null, '', true); document.getElementById('rd-type').onclick = () => readForm(box, null, '', false); } } catch (e) {}
   return res; };
-window.__shelf = { findBook, cleanSaid, bestMatch, sim };
+/* ---------- 책장에 꽂은 책의 사진 바꾸기: 새 사진을 고르면 자르기 화면(여러 권 중에서 고르기도 돼요)을 거쳐 표지를 바꿔요 ---------- */
+function picEditor(id, file) {
+  document.querySelectorAll('.rdpicedit').forEach(x => x.remove());
+  const card = document.querySelector('.rdcard[data-id="' + id + '"]'), host = document.createElement('div'); host.className = 'rdform rdpicedit';
+  host.innerHTML = '<p class="rdstat"><b>📷 새 사진으로 바꿔요</b></p><div class="rdcropat"><p class="rdstat">사진을 불러오는 중이에요…</p></div><p class="rdstat" data-pe="msg"></p><div class="row center"><button class="btn main" type="button" data-pe="save">이 사진으로 바꾸기</button><button class="btn" type="button" data-pe="cancel">그만두기</button></div>';
+  if (card) card.insertAdjacentElement('afterend', host); else { const at = document.getElementById('rd-new'); if (!at) return; at.appendChild(host); }
+  let cv = null; const r = { x: 0, y: 0, w: 1, h: 1 };
+  loadCanvas(file, 1000).then(c => { cv = c; cropUI(host.querySelector('.rdcropat'), c, r, 'pick'); })
+    .catch(() => { host.querySelector('.rdcropat').innerHTML = '<p class="rdstat">사진을 열지 못했어요. 다른 사진을 골라 주세요.</p>'; });
+  host.querySelector('[data-pe="cancel"]').onclick = () => host.remove();
+  host.querySelector('[data-pe="save"]').onclick = () => { if (!cv) return; if (!savePic(id, cropThumb(cv, r, 300))) { host.querySelector('[data-pe="msg"]').textContent = '저장할 곳이 가득 찼어요. 다른 책 사진을 몇 개 지운 뒤 다시 해 봐요.'; return; }
+    try { persist(); } catch (e) {} try { readView(); } catch (e) {} setTimeout(() => { const c = document.querySelector('.rdcard[data-id="' + id + '"]'); if (c) { c.scrollIntoView({ block: 'center' }); c.classList.add('rdflash'); setTimeout(() => c.classList.remove('rdflash'), 1200); } }, 60); };
+  host.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+const pickPhoto = cb => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => { const f = inp.files && inp.files[0]; if (f) cb(f); }; inp.click(); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pic]'); if (!b) return; pickPhoto(f => picEditor(b.dataset.pic, f)); });
+/* ---------- 같은 책 두 번 꽂기 막기 + 이미 두 번 꽂힌 책 정리하기 ---------- */
+const sameBook = (a, b) => { const x = NORM(a), y = NORM(b); return !!x && !!y && (x === y || sim(a, b) >= 0.9); };
+const dupGroups = () => { const R = STATE.reads || [], G = []; R.forEach(r => { const g = G.find(g => sameBook(g[0].title, r.title)); if (g) g.push(r); else G.push([r]); }); return G.filter(g => g.length > 1); };
+const dstr = d => String(d || '').replace(/^(\d+)-0?(\d+)-0?(\d+)$/, '$2월 $3일');
+{ const _rv2 = readView; readView = function () { const res = _rv2.apply(this, arguments);
+    try { const G = dupGroups(), list = document.querySelector('.rdlist'); if (G.length && list) {
+      const ban = document.createElement('div'); ban.className = 'rddup';
+      ban.innerHTML = '<b>📚 같은 책이 여러 번 꽂혀 있어요</b>' + G.map((g, k) => '<div class="rddrow"><span>《' + esc(g[0].title) + '》 ' + g.length + '번 (' + g.map(r => dstr(r.d)).join(', ') + ')</span><button class="back" type="button" data-dupfix="' + k + '">하나만 남기기</button></div>').join('')
+        + (G.length > 1 ? '<div class="row center"><button class="btn sun" type="button" data-dupfix="all">모두 하나씩만 남기기</button></div>' : '');
+      list.parentNode.insertBefore(ban, list);
+      ban.onclick = e => { const b = e.target.closest('[data-dupfix]'); if (!b) return; const which = b.dataset.dupfix === 'all' ? G : [G[+b.dataset.dupfix]];
+        if (!confirm(which.length > 1 ? '같은 책을 하나씩만 남기고 나머지를 지울까요?' : '《' + which[0][0].title + '》' + (hasB(which[0][0].title) ? '을' : '를') + ' 하나만 남기고 나머지를 지울까요?')) return;
+        const pics = readPics(), R = STATE.reads;
+        which.forEach(g => { const keep = g[0]; g.slice(1).forEach(r => { if (!keep.note && r.note) keep.note = r.note; if (!pics[keep.id] && pics[r.id]) savePic(keep.id, pics[r.id]); const i = R.indexOf(r); if (i >= 0) R.splice(i, 1); (STATE.readDel = STATE.readDel || []).push(r.id); savePic(r.id, ''); }); });
+        persist(); readView(); }; } } catch (e) {}
+    return res; }; }
+window.__shelf = { findBook, findAt, cleanSaid, bestMatch, sim, picEditor, dupGroups };
 })();
 </script>
 <!-- ===== 오늘의 왜 시작 ===== -->
