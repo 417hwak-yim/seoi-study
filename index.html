@@ -6928,7 +6928,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 <!-- ===== 시계 보기 시작 ===== -->
 <script>
 /* ===== 서이: ⏰ 시계 보기 =====
-   날마다 8문제. 지금 단계 문제 6개 + 앞 단계 복습 2개. 처음에 6개 넘게 맞히면 다음 단계가 열려요.
+   날마다 8문제. 서이는 한글을 혼자 읽으니 문제는 소리로 읽어 주지 않아요. 지금 단계 문제 6개 + 앞 단계 복습 2개. 처음에 6개 넘게 맞히면 다음 단계가 열려요.
    1단계 몇 시 · 2단계 몇 시 30분 · 3단계 시계 그림 고르기 · 4단계 몇 시 몇 분(5분씩) · 5단계 바늘 맞추기 · 6단계 몇 시간 뒤 */
 (function () {
   if (!(typeof KID !== 'undefined' && /서이/.test(KID.name || ''))) return;
@@ -6970,13 +6970,13 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   function play(lv) { const S = C(), list = []; for (let k = 0; k < 6; k++) list.push(GEN[lv]()); for (let k = 0; k < 2; k++) list.push(GEN[lv > 1 ? rnd(1, lv - 1) : lv]()); const qs = mix(list.slice(0, 6)).concat(list.slice(6)); let i = 0, right = 0;
     const paint = () => { const q = qs[i]; VIEW = 'clock';
       let h = '<button class="back" data-go="clock">← 시계 보기</button><div class="meter">' + (i + 1) + ' / ' + qs.length + '</div><div class="bar"><i style="width:' + (i / qs.length * 100) + '%"></i></div><section class="panel rvs ckp">'
-        + '<p class="rvs-q">' + q.q + ' <button class="rvs-say" type="button" id="cksay" aria-label="다시 듣기">🔊</button></p>' + (q.stim || '');
+        + '<p class="rvs-q">' + q.q + '</p>' + (q.stim || '');
       if (q.set) h += '<div class="ckbig" id="ckset">' + face(12, 0, 210) + '</div><div class="ckctl"><div><span><i class="r"></i>짧은바늘</span><button type="button" class="btn" data-d="h-">◀</button><button type="button" class="btn" data-d="h+">▶</button></div><div><span><i class="b"></i>긴바늘</span><button type="button" class="btn" data-d="m-">◀</button><button type="button" class="btn" data-d="m+">▶</button></div></div><div class="row center"><button type="button" class="btn main" id="ckchk">다 맞췄어요</button></div>';
       else h += '<div class="rvs-opts' + (q.pic ? ' ckpics' : '') + '">' + q.opts.map((o, j) => '<button class="rvs-opt" type="button" data-j="' + j + '">' + o.t + '</button>').join('') + '</div>';
       h += '<div id="rvsfb"></div></section>';
-      show(h, '#3E7F6F'); talk(q.speak || q.q.replace(/<[^>]+>/g, '')); document.getElementById('cksay').onclick = () => talk(q.speak || q.q);
+      show(h, '#3E7F6F');
       let tries = 0;
-      const good = () => { if (tries === 0) right++; tone(true); talk(q.ex); document.getElementById('rvsfb').innerHTML = '<div class="rvs-fbok"><b>' + (tries ? '맞았어요!' : '딩동댕! 🎉') + '</b><p>' + q.ex + '</p></div><div class="row center"><button class="btn main" id="cknx">' + (i < qs.length - 1 ? '다음 ▶' : '끝내기') + '</button></div>'; document.getElementById('cknx').onclick = () => { i++; i < qs.length ? paint() : end(); }; };
+      const good = () => { if (tries === 0) right++; tone(true); document.getElementById('rvsfb').innerHTML = '<div class="rvs-fbok"><b>' + (tries ? '맞았어요!' : '딩동댕! 🎉') + '</b><p>' + q.ex + '</p></div><div class="row center"><button class="btn main" id="cknx">' + (i < qs.length - 1 ? '다음 ▶' : '끝내기') + '</button></div>'; document.getElementById('cknx').onclick = () => { i++; i < qs.length ? paint() : end(); }; };
       const bad = () => { tries++; tone(false); document.getElementById('rvsfb').innerHTML = '<p class="rvs-fbno">다시 한 번 봐요! 짧은바늘은 시, 긴바늘은 분이에요.</p>'; };
       if (q.set) { let sh = 12, sm = 0; const box = document.getElementById('ckset'), draw = () => { box.innerHTML = face(sh, sm, 210); };
         $app.querySelectorAll('.ckctl .btn').forEach(b => b.onclick = () => { const d = b.dataset.d; if (d === 'h+') sh = H(sh + 1); if (d === 'h-') sh = H(sh - 1); if (d === 'm+') sm = (sm + 5) % 60; if (d === 'm-') sm = (sm + 55) % 60; draw(); });
@@ -6984,7 +6984,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
       else $app.querySelectorAll('.rvs-opt').forEach(b => b.onclick = () => { const o = q.opts[+b.dataset.j]; if (!o.ok) { b.disabled = true; b.classList.add('no'); bad(); return; } b.classList.add('ok'); $app.querySelectorAll('.rvs-opt').forEach(x => x.disabled = true); good(); }); };
     const end = () => { const S = C(), pass = right >= 6, first = S.day !== dk(); S.day = dk(); S.best[lv] = Math.max(S.best[lv] || 0, right); let up = false; if (pass && lv === S.lv && S.lv < LV.length) { S.lv++; up = true; }
       try { if (first) { const k = dkey(new Date()); STATE.days[k] = (STATE.days[k] || 0) + 1; grantGame(); } } catch (e) {} try { persist(); } catch (e) {}
-      show('<section class="panel result rvs"><div class="big">⏰</div><h2>시계 보기 ' + lv + '단계 끝!</h2><p>' + qs.length + '문제 중 <b>' + right + '문제</b>를 한 번에 맞혔어요.</p>' + (up ? '<p class="ckup">🎉 ' + (lv + 1) + '단계 「' + LV[lv][0] + '」가 열렸어요!</p>' : pass ? '' : '<p class="rvs-note">6문제 넘게 한 번에 맞히면 다음 단계가 열려요. 내일 또 해 봐요!</p>') + '<div class="row center"><button class="btn main" data-go="clock">단계 보기</button><button class="btn" data-go="start">처음 화면</button></div></section>', '#3E7F6F'); talk(KID.name + ', 잘했어요!'); };
+      show('<section class="panel result rvs"><div class="big">⏰</div><h2>시계 보기 ' + lv + '단계 끝!</h2><p>' + qs.length + '문제 중 <b>' + right + '문제</b>를 한 번에 맞혔어요.</p>' + (up ? '<p class="ckup">🎉 ' + (lv + 1) + '단계 「' + LV[lv][0] + '」가 열렸어요!</p>' : pass ? '' : '<p class="rvs-note">6문제 넘게 한 번에 맞히면 다음 단계가 열려요. 내일 또 해 봐요!</p>') + '<div class="row center"><button class="btn main" data-go="clock">단계 보기</button><button class="btn" data-go="start">처음 화면</button></div></section>', '#3E7F6F'); };
     paint(); }
   function view() { VIEW = 'clock'; const S = C();
     show('<button class="back" data-go="start">← 처음 화면</button><section class="panel"><h2>⏰ 시계 보기</h2><p class="lead">짧은바늘은 <b style="color:#D9482B">시</b>, 긴바늘은 <b style="color:#2F6FD6">분</b>을 알려 줘요. 한 단계씩 올라가요!</p><div class="ckhero">' + face(3, 30, 120) + '</div><div class="cklv">'
