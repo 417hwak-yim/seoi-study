@@ -6418,28 +6418,55 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     + '<filter id="smsh" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="1.2" dy="1.6" stdDeviation="1.2" flood-color="#5A3E1B" flood-opacity=".35"/></filter></defs>';
   const ribbon = (x, y, w, txt, fs) => '<g filter="url(#smsh)"><path d="M' + (x - w / 2 - 8) + ' ' + (y + 2) + ' l6 -7 l-6 -7 h' + (w + 16) + ' l-6 7 l6 7z" fill="#B0844A"/><rect x="' + (x - w / 2) + '" y="' + (y - 11) + '" width="' + w + '" height="17" rx="2" fill="#F6E7C1" stroke="' + INK + '" stroke-width="1"/></g><text x="' + x + '" y="' + (y + 1.5) + '" text-anchor="middle" font-size="' + (fs || 10.5) + '" font-weight="800" fill="' + INK + '" font-family="Jua, serif">' + txt + '</text>';
   const compass = (x, y) => '<g transform="translate(' + x + ' ' + y + ')" opacity=".85"><circle r="17" fill="none" stroke="' + INK + '" stroke-width=".8"/><path d="M0 -22 L4 -4 L0 0 L-4 -4Z M0 22 L4 4 L0 0 L-4 4Z" fill="' + INK + '"/><path d="M-22 0 L-4 -4 L0 0 L-4 4Z M22 0 L4 -4 L0 0 L4 4Z" fill="#B0844A" stroke="' + INK + '" stroke-width=".6"/><text y="-25" text-anchor="middle" font-size="8" font-weight="900" fill="' + INK + '">N</text></g>';
+  /* 큰 섬 하나: 가운데 수도(성)에서 길이 모든 나라로 뻗어 있어요. 과목 나라들은 동시에 탐험하는 곳이라 순서가 없어요.
+     나라마다 처음엔 안개에 덮여 있다가, 도장을 모을수록 안개가 걷히고 색이 진해져요. */
   function view() {
-    const [a, b] = total(), L = subs().map(s => [s, stats(s)]), W = 360, cols = 2, rowH = 132, rows = Math.ceil(L.length / cols), H = 96 + rows * rowH + 30;
-    const ctr = i => { const r = Math.floor(i / cols), c = i % cols; return [c ? 262 - (r % 2) * 14 : 98 + (r % 2) * 14, 112 + r * rowH]; };
-    let g = '<rect x="4" y="4" width="' + (W - 8) + '" height="' + (H - 8) + '" rx="10" fill="url(#smpp)" stroke="' + INK + '" stroke-width="2"/><rect x="10" y="10" width="' + (W - 20) + '" height="' + (H - 20) + '" rx="6" fill="none" stroke="' + INK + '" stroke-width=".7" stroke-dasharray="4 3"/>';
-    for (let k = 0; k < 14; k++) { const R = rnd(k + 7); g += '<text x="' + (16 + R() * (W - 40)).toFixed(0) + '" y="' + (70 + R() * (H - 90)).toFixed(0) + '" font-size="9" fill="#7FA6B8" opacity=".55">∿∿</text>'; }
-    /* 길: 나라와 나라를 잇는 점선 */
-    let road = ''; L.forEach((_, i) => { const [x, y] = ctr(i); road += (i ? ' L' : 'M') + x + ' ' + y; });
-    const lands = L.map(([s, k], i) => { const S = SUBJ[s], [x, y] = ctr(i), fr = k.b ? k.a / k.b : 0, home = fr >= 1 ? '🏰' : fr >= .5 ? '🏘️' : fr > 0 ? '⛺' : '🌫️';
-      return '<g class="smterr" data-go="smap:' + s + '" style="cursor:pointer"><path d="' + blob(x, y, 76, 54, i * 31 + 5) + '" fill="' + mix(S.color, .22 + fr * .45) + '" stroke="' + INK + '" stroke-width="1.6" filter="url(#smsh)"/>'
-        + '<text x="' + (x - 46) + '" y="' + (y - 14) + '" font-size="12" opacity=".8">' + ['⛰️', '🌲', '🌳', '⛰️'][i % 4] + '</text><text x="' + (x + 34) + '" y="' + (y + 22) + '" font-size="11" opacity=".8">' + ['🌲', '⛰️', '🌼', '🌲'][i % 4] + '</text>'
-        + '<text x="' + x + '" y="' + (y + 2) + '" text-anchor="middle" font-size="22">' + home + '</text>'
-        + ribbon(x, y - 30, Math.max(54, S.name.length * 11 + 14), S.name)
-        + '<text x="' + x + '" y="' + (y + 30) + '" text-anchor="middle" font-size="10" font-weight="800" fill="' + INK + '">⭐ ' + k.a + ' / ' + k.b + '</text></g>'; }).join('');
-    g += '<path d="' + road + '" fill="none" stroke="' + INK + '" stroke-width="1.6" stroke-dasharray="5 4" opacity=".55"/>' + lands;
-    g += ribbon(W / 2 - 18, 40, 190, (KN ? KN + '의 ' : '') + '공부 나라 지도', 13) + compass(W - 36, 44);
+    const [a, b] = total(), L = subs().map(s => [s, stats(s)]), n = L.length, W = 360, H = 470, CX = 180, CY = 250, RX = 160, RY = 204;
+    const rr = t => 1 + .07 * Math.sin(3 * t + 1) + .05 * Math.sin(7 * t + .4) + .025 * Math.sin(13 * t + 2);
+    const coast = t => [CX + Math.cos(t) * RX * rr(t), CY + Math.sin(t) * RY * rr(t)];
+    const P = q => q.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const ang = i => -Math.PI / 2 + i / n * Math.PI * 2;
+    let isl = []; for (let k = 0; k < 160; k++) isl.push(coast(k / 160 * Math.PI * 2));
+    let g = '<rect width="' + W + '" height="' + H + '" rx="12" fill="url(#smpp)"/>';
+    /* 바다 물결 */
+    for (let k = 0; k < 26; k++) { const R = rnd(k + 3), x = 14 + R() * (W - 40), y = 20 + R() * (H - 40), dx = (x - CX) / RX, dy = (y - CY) / RY; if (dx * dx + dy * dy < 1.25) continue; g += '<path d="M' + x.toFixed(0) + ' ' + y.toFixed(0) + ' q4 -3 8 0 t8 0" fill="none" stroke="#7FA6B8" stroke-width="1" opacity=".7"/>'; }
+    /* 섬 그림자 + 바닷가 띠 */
+    g += '<polygon points="' + P(isl.map(p => [p[0] + 3, p[1] + 5])) + '" fill="#5A3E1B" opacity=".18"/>' + '<polygon points="' + P(isl) + '" fill="#E9D49C" stroke="#9BC3D3" stroke-width="7" stroke-linejoin="round" opacity=".9"/>';
+    /* 나라(부채꼴) */
+    const regs = L.map(([s, k], i) => { const a0 = ang(i - .5), a1 = ang(i + .5), pts = [[CX, CY]]; for (let j = 0; j <= 14; j++) pts.push(coast(a0 + (a1 - a0) * j / 14)); return { s, k, i, pts, fr: k.b ? k.a / k.b : 0, am: ang(i) }; });
+    regs.forEach(R => { const S = SUBJ[R.s]; g += '<polygon points="' + P(R.pts) + '" fill="' + mix(S.color, .18 + R.fr * .6) + '"/>'; });
+    /* 산과 숲 (나라 안에 흩어 그려요) */
+    regs.forEach(R => { const rd = rnd(R.i * 17 + 11); for (let k = 0; k < 4; k++) { const t = R.am + (rd() - .5) * (Math.PI * 2 / n) * .6, f = .42 + rd() * .45, x = CX + Math.cos(t) * RX * rr(t) * f, y = CY + Math.sin(t) * RY * rr(t) * f;
+        if (k % 2) g += '<path d="M' + (x - 7).toFixed(1) + ' ' + y.toFixed(1) + ' L' + x.toFixed(1) + ' ' + (y - 11).toFixed(1) + ' L' + (x + 7).toFixed(1) + ' ' + y.toFixed(1) + 'Z" fill="#B59A6A" stroke="' + INK + '" stroke-width=".7"/><path d="M' + (x - 2.4).toFixed(1) + ' ' + (y - 7.3).toFixed(1) + ' L' + x.toFixed(1) + ' ' + (y - 11).toFixed(1) + ' L' + (x + 2.4).toFixed(1) + ' ' + (y - 7.3).toFixed(1) + 'Z" fill="#fff"/>';
+        else g += '<g fill="#6E8B4A" stroke="' + INK + '" stroke-width=".5"><circle cx="' + (x - 3).toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.2"/><circle cx="' + (x + 3).toFixed(1) + '" cy="' + (y + 1).toFixed(1) + '" r="3"/><circle cx="' + x.toFixed(1) + '" cy="' + (y - 3).toFixed(1) + '" r="3.3"/></g>'; } });
+    /* 나라 경계 */
+    regs.forEach(R => { const e = coast(ang(R.i - .5)); g += '<line x1="' + CX + '" y1="' + CY + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="' + INK + '" stroke-width=".8" stroke-dasharray="3 2.5" opacity=".6"/>'; });
+    /* 안개: 도장을 모을수록 걷혀요 */
+    regs.forEach(R => { const fog = Math.max(0, .78 - R.fr * 1.1); if (fog > .02) g += '<polygon points="' + P(R.pts) + '" fill="#F4EEE0" opacity="' + fog.toFixed(2) + '"/>'; });
+    /* 해안선 */
+    g += '<polygon points="' + P(isl) + '" fill="none" stroke="' + INK + '" stroke-width="1.8" stroke-linejoin="round"/>';
+    /* 수도에서 각 나라로 가는 길 (모두 동시에) */
+    regs.forEach(R => { const t = R.am, ff = n > 8 ? (R.i % 2 ? .52 : .8) : .66, x = CX + Math.cos(t) * RX * rr(t) * ff, y = CY + Math.sin(t) * RY * rr(t) * ff; g += '<path d="M' + CX + ' ' + CY + ' Q' + ((CX + x) / 2 + Math.sin(t) * 8).toFixed(1) + ' ' + ((CY + y) / 2 - Math.cos(t) * 8).toFixed(1) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + '" fill="none" stroke="#8A6A3A" stroke-width="1.6" stroke-dasharray="4 3"/>'; R.lx = x; R.ly = y; });
+    /* 나라 이름표와 진행 */
+    regs.forEach(R => { const S = SUBJ[R.s], icon = R.fr >= 1 ? '🏰' : R.fr >= .5 ? '🏘️' : R.fr > 0 ? '⛺' : '☁️', w = Math.max(40, S.name.length * 9 + 10);
+      g += '<g class="smterr" data-go="smap:' + R.s + '" style="cursor:pointer"><circle cx="' + R.lx.toFixed(1) + '" cy="' + R.ly.toFixed(1) + '" r="24" fill="transparent"/>'
+        + '<text x="' + R.lx.toFixed(1) + '" y="' + (R.ly + 2).toFixed(1) + '" text-anchor="middle" font-size="15">' + icon + '</text>'
+        + ribbon(R.lx, R.ly - 16, w, S.name, 8.6)
+        + '<text x="' + R.lx.toFixed(1) + '" y="' + (R.ly + 15).toFixed(1) + '" text-anchor="middle" font-size="7.6" font-weight="800" fill="' + INK + '" stroke="#F6E7C1" stroke-width="2.4" paint-order="stroke">⭐' + R.k.a + '/' + R.k.b + '</text></g>'; });
+    /* 수도 */
+    g += '<g filter="url(#smsh)"><circle cx="' + CX + '" cy="' + CY + '" r="17" fill="#F6E7C1" stroke="' + INK + '" stroke-width="1.4"/></g><text x="' + CX + '" y="' + (CY + 6) + '" text-anchor="middle" font-size="18">🏯</text>'
+      + '<text x="' + CX + '" y="' + (CY + 30) + '" text-anchor="middle" font-size="8" font-weight="800" fill="' + INK + '" stroke="#F6E7C1" stroke-width="2.6" paint-order="stroke">' + (KN || '') + '의 성</text>';
+    /* 바다 장식: 배, 바다뱀, 나침반, 제목 */
+    g += '<g transform="translate(34 420)" opacity=".85"><path d="M-12 0 h24 l-4 6 h-16z" fill="#8A5A2B" stroke="' + INK + '" stroke-width=".8"/><path d="M0 0 V-18 L10 -6 H0" fill="#F6E7C1" stroke="' + INK + '" stroke-width=".8"/></g>'
+      + '<path d="M300 430 q6 -10 12 0 q6 10 12 0 q6 -10 12 0" fill="none" stroke="#3E7A5A" stroke-width="3" stroke-linecap="round"/><circle cx="337" cy="428" r="2" fill="#3E7A5A"/>'
+      + compass(W - 34, 46) + ribbon(132, 24, 200, (KN ? KN + '의 ' : '') + '공부 나라', 13)
+      + '<rect x="3" y="3" width="' + (W - 6) + '" height="' + (H - 6) + '" rx="11" fill="none" stroke="' + INK + '" stroke-width="2"/><rect x="9" y="9" width="' + (W - 18) + '" height="' + (H - 18) + '" rx="7" fill="none" stroke="' + INK + '" stroke-width=".7" stroke-dasharray="4 3"/>';
     const h = '<button class="back" data-go="start">← 처음 화면</button><section class="panel smpanel"><h2>🗺️ 도장 지도</h2>'
-      + '<p class="lead" style="margin:0 0 8px">도장을 <b style="color:#B0844A;font-size:1.2em">' + a + '개</b> 모았어요! 나라를 누르면 그 나라의 길이 펼쳐져요.</p>'
-      + '<div class="smaplegend"><span>🌫️ 아직 안 간 나라</span><span>⛺ 탐험 시작</span><span>🏘️ 절반 넘게</span><span>🏰 다 모았어요</span></div>'
+      + '<p class="lead" style="margin:0 0 6px">도장을 <b style="color:#B0844A;font-size:1.2em">' + a + '개</b> 모았어요! 과목 나라들은 순서 없이 함께 탐험해요. 도장을 모을수록 안개가 걷혀요.</p>'
+      + '<div class="smaplegend"><span>☁️ 안개 속</span><span>⛺ 탐험 시작</span><span>🏘️ 절반 넘게</span><span>🏰 다 모았어요</span><span>👆 나라를 누르면 길이 펼쳐져요</span></div>'
       + '<svg class="smworld" viewBox="0 0 ' + W + ' ' + H + '">' + defs + g + '</svg></section>';
     show(h, '#B0844A'); try { window.scrollTo(0, 0); } catch (e) {}
-  }
-  /* 한 나라 펼쳐 보기: 단원 마을이 길 위에 놓여 있어요 */
+  }  /* 한 나라 펼쳐 보기: 단원 마을이 길 위에 놓여 있어요 */
   function region(s) { const S = SUBJ[s]; if (!S) return view(); const k = stats(s);
     const h = '<button class="back" data-go="smap">← 도장 지도</button><section class="panel smpanel"><h2>' + S.name + ' 나라</h2>'
       + '<p class="lead" style="margin:0 0 6px">도장 <b>' + k.a + ' / ' + k.b + '</b> · 마을 ' + k.us.length + '곳</p>'
