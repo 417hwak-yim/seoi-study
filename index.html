@@ -4549,7 +4549,7 @@ const MGSRC={"bfit": "\u003c!DOCTYPE html\u003e\n\u003chtml lang=\"ko\"\u003e\n\
 /* ---------- 게임 시간: 단계 두 개를 끝낼 때마다 일곱 게임 가운데 하나가 무작위로 60초 동안 열려요 ----------
    오늘 아직 안 연 게임 가운데서만 골라요. 게임마다 배경음이 나와요.
    시간이 끝나면 게임이 저장돼서 다음에 그 게임이 열리면 이어서 해요. */
-const MGAMES={bubble:['🫧','말랑팝 방울 슈터'],bfit:['🧩','네온 블록 퍼즐'],galaga:['🚀','네온 갤러그'],ddr:['🎵','손가락 DDR'],drop:['🔢','2048 블록 드롭'],snake:['🐍','컬러 스네이크'],mole:['🐹','두더지 잡기'],bbl:['🫧','버블 버블'],hidden:['🔍','숨은그림찾기'],spot:['🔎','틀린그림찾기'],stack:['🏙️','네온 스택 타워'],ten:['🔟','네온 10 만들기'],fish:['🐟','심해어 키우기'],pac:['🟡','네온 팩맨'],cell:['🦠','면역 디펜스']};
+const MGAMES={bubble:['🫧','말랑팝 방울 슈터'],bfit:['🧩','네온 블록 퍼즐'],galaga:['🚀','네온 갤러그'],ddr:['🎵','손가락 DDR'],drop:['🔢','2048 블록 드롭'],snake:['🐍','컬러 스네이크'],mole:['🐹','두더지 잡기'],bbl:['🫧','버블 버블'],/* 숨은그림찾기는 잠깐 쉬어요: hidden:['🔍','숨은그림찾기'], */spot:['🔎','틀린그림찾기'],stack:['🏙️','네온 스택 타워'],ten:['🔟','네온 10 만들기'],fish:['🐟','심해어 키우기'],pac:['🟡','네온 팩맨'],cell:['🦠','면역 디펜스']};
 /* 예전에 열린 두더지 게임 시간이 남아 있으면 지워요 (두더지는 게임 목록에서 뺐어요) */
 try{ const M0=STATE.mg; if(M0){ if(M0.pend&&!MGAMES[M0.pend.k]) M0.pend=null; M0.open=(M0.open||[]).filter(k=>MGAMES[k]); } }catch(e){}
 function mgState(){ const k=dkey(new Date()); let M=STATE.mg; if(!M||M.d!==k) M=STATE.mg={d:k,n:0,open:[],pend:null}; return M; }
