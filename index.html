@@ -2696,7 +2696,7 @@ function routeInner(v,a,b){
 /* 새로 고침을 해도 보고 있던 화면으로 돌아와요 (같은 탭에서만) */
 function restoreView(){
   let o=null; try{ o=JSON.parse(sessionStorage.getItem('seoi-hanja-view')||'null'); }catch(e){}
-  if(!o||!o.v||o.v==='start') return start('');
+  if(!o||!o.v||o.v==='start'||o.v==='smap'||o.v==='trbox') return start('');
   if(o.v==='subj') return start(o.a);
   try{
     setGrade(o.g); const u=UNITS[+o.a], rs=resumeInfo();
@@ -6209,9 +6209,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     /* 땅: 구절초 꽃밭 */
     + 'html[data-season=autumn] .fallground{background:linear-gradient(#C97A3A,#B5642B)}'
     + 'html[data-season=autumn] .fallground .fleaf{z-index:1}'
-    /* 바닥: 낙엽과 꽃이 여기저기 수북이 겹쳐 쌓이고, 바람이 불면 한 무더기가 흩어졌다가 다른 곳에 다시 모여요 */
-    + 'html[data-season=autumn] .fallground .fleaf,.gujbed>span{transition:left var(--gd,1.9s) cubic-bezier(.25,.7,.3,1),bottom var(--gd,1.9s) cubic-bezier(.25,.7,.3,1)}'
-    + '.gust{animation:gust var(--gd,1.9s) ease-out both!important}@keyframes gust{0%{translate:0 0;rotate:0deg}35%{translate:0 var(--gy);rotate:calc(var(--gr) * .55)}70%{translate:0 calc(var(--gy) * .35);rotate:calc(var(--gr) * .85)}100%{translate:0 0;rotate:var(--gr)}}'
+    /* 바닥: 낙엽·도토리·꽃 몇 개만 겹치지 않게 (움직이지 않아요) */
     + '.gujbed{position:absolute;left:0;right:0;bottom:0;height:100%;pointer-events:none}'
     + '.gujbed>span{position:absolute;bottom:var(--b);left:var(--x);width:calc(clamp(38px,10vw,66px) * var(--s));transform:rotate(var(--r));transform-origin:bottom center;animation:gsway 3.4s ease-in-out infinite;animation-delay:var(--dl)}'
     + '.gujbed>span svg{display:block;width:100%;height:auto}'
@@ -6235,37 +6233,19 @@ const BDSIB={call:'채이 언니',m:10,d:18};
         box.insertAdjacentHTML('beforeend', h); }
       const gr = document.querySelector('.fallground');
       if (gr && !gr.querySelector('.gujbed')) {
+        /* 땅 위에는 몇 개만 겹치지 않게 띄엄띄엄 놓아요 (나무가 있는 양 끝은 비워 둬요) */
         let h = '<div class="gujbed" aria-hidden="true">';
-        /* 떨어진 구절초 꽃송이: 땅 위에 누운 듯 납작하게, 뒷줄은 작게 앞줄은 크게 흩어져 있어요 */
-        for (let k = 0; k < 7; k++) h += '<span class="ghead" style="--x:' + (k * 14 + 4 + R(-3, 3)).toFixed(1) + '%;--b:' + R(42, 58).toFixed(0) + '%;--s:' + R(.6, .75).toFixed(2) + ';--r:' + R(-40, 40).toFixed(0) + 'deg">' + (k % 3 === 2 ? MUM('#F7C531', '#E8901A') : COSMOS(COLS[k % 6])) + '</span>';
-        for (let k = 0; k < 6; k++) h += '<span class="ghead" style="--x:' + (k * 16 + 7 + R(-3, 3)).toFixed(1) + '%;--b:' + R(8, 22).toFixed(0) + '%;--s:' + R(.85, 1).toFixed(2) + ';--r:' + R(-40, 40).toFixed(0) + 'deg">' + COSMOS(COLS[(k + 2) % 6]) + '</span>';        /* 떨어진 꽃잎 몇 장 */
-        for (let k = 0; k < 7; k++) h += '<span class="gpet" style="--x:' + (8 + k * 13 + R(-3, 3)).toFixed(1) + '%;--b:' + R(4, 14).toFixed(0) + '%;--s:1;--r:' + R(-70, 70).toFixed(0) + 'deg">' + PETAL(COLS[k % 6]) + '</span>';
+        for (let k = 0; k < 3; k++) h += '<span class="ghead" style="--s:.8;--r:' + R(-30, 30).toFixed(0) + 'deg">' + (k === 1 ? MUM('#F7C531', '#E8901A') : COSMOS(COLS[k * 2 % 6])) + '</span>';
+        h += '<span class="gpet" style="--s:1;--r:' + R(-60, 60).toFixed(0) + 'deg">' + PETAL(COLS[1]) + '</span>';
         gr.insertAdjacentHTML('afterbegin', h + '</div>');
-        /* 처음에는 네 군데에 수북이 겹쳐 쌓여 있어요 */
-        ground().forEach((el, k) => { const p = k % PILES.length; el.dataset.p = p; place(el, PILES[p] + R(-5, 5), R(5, 34)); el.style.zIndex = 1 + Math.floor(Math.random() * 3); }); }
+        const lv = [...gr.querySelectorAll('.fleaf')], ac = [...gr.querySelectorAll('.facorn')];
+        lv.slice(2).forEach(x => x.remove()); ac.slice(2).forEach(x => x.remove());
+        const hd = [...gr.querySelectorAll('.gujbed>.ghead')], pt = gr.querySelector('.gujbed>.gpet');
+        const seq = [hd[0], lv[0], ac[0], pt, hd[1], lv[1], ac[1], hd[2]].filter(Boolean);
+        seq.forEach((el, k) => place(el, 25 + k * 8.2 + R(-1, 1), k % 2 ? R(26, 32) : R(6, 12))); }
     } catch (e) {} }
-  let PILES = [16, 38, 61, 84];
-  const ground = () => [...document.querySelectorAll('.fallground .fleaf, .gujbed>span')];
-  const place = (el, x, b) => { el.style.left = Math.max(-2, Math.min(95, x)).toFixed(1) + '%'; el.style.bottom = b.toFixed(0) + '%'; };
-  const fly = (el, x, b, k) => { el.style.setProperty('--gy', R(-70, -30).toFixed(0) + 'px'); el.style.setProperty('--gr', (Math.random() < .5 ? -360 : 360) + 'deg'); el.style.setProperty('--gd', R(1.6, 2.4).toFixed(1) + 's');
-    setTimeout(() => { el.classList.remove('gust'); void el.offsetWidth; el.classList.add('gust'); place(el, x, b); el.addEventListener('animationend', () => el.classList.remove('gust'), { once: true }); }, k * 90); };
-  /* 바람: 4~6초마다 한 번씩. 한 번은 수북한 무더기를 왼쪽으로 흩어 놓고, 다음에는 흩어진 것들이 다른 곳에 다시 모여 쌓여요 */
-  let turn = 0;
-  function gust() { try { if (document.hidden || document.documentElement.dataset.season !== 'autumn') return;
-      const all = ground(); if (!all.length) return;
-      if (turn++ % 2 === 0) {
-        /* 가장 수북한 무더기를 골라 바람에 흩어요 */
-        const cnt = PILES.map((_, p) => all.filter(el => el.dataset.p == p).length), p = cnt.indexOf(Math.max(...cnt)), c = PILES[p];
-        all.filter(el => el.dataset.p == p).forEach((el, k) => { el.dataset.p = -1; fly(el, c + R(-26, 6), R(3, 40), k); });
-        PILES[p] = null;
-      } else {
-        /* 흩어진 것들이 바람에 밀려 새 무더기로 겹쳐 쌓여요 */
-        const p = PILES.indexOf(null) >= 0 ? PILES.indexOf(null) : Math.floor(Math.random() * PILES.length);
-        const others = PILES.filter((x, i) => i !== p && x !== null); let c = R(8, 90), g = 0; while (others.some(o => Math.abs(o - c) < 15) && g++ < 20) c = R(8, 90); PILES[p] = c;
-        const loose = all.filter(el => el.dataset.p == -1), pick = (loose.length >= 5 ? loose : all).sort(() => Math.random() - .5).slice(0, 5 + Math.floor(Math.random() * 4));
-        pick.forEach((el, k) => { el.dataset.p = p; el.style.zIndex = 1 + Math.floor(Math.random() * 3); fly(el, c + R(-5, 5), R(5, 34), k); });
-      } } catch (e) {} }
-  (function loopG() { setTimeout(() => { gust(); loopG(); }, 4000 + Math.random() * 2000); })();  window.__autumnFlowers = { COSMOS, PETAL, MUM, GUJ, GUJSTEM, GINKGO };
+  const place = (el, x, b) => { el.style.left = x.toFixed(1) + '%'; el.style.bottom = b.toFixed(0) + '%'; };
+  window.__autumnFlowers = { COSMOS, PETAL, MUM, GUJ, GUJSTEM, GINKGO };
   const _st = start; start = function () { const r = _st.apply(this, arguments); apply(); return r; };
   apply();
 })();
@@ -6772,6 +6752,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     + '.trx{animation:trxin .7s cubic-bezier(.3,1.6,.5,1) both}@keyframes trxin{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}'
     + '.trfly{position:absolute;left:0;font-size:calc(clamp(1.3rem,6.6vw,2rem) * .5);line-height:1;animation:trfl 14s linear infinite}.trfly.sil{filter:brightness(0) opacity(.75)}@keyframes trfl{0%{transform:translate(-12cqw,0)}25%{transform:translate(20cqw,-3cqw)}50%{transform:translate(50cqw,1.5cqw)}75%{transform:translate(80cqw,-2cqw)}100%{transform:translate(112cqw,0)}}'
     + '.trscene.full{box-shadow:0 0 0 3px #FFD43B,0 0 22px rgba(255,190,60,.55)}.trsndrow{display:flex;justify-content:center;margin:0 0 10px}.trsnd{padding:7px 16px;border-radius:999px;border:2px solid #4B2A7A;background:#fff;color:#4B2A7A;font:inherit;font-weight:800;font-size:.95rem;cursor:pointer;touch-action:manipulation}.trfinmsg{color:#7A3E9D!important;font-weight:800}'
+    + '.trscene .trslot:not(.no){cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}.trscene .trslot:not(.no)::after{content:"";position:absolute;inset:-35%}.trslot.tap{z-index:5;animation:trtap .75s cubic-bezier(.3,1.4,.5,1)!important}@keyframes trtap{0%{transform:translate(-50%,-50%) scale(1)}22%{transform:translate(-50%,-85%) scale(1.4) rotate(-12deg)}45%{transform:translate(-50%,-60%) scale(1.2) rotate(10deg)}68%{transform:translate(-50%,-50%) scale(1.12,.88)}84%{transform:translate(-50%,-54%) scale(.96,1.05)}100%{transform:translate(-50%,-50%) scale(1)}}'
+    + '.trspark{position:absolute;z-index:6;pointer-events:none;font-size:calc(clamp(1.3rem,6.6vw,2rem) * .45);transform:translate(-50%,-50%);animation:trspk .8s ease-out forwards}@keyframes trspk{from{opacity:1;transform:translate(-50%,-50%) scale(.6)}to{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1)}}'
     + '@media (prefers-reduced-motion:reduce){.trscene *,.trscene svg *{animation:none!important}}';
   document.head.appendChild(css);
 
@@ -6877,8 +6859,16 @@ const BDSIB={call:'채이 언니',m:10,d:18};
         else if (k === 'fa') { drone([130.8, 164.8, 196], 'sine', .03, 900); wind(.012, 700); }
         else { drone([174.6, 220, 261.6], 'sine', .022, 1200); }
         const t = ac.currentTime; nt = t + .3; bus.gain.cancelScheduledValues(t); bus.gain.setValueAtTime(0, t); bus.gain.linearRampToValueAtTime(.8, t + 1.5); clearInterval(tm); tm = setInterval(tick, 100); tick(); }, was ? 650 : 0); }
-    return { start, stop, off, setOff, playing: () => on && ac && ac.state === 'running' };
+    function blip(m) { if (!ensure()) return; try { ac.resume(); } catch (e) {} const t = ac.currentTime + .01; [[1, .12], [2.76, .03]].forEach(p => { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = mf(m) * p[0]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(p[1], t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .6); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .65); }); }
+    return { blip, start, stop, off, setOff, playing: () => on && ac && ac.state === 'running' };
   })();
+  /* 모은 소품을 손가락으로 톡 누르면 폴짝 움직이고 반짝 소리가 나요 */
+  const BLIP = { hw: [57, 60, 64, 63], fa: [72, 74, 76, 79], xm: [79, 83, 86, 91] };
+  document.addEventListener('click', e => { const el = e.target.closest && e.target.closest('.trscene .trslot:not(.no)'); if (!el) return; const sc = el.closest('.trscene');
+    el.classList.remove('tap'); void el.offsetWidth; el.classList.add('tap'); el.addEventListener('animationend', () => el.classList.remove('tap'), { once: true });
+    const bg = /trhw/.test(sc.innerHTML) ? 'hw' : /trxm/.test(sc.innerHTML) ? 'xm' : 'fa', sp = bg === 'hw' ? ['✦', '🦇', '✦'] : bg === 'xm' ? ['✨', '❄️', '✨'] : ['✨', '🍂', '✨'];
+    sp.forEach((c, i) => { const s = document.createElement('span'); s.className = 'trspark'; s.textContent = c; s.style.left = el.style.left; s.style.top = el.style.top; s.style.color = bg === 'hw' ? '#FFB020' : '#FFE066'; s.style.setProperty('--dx', ((i - 1) * 28) + 'px'); s.style.setProperty('--dy', (-24 - (i % 2) * 14) + 'px'); sc.appendChild(s); setTimeout(() => s.remove(), 850); });
+    try { if (!SND.off()) SND.blip(BLIP[bg][Math.floor(Math.random() * 4)]); } catch (x) {} });
   const SNDNAME = { hw: '으스스한 소리', fa: '가을 숲 소리', xm: '캐럴 소리' };
   function sndBtn(bg) { const b = document.querySelector('#app .trsnd'); if (!b) return; const lab = () => { b.textContent = SND.playing() ? '🔊 ' + SNDNAME[bg] + ' 끄기' : '🔈 ' + SNDNAME[bg] + ' 켜기'; };
     b.onclick = () => { if (SND.playing()) { SND.setOff(1); SND.stop(); } else { SND.setOff(0); SND.start(bg); } setTimeout(lab, 250); }; SND.start(bg); setTimeout(lab, 400); lab(); }
