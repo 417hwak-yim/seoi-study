@@ -4572,7 +4572,7 @@ function mgOffer(){
   document.getElementById('mg-yes').onclick=()=>{ done(); mgPlay(p.k,p.sec); };
 }
 const MGGUARD="\u003cscript\u003e/* 게임 부드럽게: 휴대폰에서는 흐림 효과를 끄고, 화면이 자주 끊기면 빛 번짐(shadowBlur)도 꺼요 */\n(function(){ var low=false, coarse=false; try{ coarse=matchMedia(\u0027(pointer:coarse)\u0027).matches; }catch(e){}\n if(coarse){ var st=document.createElement(\u0027style\u0027); st.textContent=\u0027*{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}\u0027; (document.head||document.documentElement).appendChild(st); }\n try{ var P=CanvasRenderingContext2D.prototype, D=Object.getOwnPropertyDescriptor(P,\u0027shadowBlur\u0027);\n  Object.defineProperty(P,\u0027shadowBlur\u0027,{configurable:true,get:function(){ return D.get.call(this); },set:function(v){ D.set.call(this,low?0:v); }}); }catch(e){}\n var last=0, n=0, slow=0; function f(t){ if(last\u0026\u0026!document.hidden){ var dt=t-last; if(dt\u003c250){ n++; if(dt\u003e26) slow++; } } last=t;\n  if(n\u003e=150){ if(slow/n\u003e0.2) low=true; n=0; slow=0; } if(!low) requestAnimationFrame(f); }\n requestAnimationFrame(f); window.__lowfx=function(){ return low; }; })();\n\u003c/script\u003e";
-const MGEXT={hidden:'mg-hidden.html?v=2610190844',spot:'mg-spot.html?v=2610190844'};   /* 따로 뺀 큰 게임 파일 (index.html 옆에 함께 올려요) */
+const MGEXT={hidden:'mg-hidden.html?v=2610190853',spot:'mg-spot.html?v=2610190853'};   /* 따로 뺀 큰 게임 파일 (index.html 옆에 함께 올려요) */
 const MGSD=k=>{ const s=MGSRC[k], m=/<head[^>]*>/i.exec(s); return m?s.slice(0,m.index+m[0].length)+MGGUARD+s.slice(m.index+m[0].length):MGGUARD+s; };
 function mgPlay(k,sec){
   if(k==='bubble'){ const B=STATE.bp=STATE.bp||{}; B.tix=0; B.left=sec; persist(); return bubbleGame(); }
@@ -4598,7 +4598,7 @@ function mgPlay(k,sec){
     if(left<=0&&!ended){ ended=true; kill(); document.getElementById('mg-over').hidden=false; try{ SFX.play('done'); }catch(e){} } };
   const begin=()=>{ if(on) return; on=true; last=performance.now(); };
   fr.addEventListener('load',()=>{ try{ ['pointerdown','touchstart','mousedown','keydown'].forEach(ev=>fr.contentWindow.addEventListener(ev,begin,true)); }catch(e){ begin(); } });
-  if(MGEXT[k]) fr.src=MGEXT[k]; else fr.srcdoc=MGSD(k); last=performance.now(); timer=setInterval(tick,200);
+  if(MGEXT[k]) fr.src=MGEXT[k]; else if(MGEXT[k]) fr.src=MGEXT[k]; else fr.srcdoc=MGSD(k); last=performance.now(); timer=setInterval(tick,200);
   document.getElementById('mg-x').onclick=close; document.getElementById('mg-done').onclick=close;
 }
 
@@ -6905,7 +6905,36 @@ const BDSIB={call:'채이 언니',m:10,d:18};
       const fin = info.own.length >= info.st.items.length && dk(info.own[info.own.length - 1].d) === k;
       const p = document.createElement('div'); p.className = 'trpop'; p.innerHTML = '<div><div class="big">' + icon(o.it) + '</div><h3>오늘의 보물: ' + o.it[1] + '!</h3><p>' + info.st.t + ' ' + info.own.length + ' / ' + info.st.items.length + '</p>' + (fin ? '<p class="trfinmsg">🎉 ' + info.st.ic + ' ' + info.st.t + ' 완성!<br>보물 상자가 불빛과 장식으로 더 화려해졌어요. 열어 보세요!</p><button class="btn main" type="button" data-go="trbox">보물 상자 보러 가기 ✨</button>' : '<button class="btn main" type="button">보물 상자에 넣기</button>') + '</div>';
       document.body.appendChild(p); p.querySelector('button').onclick = () => p.remove(); try { sfx('done'); } catch (e) {} } } }
-  { const _st = start; start = function () { try { SND.stop(); } catch (e) {} const r = _st.apply(this, arguments); try { if (!CURSUBJ) homeCheck(); } catch (e) {} return r; }; }
+  /* 처음 화면 ‘오늘의 기분’ 줄 왼쪽(생일 케이크 자리)에 작은 보물 상자 바로가기: 10월은 귀여운 박쥐.
+     박쥐 주위로 꼬마 박쥐·사탕·호박·별·유령이 팔랑팔랑 날아오르고, 누르면 한꺼번에 퐁 터지며 보물 상자로 들어가요 */
+  const BATSVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle class="tbglow" cx="32" cy="34" r="24" fill="#B388FF" opacity=".3"/>'
+    + '<g class="tbw tbl"><path d="M24 31 C16 18 6 20 3 28 C8 28 10 32 9 37 C13 34 17 36 18 40 C20 36 24 37 26 38Z" fill="#4A2D7A" stroke="#1B2750" stroke-width="2" stroke-linejoin="round"/></g>'
+    + '<g class="tbw tbr"><path d="M40 31 C48 18 58 20 61 28 C56 28 54 32 55 37 C51 34 47 36 46 40 C44 36 40 37 38 38Z" fill="#4A2D7A" stroke="#1B2750" stroke-width="2" stroke-linejoin="round"/></g>'
+    + '<path d="M22 29 L20 15 L29 25Z M42 29 L44 15 L35 25Z" fill="#5B3A9E" stroke="#1B2750" stroke-width="2" stroke-linejoin="round"/><path d="M22 25 L21.5 19 L25.5 24Z M42 25 L42.5 19 L38.5 24Z" fill="#FF9EC7"/>'
+    + '<ellipse cx="32" cy="36" rx="13.5" ry="12.5" fill="#5B3A9E" stroke="#1B2750" stroke-width="2"/><ellipse cx="32" cy="41" rx="7.5" ry="5.5" fill="#8E6BD1"/>'
+    + '<g class="tbeye"><circle cx="27" cy="33" r="4.3" fill="#fff"/><circle cx="37" cy="33" r="4.3" fill="#fff"/><circle cx="27.6" cy="33.6" r="2.4" fill="#1B2750"/><circle cx="37.6" cy="33.6" r="2.4" fill="#1B2750"/><circle cx="28.4" cy="32.6" r=".9" fill="#fff"/><circle cx="38.4" cy="32.6" r=".9" fill="#fff"/></g>'
+    + '<ellipse cx="22.5" cy="38.5" rx="2.6" ry="1.6" fill="#FF8FB8" opacity=".75"/><ellipse cx="41.5" cy="38.5" rx="2.6" ry="1.6" fill="#FF8FB8" opacity=".75"/>'
+    + '<path d="M29 40.5 q3 2.6 6 0" fill="none" stroke="#1B2750" stroke-width="1.6" stroke-linecap="round"/><path d="M30 41.2 l.9 2.3 l1 -2Z M33.1 41.3 l1 2.2 l.9 -2.3Z" fill="#fff"/></svg>';
+  const FLY = { hw: ['🦇', '🍬', '🎃', '⭐', '👻', '🦇', '🍭'], fa: ['🍁', '🍂', '🌰', '🍁', '🍂', '🌰', '🍁'], xm: ['❄️', '⭐', '❄️', '✨', '❄️', '⭐', '❄️'] };
+  const flyers2 = (L, n, burst) => Array.from({ length: n }, (_, k) => { const a = (-150 + k * (120 / Math.max(1, n - 1)) + (burst ? Math.random() * 16 - 8 : 0)) * Math.PI / 180, d = burst ? 46 + Math.random() * 22 : 30 + (k % 3) * 8;
+    return '<i class="tbp' + (burst ? ' bst' : '') + '" style="--dx:' + (Math.cos(a) * d).toFixed(0) + 'px;--dy:' + (Math.sin(a) * d).toFixed(0) + 'px;animation-delay:' + (burst ? 0 : k * .45).toFixed(2) + 's;animation-duration:' + (burst ? .9 : 2.6 + (k % 3) * .5).toFixed(1) + 's">' + L[k % L.length] + '</i>'; }).join('');
+  function moodIcon() { const mr = $app.querySelector('.moodrow'); if (!mr || mr.querySelector('.bdcake,.trbat')) return; const info = setOf(new Date()); if (!info) return; const bg = info.st.bg;
+    const face = bg === 'hw' ? BATSVG : '<span class="tbemo">' + info.st.ic + '</span>';
+    mr.insertAdjacentHTML('afterbegin', '<button type="button" class="trbat" aria-label="보물 상자 열기">' + face + flyers2(FLY[bg] || FLY.hw, 6) + '</button>');
+    const b = mr.querySelector('.trbat'); b.onclick = () => { if (b.dataset.go2) return; b.dataset.go2 = 1; b.insertAdjacentHTML('beforeend', flyers2(FLY[bg] || FLY.hw, 9, 1)); b.classList.add('pop');
+      setTimeout(() => { try { typeof route === 'function' ? route('trbox') : routeInner('trbox'); } catch (e) { routeInner('trbox'); } }, 420); }; }
+  css.textContent += '.moodrow:has(.trbat){display:flex;align-items:center;justify-content:flex-end;gap:4px}.moodrow:has(.trbat)>.moodbar{margin-left:0}'
+    + '.trbat{position:relative;flex:none;width:42px;height:42px;padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation;overflow:visible;-webkit-tap-highlight-color:transparent}.trbat>svg{width:100%;height:100%;display:block;overflow:visible;animation:tbbob 2.2s ease-in-out infinite}.trbat:active>svg{transform:scale(.9)}'
+    + '.trbat .tbw{transform-box:fill-box;animation:tbflap .5s ease-in-out infinite alternate}.trbat .tbl{transform-origin:100% 40%}.trbat .tbr{transform-origin:0 40%;animation-delay:-.0s}'
+    + '@keyframes tbflap{from{transform:rotate(14deg) scaleY(.9)}to{transform:rotate(-12deg) scaleY(1.05)}}.trbat .tbr{animation-name:tbflapr}@keyframes tbflapr{from{transform:rotate(-14deg) scaleY(.9)}to{transform:rotate(12deg) scaleY(1.05)}}'
+    + '@keyframes tbbob{0%,100%{transform:translateY(1px)}50%{transform:translateY(-3px)}}.trbat .tbglow{transform-box:fill-box;transform-origin:center;animation:tbglow 1.6s ease-in-out infinite alternate}@keyframes tbglow{from{opacity:.12;transform:scale(.85)}to{opacity:.45;transform:scale(1.08)}}'
+    + '.trbat .tbeye{transform-box:fill-box;transform-origin:center;animation:tbblink 4s infinite}@keyframes tbblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}'
+    + '.trbat .tbemo{display:grid;place-items:center;width:100%;height:100%;font-size:1.8rem;animation:tbbob 2.2s ease-in-out infinite}'
+    + '.tbp{position:absolute;left:50%;top:45%;font-style:normal;font-size:11px;line-height:1;pointer-events:none;opacity:0;transform:translate(-50%,-50%);animation:tbfly 3s ease-out infinite}.tbp.bst{font-size:15px;animation-iteration-count:1;animation-fill-mode:forwards}'
+    + '@keyframes tbfly{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0)}15%{opacity:1}70%{opacity:.9}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(25deg)}}'
+    + '.trbat.pop>svg,.trbat.pop .tbemo{animation:tbpop .42s ease-out forwards}@keyframes tbpop{40%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1.1)}}'
+    + '@media (prefers-reduced-motion:reduce){.trbat *{animation:none!important}.tbp{display:none}}';
+  { const _st = start; start = function () { try { SND.stop(); } catch (e) {} const r = _st.apply(this, arguments); try { if (!CURSUBJ) { homeCheck(); moodIcon(); } } catch (e) {} return r; }; }
   { const _ri = routeInner; routeInner = function (v, a, b) { if (v === 'trbox') { VIEW = 'trbox'; return view(a); } try { SND.stop(); } catch (e) {} return _ri.apply(this, arguments); }; }
   window.__tr = { setOf, bonusSec, streakBefore, view, SETS, scene };
   try { if (typeof VIEW !== 'undefined' && VIEW === 'start') start(CURSUBJ); } catch (e) {}
