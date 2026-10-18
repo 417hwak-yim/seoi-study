@@ -1267,8 +1267,8 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 <style>/* 고친 점 10.14 */
 .mline .mcol{grid-auto-rows:1fr; align-content:stretch}
 .mline .mlb{display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3; word-break:keep-all}
-.fb>div>b{display:inline; margin-right:6px}
-.fb>div>p{display:inline; margin:0}
+.fb>div>b{display:block; margin:0 0 2px}
+.fb>div>p{display:block; margin:0}
 .wdcard b.wdlab,.wdlab{display:inline-block; font-size:.7rem!important; line-height:1.55!important; font-family:inherit!important; font-weight:700; color:#fff; background:var(--u); border-radius:999px; padding:1px 8px; margin-right:4px; vertical-align:2px}
 .spd{display:grid; gap:10px; margin-top:12px}
 .spdb{min-height:58px; font-size:1.35rem; font-weight:700; border:2px solid var(--ink); border-radius:14px; background:var(--card); color:var(--ink); touch-action:manipulation}
@@ -1328,7 +1328,7 @@ button.key small{display:none} button.key[data-low]{min-width:64px; min-height:5
 .rdpeek .rdpara{font-size:1.05rem; line-height:1.8}
 </style><style>/* 카드 글자 넘침 막기 + 낱말 짝 잇기 */
 .mcard .f{overflow:hidden; word-break:keep-all; overflow-wrap:anywhere; line-height:1.2}
-.mtwrap{display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr); gap:10px; margin:12px 0}
+.mtwrap{display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr); gap:clamp(26px,9vw,48px); margin:12px 0}
 .mtcol{display:flex; flex-direction:column; gap:8px; min-width:0}
 .mtc{position:relative; min-height:54px; border:1.5px solid var(--ink); border-radius:10px; background:var(--card); color:var(--ink); padding:8px 10px; font:inherit; font-weight:700; font-size:1.02rem; line-height:1.35; text-align:center; word-break:keep-all; overflow-wrap:anywhere; touch-action:manipulation; -webkit-tap-highlight-color:transparent}
 .mtl .mtc{font-size:1.15rem; flex:1}
@@ -2052,57 +2052,57 @@ const REV_LESSONS={hanja:[['뜻과 소리 평가','한자의 뜻과 소리를 �
    1단계는 이 프로그램을 위해 새로 지은 짧은 그림책, 2단계는 이솝 이야기와 옛이야기를 아이 눈높이에 맞게 새로 쓴 것과 생활 이야기예요.
    쪽: [그림, 영어 문장, 우리말 뜻] / 낱말: "영어=뜻=그림" / 이야기 문제: [묻는 말, 정답, 틀린 보기, 틀린 보기] */
 const STB=[
-['처음 그림책','짧은 문장으로 된 첫 이야기','#2C6E8C',[
+['처음 그림책','아주 짧은 문장으로 된 첫 이야기','#2C6E8C',[
  {t:'Where Is My Ball?',kt:'내 공은 어디에?',cv:'⚽',
-  p:[['👦⚽','I have a red ball.','나에게 빨간 공이 있어요.'],['👦🤾⚽','I throw the ball. Up, up, up!','공을 던져요. 높이, 높이, 높이!'],['🌳⚽','Oh no! The ball is in the tree.','앗! 공이 나무에 걸렸어요.'],['👦😢','I cannot get it. I am sad.','공을 꺼낼 수가 없어요. 나는 슬퍼요.'],['🐶💨🌳','My dog runs and jumps. Woof!','우리 강아지가 달려가서 폴짝 뛰어요. 멍멍!'],['🐶⚽👦❤️','My dog gets the ball. Thank you, my dog!','강아지가 공을 가져왔어요. 고마워, 우리 강아지!']],
-  w:'ball=공=⚽|red=빨간색=🟥|tree=나무=🌳|sad=슬픈=😢|dog=강아지=🐶|run=달리다=🏃',
-  q:[['공은 어디에 걸렸나요?','🌳 나무','🏠 지붕','🚗 자동차'],['공을 꺼낼 수 없을 때 아이의 기분은 어땠나요?','😢 슬펐어요','😄 기뻤어요','😠 화났어요'],['공을 가져다준 것은 누구인가요?','🐶 강아지','🐱 고양이','🐦 새'],['공은 무슨 색인가요?','빨간색','파란색','노란색']]},
+  p:[['👦⚽','I have a ball.','나는 공이 있어요.'],['👦⚽⬆️','Up, up, up!','위로, 위로, 위로!'],['🌳⚽','It is in the tree.','공이 나무에 걸렸어요.'],['👦😢','I am sad.','나는 슬퍼요.'],['🐶💨','My dog can jump.','우리 강아지는 폴짝 뛸 수 있어요.'],['🐶⚽👦❤️','Here is my ball!','여기 내 공이 있어요!']],
+  w:'ball=공=⚽|tree=나무=🌳|sad=슬픈=😢|dog=강아지=🐶|jump=뛰다=🦘|up=위로=⬆️',
+  q:[['공은 어디에 걸렸나요?','🌳 나무','🏠 지붕','🚗 자동차'],['공이 걸렸을 때 아이의 기분은 어땠나요?','😢 슬펐어요','😄 기뻤어요','😠 화났어요'],['공을 가져다준 것은 누구인가요?','🐶 강아지','🐱 고양이','🐦 새'],['강아지는 무엇을 할 수 있나요?','폴짝 뛰어요','하늘을 날아요','노래해요']]},
  {t:'Mimi Is Hungry',kt:'배고픈 미미',cv:'🐱',
-  p:[['🐱','This is Mimi. Mimi is a little cat.','이 아이는 미미예요. 미미는 작은 고양이예요.'],['🐱😿','Mimi is hungry. Meow!','미미는 배가 고파요. 야옹!'],['🐱📦','Is food in the box? No!','상자 안에 먹을 것이 있을까? 없어요!'],['🐱🧸','Is food under the teddy bear? No!','곰 인형 밑에 있을까? 없어요!'],['👧🥛🐱','Here is some milk, Mimi!','미미야, 여기 우유 있어!'],['🐱😋💤','Mimi drinks the milk and sleeps.','미미는 우유를 마시고 잠이 들어요.']],
-  w:'cat=고양이=🐱|little=작은=🤏|hungry=배고픈=😿|box=상자=📦|milk=우유=🥛|sleep=자다=💤',
-  q:[['미미는 왜 먹을 것을 찾았나요?','배가 고파서','심심해서','추워서'],['미미가 먹을 것을 찾아본 곳이 아닌 것은?','🛏️ 침대 밑','📦 상자 안','🧸 곰 인형 밑'],['미미가 마신 것은 무엇인가요?','🥛 우유','🧃 주스','💧 물'],['우유를 마신 뒤 미미는 무엇을 했나요?','잠을 잤어요','밖에 나갔어요','노래했어요']]},
+  p:[['🐱','I am Mimi.','나는 미미예요.'],['🐱😿','I am hungry.','나는 배가 고파요.'],['🐱📦','Is it in the box? No.','상자 안에 있을까? 없어요.'],['🐱🛏️','Is it on the bed? No.','침대 위에 있을까? 없어요.'],['👧🥛🐱','Here is milk!','여기 우유가 있어!'],['🐱😋💤','Yum! Now I sleep.','냠냠! 이제 잘래요.']],
+  w:'cat=고양이=🐱|box=상자=📦|bed=침대=🛏️|milk=우유=🥛|hungry=배고픈=😿|sleep=자다=💤',
+  q:[['미미는 왜 먹을 것을 찾았나요?','배가 고파서','심심해서','추워서'],['미미가 먹을 것을 찾아본 곳이 아닌 것은?','🧸 곰 인형 밑','📦 상자 안','🛏️ 침대 위'],['미미가 마신 것은 무엇인가요?','🥛 우유','🧃 주스','💧 물'],['우유를 마신 뒤 미미는 무엇을 했나요?','잠을 잤어요','밖에 나갔어요','노래했어요']]},
  {t:'A Rainy Day',kt:'비 오는 날',cv:'🎨',
-  p:[['👦🌧️','It is raining. Tom is bored.','비가 와요. 톰은 심심해요.'],['👦🎨','Tom gets his paints.','톰은 물감을 꺼내요.'],['🍎☀️','He paints a red apple and a yellow sun.','빨간 사과와 노란 해를 그려요.'],['🌊🐸','He paints a blue sea and a green frog.','파란 바다와 초록 개구리도 그려요.'],['🪟🌈','Look! The rain stops. A rainbow!','봐요! 비가 그쳤어요. 무지개예요!'],['👦🖼️🌈','Tom paints the rainbow, too.','톰은 무지개도 그려요.']],
-  w:'rain=비=🌧️|paint=칠하다=🎨|red=빨간색=🟥|yellow=노란색=🟨|blue=파란색=🟦|green=초록색=🟩',
-  q:[['톰은 왜 심심했나요?','비가 와서','배가 고파서','친구가 없어서'],['톰이 노란색으로 그린 것은 무엇인가요?','☀️ 해','🍎 사과','🐸 개구리'],['비가 그친 뒤 무엇이 보였나요?','🌈 무지개','⭐ 별','🌙 달'],['개구리는 무슨 색으로 그렸나요?','초록색','빨간색','파란색']]},
+  p:[['👦🌧️','Rain, rain, rain.','비가 와요, 비가 와요.'],['👦🎨','Tom can paint.','톰은 그림을 그릴 수 있어요.'],['🍎','A red apple.','빨간 사과.'],['☀️','A yellow sun.','노란 해.'],['🐸','A green frog.','초록 개구리.'],['🪟🌈','Look! A rainbow!','봐요! 무지개예요!']],
+  w:'rain=비=🌧️|red=빨간색=🟥|sun=해=☀️|frog=개구리=🐸|green=초록색=🟩|look=보다=👀',
+  q:[['비 오는 날 톰은 무엇을 했나요?','🎨 그림을 그렸어요','⚽ 공을 찼어요','📖 책을 읽었어요'],['톰이 노란색으로 그린 것은 무엇인가요?','☀️ 해','🍎 사과','🐸 개구리'],['마지막에 무엇이 보였나요?','🌈 무지개','⭐ 별','🌙 달'],['개구리는 무슨 색으로 그렸나요?','초록색','빨간색','파란색']]},
  {t:'Where Is My Hat?',kt:'내 모자 어디 있지?',cv:'🧢',
-  p:[['🐻🧢','Bear has a new hat.','곰에게 새 모자가 있어요.'],['🐻❓','Oh no! Where is my hat?','앗! 내 모자가 어디 있지?'],['🛏️','Is it on the bed? No.','침대 위에 있나? 아니에요.'],['🪑','Is it under the chair? No.','의자 밑에 있나? 아니에요.'],['👀🐰🧢','Look! Rabbit has the hat. Rabbit is cold.','봐요! 토끼가 모자를 쓰고 있어요. 토끼는 추웠대요.'],['🐻🧣🐰','Bear gives Rabbit a scarf. Now they are both warm.','곰은 토끼에게 목도리를 줘요. 이제 둘 다 따뜻해요.']],
+  p:[['🐻🧢','I have a hat.','나는 모자가 있어요.'],['🐻❓','Where is my hat?','내 모자가 어디 있지?'],['🛏️','Not on the bed.','침대 위에 없어요.'],['🪑','Not on the chair.','의자 위에도 없어요.'],['👀🐰🧢','Look! Rabbit has it.','봐요! 토끼가 가지고 있어요.'],['🐻🐰❤️','You can have it.','너 가져도 돼.']],
   w:'hat=모자=🧢|bear=곰=🐻|bed=침대=🛏️|chair=의자=🪑|rabbit=토끼=🐰|look=보다=👀',
-  q:[['곰이 찾던 것은 무엇인가요?','🧢 모자','👟 신발','🧸 인형'],['모자를 쓰고 있던 동물은 누구인가요?','🐰 토끼','🐶 강아지','🐷 돼지'],['토끼는 왜 모자를 썼나요?','추워서','더워서','심심해서'],['곰은 토끼에게 무엇을 주었나요?','🧣 목도리','🧢 모자','🍎 사과']]},
+  q:[['곰이 찾던 것은 무엇인가요?','🧢 모자','👟 신발','🧸 인형'],['모자를 가지고 있던 동물은 누구인가요?','🐰 토끼','🐶 강아지','🐷 돼지'],['곰이 모자를 찾아본 곳은 어디인가요?','🪑 의자 위','🚗 자동차 안','🌳 나무 위'],['마지막에 곰은 어떻게 했나요?','토끼에게 모자를 줬어요','모자를 뺏었어요','울었어요']]},
  {t:'Hurry, Mia!',kt:'서둘러, 미아!',cv:'⏰',
-  p:[['☀️⏰','The sun is up. Ring, ring!','해가 떴어요. 따르릉!'],['👧🛏️💤','But Mia is still in bed.','그런데 미아는 아직 침대에 있어요.'],['👩📣','Get up, Mia! You are late!','미아야, 일어나! 늦었어!'],['👧🪥🍞','Mia brushes her teeth and eats bread. Quick!','미아는 이를 닦고 빵을 먹어요. 빨리빨리!'],['👧🎒❓','Oh no! Where is my bag?','앗! 내 가방이 어디 있지?'],['🐶🎒👧🏫','Her dog has the bag. Now Mia goes to school.','강아지가 가방을 물고 왔어요. 이제 미아는 학교에 가요.']],
-  w:'sun=해=☀️|bed=침대=🛏️|teeth=이=🦷|bread=빵=🍞|bag=가방=🎒|school=학교=🏫',
-  q:[['미아는 왜 서둘렀나요?','늦게 일어나서','비가 와서','배가 아파서'],['미아가 아침으로 먹은 것은 무엇인가요?','🍞 빵','🍚 밥','🍜 국수'],['미아의 가방을 찾아 준 것은 누구인가요?','🐶 강아지','👩 엄마','🐱 고양이'],['미아는 마지막에 어디에 가나요?','🏫 학교','🏥 병원','🏖️ 바다']]},
+  p:[['☀️⏰','Ring, ring!','따르릉!'],['👧🛏️💤','Mia is in bed.','미아는 아직 침대에 있어요.'],['👩📣','Get up, Mia!','미아야, 일어나!'],['👧🍞','Mia eats bread.','미아는 빵을 먹어요.'],['👧🎒❓','Where is my bag?','내 가방이 어디 있지?'],['🐶🎒👧🏫','Here it is! Go, go!','여기 있다! 가자, 가자!']],
+  w:'bed=침대=🛏️|bread=빵=🍞|bag=가방=🎒|dog=강아지=🐶|mom=엄마=👩|go=가다=🏃',
+  q:[['미아를 깨운 소리는 무엇인가요?','⏰ 따르릉','🐶 멍멍','🚗 빵빵'],['미아가 아침으로 먹은 것은 무엇인가요?','🍞 빵','🍚 밥','🍜 국수'],['미아의 가방을 찾아 준 것은 누구인가요?','🐶 강아지','👩 엄마','🐱 고양이'],['미아는 마지막에 어디에 가나요?','🏫 학교','🏥 병원','🏖️ 바다']]},
  {t:'The Lost Duck',kt:'길 잃은 오리',cv:'🦆',
-  p:[['🦆🦆🦆','One, two, three little ducks.','하나, 둘, 셋, 작은 오리들.'],['🦆🦆🦆🌊','They swim with Mom.','오리들은 엄마와 함께 헤엄쳐요.'],['🌧️🦆','It rains. Splash! One duck is lost.','비가 와요. 첨벙! 오리 한 마리가 길을 잃었어요.'],['🦆😢','Quack! Where is my mom?','꽥! 우리 엄마는 어디 있지?'],['🐸🦆','A frog says, This way!','개구리가 말해요. 이쪽이야!'],['🦆🦆🦆🦆🏠','Now three ducks and Mom go home.','이제 오리 세 마리와 엄마는 집에 가요.']],
-  w:'duck=오리=🦆|three=셋=3️⃣|swim=헤엄치다=🏊|rain=비=🌧️|frog=개구리=🐸|home=집=🏠',
-  q:[['아기 오리는 모두 몇 마리인가요?','세 마리','한 마리','다섯 마리'],['길을 잃은 오리를 도와준 것은 누구인가요?','🐸 개구리','🐟 물고기','🐢 거북이'],['오리가 길을 잃은 때는 언제인가요?','비가 올 때','밤이 될 때','눈이 올 때'],['오리들은 마지막에 어디로 갔나요?','🏠 집','🏫 학교','🌳 숲']]}
+  p:[['🦆🦆🦆','One, two, three ducks.','하나, 둘, 셋, 오리들.'],['🦆🦆🦆🌊','We swim with Mom.','우리는 엄마랑 헤엄쳐요.'],['🦆😢','Oh no! One is lost.','이런! 한 마리가 길을 잃었어요.'],['🦆❓','Where is my mom?','우리 엄마는 어디 있지?'],['🐸👉','Frog says, This way!','개구리가 말해요. 이쪽이야!'],['🦆🦆🦆🦆🏠','Here is Mom! Yay!','엄마다! 야호!']],
+  w:'duck=오리=🦆|three=셋=3️⃣|swim=헤엄치다=🏊|mom=엄마=👩|frog=개구리=🐸|lost=길 잃은=😢',
+  q:[['아기 오리는 모두 몇 마리인가요?','세 마리','한 마리','다섯 마리'],['길을 잃은 오리를 도와준 것은 누구인가요?','🐸 개구리','🐟 물고기','🐢 거북이'],['오리들은 엄마와 함께 무엇을 했나요?','헤엄쳤어요','하늘을 날았어요','잠을 잤어요'],['길을 잃은 오리는 마지막에 누구를 만났나요?','엄마','고양이','강아지']]}
 ]],
-['이야기 그림책','옛이야기와 생활 이야기, 조금 긴 문장','#B8402A',[
+['이야기 그림책','옛이야기와 생활 이야기','#B8402A',[
  {t:'The Big Carrot',kt:'커다란 당근',cv:'🥕',
-  p:[['👴🥕','Grandpa has a big carrot.','할아버지에게 커다란 당근이 있어요.'],['👴💪🥕','He pulls and pulls. It does not come out.','할아버지가 당기고 또 당겨요. 당근이 뽑히지 않아요.'],['👵👴','Grandma helps. They pull and pull.','할머니가 도와요. 둘이 당기고 또 당겨요.'],['👧👵👴','A girl helps, too. It does not come out.','여자아이도 도와요. 그래도 뽑히지 않아요.'],['🐶👧','A dog helps, too.','강아지도 도와요.'],['🐱🐶','A cat helps, too.','고양이도 도와요.'],['🐭🐱','A little mouse helps. Pull!','작은 생쥐도 도와요. 영차!'],['🥕🎉','Pop! The carrot comes out!','쑥! 당근이 뽑혔어요!']],
-  w:'carrot=당근=🥕|pull=당기다=💪|mouse=생쥐=🐭|help=돕다=🤝|grandpa=할아버지=👴|girl=여자아이=👧',
-  q:[['할아버지가 뽑으려던 것은 무엇인가요?','🥕 당근','🥔 감자','🍎 사과'],['맨 마지막에 도와준 동물은 누구인가요?','🐭 생쥐','🐶 강아지','🐱 고양이'],['할아버지를 맨 처음 도와준 사람은 누구인가요?','👵 할머니','👧 여자아이','👦 남자아이'],['이 이야기에서 배울 수 있는 것은 무엇일까요?','힘을 합치면 할 수 있어요','혼자 하는 게 좋아요','당근은 맛이 없어요']]},
- {t:'The Ant and the Dove',kt:'개미와 비둘기',cv:'🐜',
-  p:[['🐜💧','An ant falls into the water.','개미가 물에 빠졌어요.'],['🐜😢','Help! Help!','도와줘요! 도와줘요!'],['🕊️🍃','A dove drops a leaf.','비둘기가 나뭇잎을 떨어뜨려요.'],['🐜🍃','The ant gets on the leaf. Thank you!','개미가 나뭇잎에 올라타요. 고마워요!'],['🧑‍🌾🕊️','A man wants to catch the dove.','어떤 사람이 비둘기를 잡으려고 해요.'],['🐜🦶','The ant bites his foot. Ouch!','개미가 그 사람의 발을 물어요. 아야!'],['🕊️💨','The dove flies away.','비둘기가 날아가요.'],['🐜🕊️❤️','Now they are good friends.','이제 둘은 좋은 친구예요.']],
-  w:'ant=개미=🐜|dove=비둘기=🕊️|leaf=나뭇잎=🍃|water=물=💧|foot=발=🦶|friend=친구=🤝',
-  q:[['물에 빠진 것은 누구인가요?','🐜 개미','🕊️ 비둘기','🐟 물고기'],['비둘기는 개미를 어떻게 도왔나요?','나뭇잎을 떨어뜨렸어요','물을 마셨어요','노래를 불렀어요'],['개미는 비둘기를 어떻게 도왔나요?','사람의 발을 물었어요','나뭇잎을 주었어요','집을 지어 주었어요'],['“Thank you!”는 무슨 뜻일까요?','고마워요!','미안해요!','안녕!']]},
+  p:[['👴🥕','Grandpa has a big carrot.','할아버지에게 커다란 당근이 있어요.'],['👴💪🥕','Pull, pull! No.','영차, 영차! 안 빠져요.'],['👵👴','Grandma helps. Pull, pull!','할머니가 도와요. 영차, 영차!'],['👧','A girl helps. Pull, pull!','여자아이가 도와요. 영차, 영차!'],['🐶','A dog helps. Pull, pull!','강아지가 도와요. 영차, 영차!'],['🐱','A cat helps. Pull, pull!','고양이가 도와요. 영차, 영차!'],['🐭','A little mouse helps.','작은 생쥐도 도와요.'],['🥕🎉','Pop! Here is the carrot!','쑥! 당근이 나왔어요!']],
+  w:'carrot=당근=🥕|pull=당기다=💪|cat=고양이=🐱|dog=강아지=🐶|mouse=생쥐=🐭|help=돕다=🤝',
+  q:[['할아버지에게 있던 것은 무엇인가요?','🥕 커다란 당근','🍎 사과','🎃 호박'],['마지막으로 도와준 것은 누구인가요?','🐭 생쥐','🐘 코끼리','🐻 곰'],['당근을 뽑을 때 다 함께 한 말은 무엇인가요?','Pull, pull!','Run, run!','Jump, jump!'],['이 이야기에서 배울 수 있는 것은 무엇일까요?','다 함께 힘을 모으면 돼요','혼자 하는 게 좋아요','잠을 많이 자야 해요']]},
+ {t:'The Ant and the Bird',kt:'개미와 새',cv:'🐜',
+  p:[['🐜🌊','An ant is in the water.','개미가 물에 빠졌어요.'],['🐜😱','Help! Help!','살려 주세요!'],['🐦🍃','A bird drops a leaf.','새가 나뭇잎을 떨어뜨려요.'],['🐜🍃','The ant is on the leaf.','개미가 나뭇잎 위에 올라탔어요.'],['🐜❤️🐦','Thank you, bird!','고마워, 새야!'],['👨🐦','A man wants the bird.','한 남자가 새를 잡으려고 해요.'],['🐜🦶','The ant bites him. Ouch!','개미가 남자를 콕 물어요. 아야!'],['🐦🐜❤️','Now they are friends.','이제 둘은 친구예요.']],
+  w:'ant=개미=🐜|bird=새=🐦|leaf=나뭇잎=🍃|water=물=💧|man=남자=👨|help=돕다=🤝',
+  q:[['물에 빠진 것은 누구인가요?','🐜 개미','🐦 새','🐟 물고기'],['새가 떨어뜨려 준 것은 무엇인가요?','🍃 나뭇잎','🍎 사과','🪵 나뭇가지'],['개미는 새를 어떻게 도왔나요?','남자를 물었어요','노래를 불렀어요','먹이를 주었어요'],['마지막에 개미와 새는 어떻게 되었나요?','친구가 되었어요','싸웠어요','헤어졌어요']]},
  {t:'The Snowman',kt:'눈사람',cv:'⛄',
-  p:[['❄️❄️❄️','It is snowing.','눈이 와요.'],['👦👧❄️','Tom and Mia go outside.','톰과 미아가 밖으로 나가요.'],['👦⚪👧','They make a big snowball.','둘은 커다란 눈덩이를 만들어요.'],['⛄','They make a snowman.','둘은 눈사람을 만들어요.'],['👧🥕⛄','Mia gives him a carrot nose.','미아가 당근 코를 붙여 줘요.'],['👦🧣⛄','Tom gives him a red scarf.','톰이 빨간 목도리를 둘러 줘요.'],['☀️⛄💧','The sun comes out. Oh no!','해가 나왔어요. 앗!'],['⛄👋','See you next winter!','내년 겨울에 또 만나!']],
-  w:'snow=눈=❄️|snowman=눈사람=⛄|nose=코=👃|scarf=목도리=🧣|sun=해=☀️|winter=겨울=🌨️',
-  q:[['두 아이가 만든 것은 무엇인가요?','⛄ 눈사람','🏰 모래성','🪁 연'],['눈사람의 코는 무엇으로 만들었나요?','🥕 당근','🍎 사과','🪨 돌'],['톰이 눈사람에게 준 것은 무엇인가요?','🧣 빨간 목도리','🧢 파란 모자','🧤 장갑'],['해가 나오면 눈사람은 어떻게 될까요?','녹아요','커져요','날아가요']]},
+  p:[['❄️','It is snowing.','눈이 와요.'],['👦👧','Tom and Mia go out.','톰과 미아가 밖에 나가요.'],['⚪','A big snowball!','커다란 눈덩이!'],['⛄','Look! A snowman!','봐요! 눈사람이에요!'],['⛄🥕','Here is a nose.','코를 달아 줘요.'],['⛄🧢','Here is a red hat.','빨간 모자도 씌워 줘요.'],['☀️⛄💧','The sun is hot. Oh no!','해가 뜨거워요. 이런!'],['👋⛄','Bye-bye, snowman!','안녕, 눈사람!']],
+  w:'snow=눈=❄️|snowman=눈사람=⛄|nose=코=👃|hat=모자=🧢|sun=해=☀️|red=빨간색=🟥',
+  q:[['아이들이 만든 것은 무엇인가요?','⛄ 눈사람','🏰 모래성','🪁 연'],['눈사람의 코는 무엇으로 만들었나요?','🥕 당근','🍎 사과','🍌 바나나'],['눈사람의 모자는 무슨 색인가요?','빨간색','파란색','노란색'],['해가 뜨거워지자 눈사람은 어떻게 되었을까요?','녹았어요','커졌어요','달아났어요']]},
  {t:'The Lion and the Mouse',kt:'사자와 생쥐',cv:'🦁',
-  p:[['🦁💤','A lion is sleeping.','사자가 자고 있어요.'],['🐭🦁','A mouse runs on the lion.','생쥐가 사자 위를 뛰어다녀요.'],['🦁😠🐭','The lion catches the mouse.','사자가 생쥐를 잡아요.'],['🐭🙏','Please let me go. I can help you.','제발 놓아 주세요. 제가 도와 드릴게요.'],['🦁😆','The lion laughs and lets him go.','사자는 웃으며 생쥐를 놓아 줘요.'],['🦁🪢','One day, the lion is in a net.','어느 날, 사자가 그물에 걸렸어요.'],['🐭🦷🪢','The mouse bites the net.','생쥐가 그물을 갉아요.'],['🦁🐭❤️','The lion is free. Thank you, little friend!','사자가 풀려났어요. 고마워, 작은 친구야!']],
-  w:'lion=사자=🦁|mouse=생쥐=🐭|net=그물=🪢|sleep=자다=💤|laugh=웃다=😆|bite=물다=🦷',
+  p:[['🦁💤','A big lion naps.','커다란 사자가 낮잠을 자요.'],['🐭🦁','A little mouse runs on him.','작은 생쥐가 사자 위를 달려요.'],['🦁🐭','The lion gets the mouse.','사자가 생쥐를 잡아요.'],['🐭🙏','Let me go! I can help.','놓아 주세요! 내가 도울 수 있어요.'],['🦁😆','The lion lets him go.','사자는 웃으며 생쥐를 놓아줘요.'],['🦁🪢','The lion is in a net.','사자가 그물에 걸렸어요.'],['🐭🦷🪢','The mouse bites the net.','생쥐가 그물을 갉아요.'],['🦁🐭❤️','Thank you, little mouse!','고마워, 작은 생쥐야!']],
+  w:'lion=사자=🦁|mouse=생쥐=🐭|net=그물=🪢|nap=낮잠=💤|bite=물다=🦷|little=작은=🤏',
   q:[['처음에 사자는 무엇을 하고 있었나요?','자고 있었어요','먹고 있었어요','달리고 있었어요'],['사자가 걸린 것은 무엇인가요?','🪢 그물','📦 상자','🕳️ 구멍'],['사자를 구해 준 것은 누구인가요?','🐭 생쥐','🐘 코끼리','🐒 원숭이'],['이 이야기에서 배울 수 있는 것은 무엇일까요?','작은 친구도 도울 수 있어요','힘이 센 게 제일이에요','잠을 많이 자야 해요']]},
  {t:'A Rainy Day Picnic',kt:'비 오는 날의 소풍',cv:'🧺',
-  p:[['🧺☀️','Today is picnic day!','오늘은 소풍 가는 날이에요!'],['👩🥪👧🍓','Mom makes sandwiches. I wash strawberries.','엄마는 샌드위치를 만들어요. 나는 딸기를 씻어요.'],['🌳🌳','We go to the park.','우리는 공원에 가요.'],['☁️🌧️','Oh no! It starts to rain.','이런! 비가 오기 시작해요.'],['🏃🏠','We run back home.','우리는 집으로 뛰어 돌아와요.'],['🧺🏠','We sit on the floor and eat.','우리는 바닥에 앉아서 먹어요.'],['🍓😋','The strawberries are sweet.','딸기가 달콤해요.'],['🏠❤️','A picnic at home is fun, too!','집에서 하는 소풍도 재미있어요!']],
-  w:'picnic=소풍=🧺|park=공원=🌳|rain=비=🌧️|home=집=🏠|sweet=달콤한=🍭|mom=엄마=👩',
+  p:[['🧺☀️','It is picnic day!','오늘은 소풍 가는 날!'],['🍓','Yum! Red berries.','냠! 빨간 딸기.'],['🌳🌳','We go to the park.','우리는 공원에 가요.'],['☁️🌧️','Oh no! Rain!','이런! 비가 와요!'],['🏃🏠','Run, run, run home!','집으로 달려, 달려!'],['🧺🏠','We sit on the floor.','우리는 바닥에 앉아요.'],['🍓😋','The berries are sweet.','딸기가 달콤해요.'],['🏠❤️','A home picnic is fun!','집에서 하는 소풍도 재미있어요!']],
+  w:'picnic=소풍=🧺|park=공원=🌳|rain=비=🌧️|home=집=🏠|sweet=달콤한=🍭|run=달리다=🏃',
   q:[['가족이 가려던 곳은 어디인가요?','🌳 공원','🏖️ 바다','🏫 학교'],['소풍을 방해한 것은 무엇인가요?','🌧️ 비','❄️ 눈','🌪️ 바람'],['가족은 어디에서 소풍을 했나요?','🏠 집','🚗 자동차 안','🏪 가게'],['딸기 맛은 어땠나요?','달콤해요','짜요','매워요']]},
- {t:'The Tortoise and the Hare',kt:'거북이와 토끼',cv:'🐢',
-  p:[['🐢🐇','Hare is fast. Tortoise is slow.','토끼는 빨라요. 거북이는 느려요.'],['🐇😏🐢','Let us run a race!','우리 달리기 시합하자!'],['🏁','Ready, set, go!','준비, 시작!'],['🐇💨','Hare runs very fast.','토끼는 아주 빨리 달려요.'],['🌳🐇💤','Hare stops and takes a nap.','토끼는 멈춰서 낮잠을 자요.'],['🐢👣','Tortoise walks and walks. He does not stop.','거북이는 걷고 또 걸어요. 멈추지 않아요.'],['🐢🏁🏆','Tortoise wins the race!','거북이가 시합에서 이겨요!'],['🐇😲','Slow and steady wins the race.','천천히, 꾸준히 하면 이겨요.']],
-  w:'hare=토끼=🐇|fast=빠른=💨|slow=느린=🐌|race=시합=🏁|nap=낮잠=💤|win=이기다=🏆',
-  q:[['시합에서 이긴 것은 누구인가요?','🐢 거북이','🐇 토끼','🦊 여우'],['토끼는 시합 도중에 무엇을 했나요?','낮잠을 잤어요','밥을 먹었어요','책을 읽었어요'],['거북이는 어떻게 갔나요?','멈추지 않고 꾸준히','아주 빨리 뛰어서','뒤로 걸어서'],['“Hare is fast.”는 무슨 뜻일까요?','토끼는 빨라요.','토끼는 느려요.','토끼는 귀여워요.']]}
+ {t:'The Rabbit and the Turtle',kt:'토끼와 거북이',cv:'🐢',
+  p:[['🐇🐢','Rabbit is fast. Turtle is slow.','토끼는 빨라요. 거북이는 느려요.'],['🏁','Ready, set, go!','준비, 시작!'],['🐇💨','Rabbit runs fast.','토끼는 빨리 달려요.'],['🌳🐇💤','Rabbit takes a nap.','토끼는 낮잠을 자요.'],['🐢👣','Turtle walks and walks.','거북이는 걷고 또 걸어요.'],['🐢','Turtle does not stop.','거북이는 멈추지 않아요.'],['🐢🏁🏆','Turtle wins!','거북이가 이겨요!'],['🐇😲','Slow and steady wins.','천천히, 꾸준히 하면 이겨요.']],
+  w:'rabbit=토끼=🐇|turtle=거북이=🐢|fast=빠른=💨|slow=느린=🐌|nap=낮잠=💤|win=이기다=🏆',
+  q:[['시합에서 이긴 것은 누구인가요?','🐢 거북이','🐇 토끼','🦊 여우'],['토끼는 시합 도중에 무엇을 했나요?','낮잠을 잤어요','밥을 먹었어요','책을 읽었어요'],['거북이는 어떻게 갔나요?','멈추지 않고 꾸준히','아주 빨리 뛰어서','뒤로 걸어서'],['“Rabbit is fast.”는 무슨 뜻일까요?','토끼는 빨라요.','토끼는 느려요.','토끼는 귀여워요.']]}
 ]]];
 const STORDER=[], ST_LESSONS=[['동화 듣기','그림책을 넘기며 이야기를 듣고 문제를 풀어요'],['낱말 익히기','이야기에 나온 낱말을 그림과 소리로 익혀요'],['따라 쓰기','이야기 낱말을 손으로 써요'],['이야기 퀴즈','누가, 무엇을, 어떤 차례로 했는지 풀어요'],['놀이 한마당','게임으로 한 번 더 다져요']];
 STB.forEach((V,vi)=>{ const g=401+vi; STORDER.push(g);
@@ -2506,7 +2506,7 @@ function say(t){
   try{
     const lang=/[가-힣]/.test(t)?'ko-KR':'en-US', en=lang==='en-US', voice=pickVoice(lang), txt=sayNorm(t,en), n=++SAYN;
     const parts=en&&txt.length>80?(txt.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[txt]).map(s=>s.trim()).filter(Boolean):[txt];
-    const rate=en?(txt.split(' ').length<=2?.8:.9):.95;
+    const rate=en?(txt.split(' ').length<=2?.56:.63):.95;
     if(en&&!voice&&VOICES.length) noEnTip();
     speechSynthesis.cancel();
     const go=()=>{ if(n!==SAYN) return; parts.forEach(s=>{ const u=new SpeechSynthesisUtterance(s); u.lang=lang; u.rate=rate; u.pitch=1; if(voice) u.voice=voice; speechSynthesis.speak(u); }); };
@@ -2696,7 +2696,7 @@ function routeInner(v,a,b){
 /* 새로 고침을 해도 보고 있던 화면으로 돌아와요 (같은 탭에서만) */
 function restoreView(){
   let o=null; try{ o=JSON.parse(sessionStorage.getItem('seoi-hanja-view')||'null'); }catch(e){}
-  if(!o||!o.v||o.v==='start'||o.v==='smap'||o.v==='trbox') return start('');
+  if(!o||!o.v||o.v==='start'||o.v==='smap'||o.v==='trbox'||o.v==='clock') return start('');
   if(o.v==='subj') return start(o.a);
   try{
     setGrade(o.g); const u=UNITS[+o.a], rs=resumeInfo();
@@ -3439,13 +3439,13 @@ function phTrace(u){
   const step=()=>{
     const it=list[i];
     if(u.kind==='ko'||u.kind==='wd') return stepKo(it);    show('<button class="back" data-go="lesson:'+ui+':2">← 소개로 돌아가기</button><div class="meter">따라 쓰기 '+(i+1)+' / '+list.length+'</div><div class="bar"><i style="width:'+(i/list.length*100)+'%"></i></div><section class="panel"><p class="inst">흐린 글자 위에 천천히 따라 써요.</p><div class="wtop">'+(it.p?'<span class="pic" style="font-size:2rem">'+it.p+'</span> ':'')+'<b class="wname">'+it.ko+'</b>'+(canSpeak?' <button class="say" data-say="'+it.say+'">소리 듣기</button>':'')+'</div><div class="trace wide"><span class="en ghost" aria-hidden="true" style="--n:'+it.t.length+'">'+it.t+'</span><canvas id="tr" width="900" height="420" aria-label="'+it.t+' 따라 쓰는 칸"></canvas></div><div class="row center" style="margin-top:12px"><button class="btn" id="wclear">지우고 다시 쓰기</button><button class="btn main" id="wnext" disabled>'+(i<list.length-1?'다 썼어요, 다음':'다 썼어요, 끝내기')+'</button></div></section>',u.color);
-    const cv=document.getElementById('tr'), ctx=cv.getContext('2d'), n=document.getElementById('wnext'); let on=false, len=0, last=null;
+    const cv=document.getElementById('tr'), ctx=cv.getContext('2d'), n=document.getElementById('wnext'); let on=false, len=0, last=null; let cov=[...it.t].map(c=>c===' '); const gh=$app.querySelector('.trace .ghost'); const mk=p=>{ try{ const g=gh.getBoundingClientRect(), r=cv.getBoundingClientRect(), x0=(g.left-r.left)/r.width*900, x1=(g.right-r.left)/r.width*900, w=(x1-x0)/cov.length, k=Math.floor((p.x-x0)/w); if(k>=0&&k<cov.length) cov[k]=true; }catch(e){ cov=cov.map(()=>true); } };
     ctx.lineWidth=16; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle=V('--ink','#2B2520');
     const pt=e=>{ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*900,y:(e.clientY-r.top)/r.height*420}; };
     cv.addEventListener('pointerdown',e=>{ e.preventDefault(); on=true; last=pt(e); try{cv.setPointerCapture(e.pointerId)}catch(_){} });
-    cv.addEventListener('pointermove',e=>{ if(!on) return; const p=pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); len+=Math.hypot(p.x-last.x,p.y-last.y); last=p; if(len>260*Math.min(3,it.t.length)) n.disabled=false; });
+    cv.addEventListener('pointermove',e=>{ if(!on) return; const p=pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); len+=Math.hypot(p.x-last.x,p.y-last.y); last=p; mk(p); if(len>140*Math.min(3,it.t.length)&&cov.every(Boolean)) n.disabled=false; });
     const up=()=>{on=false}; cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
-    document.getElementById('wclear').onclick=()=>{ ctx.clearRect(0,0,900,420); len=0; n.disabled=true; };
+    document.getElementById('wclear').onclick=()=>{ ctx.clearRect(0,0,900,420); len=0; cov=[...it.t].map(c=>c===' '); n.disabled=true; };
     n.onclick=()=>{ i++; i<list.length?step():resultScreen(u,2,3,(lv1&&u.kind!=='ko'?'글자 ':'낱말 ')+list.length+'개를 따라 썼어요.','trace:'+ui); };
   };
   step();
@@ -3809,10 +3809,12 @@ function stIntro(u,l){
 /* ---------- 영어 동화: 그림책 읽어 주기. 표지 → 한 쪽씩 장면이 있는 그림책 → 끝(The End).
    ‘이야기 들려주기’를 누르면 한 쪽을 읽고 저절로 책장을 넘겨 끝까지 들려줘요. 낱말을 누르면 그 낱말만 들려줘요 ---------- */
 let STAC=null;
-function stSwish(){ try{ STAC=STAC||new (window.AudioContext||window.webkitAudioContext)(); const c=STAC; if(c.state==='suspended') c.resume();
-  const n=Math.floor(c.sampleRate*.28), b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(Math.sin(Math.PI*i/n),2);
-  const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type='bandpass'; f.frequency.setValueAtTime(900,c.currentTime); f.frequency.linearRampToValueAtTime(2600,c.currentTime+.28); f.Q.value=.8; g.gain.value=.16;
-  s.connect(f); f.connect(g); g.connect(c.destination); s.start(); }catch(e){} }
+function stSwish(){ try{ STAC=STAC||new (window.AudioContext||window.webkitAudioContext)(); const c=STAC; if(c.state==='suspended') c.resume(); const t0=c.currentTime, sr=c.sampleRate; /* 종이 넘기는 소리 */
+  const n=Math.floor(sr*.36), b=c.createBuffer(1,n,sr), d=b.getChannelData(0); for(let i=0;i<n;i++){ const x=i/n, env=x<.18?x/.18:Math.pow(1-(x-.18)/.82,1.7), cr=Math.random()<.035?(Math.random()*2-1)*1.6:0; d[i]=((Math.random()*2-1)*.55+cr)*env; }
+  const s=c.createBufferSource(), hp=c.createBiquadFilter(), bp=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; hp.type='highpass'; hp.frequency.value=650; bp.type='bandpass'; bp.Q.value=.55; bp.frequency.setValueAtTime(3400,t0); bp.frequency.exponentialRampToValueAtTime(1300,t0+.34); g.gain.value=.26;
+  s.connect(hp); hp.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t0);
+  const m=Math.floor(sr*.09), b2=c.createBuffer(1,m,sr), d2=b2.getChannelData(0); for(let i=0;i<m;i++) d2[i]=(Math.random()*2-1)*Math.pow(1-i/m,3);
+  const s2=c.createBufferSource(), lp=c.createBiquadFilter(), g2=c.createGain(); s2.buffer=b2; lp.type='lowpass'; lp.frequency.value=420; g2.gain.value=.5; s2.connect(lp); lp.connect(g2); g2.connect(c.destination); s2.start(t0+.3); }catch(e){} }
 function stBook(u,l){
   const ui=UNITS.indexOf(u), P=u.pages, N=P.length; let k=-1, auto=false, run=0, tAuto=null, tx=null, kon=true, kread=false;
   try{ kon=localStorage.getItem('seoi-st-ko')!=='0'; kread=localStorage.getItem('seoi-st-kread')==='1'; }catch(e){}
@@ -3827,7 +3829,7 @@ function stBook(u,l){
     try{ speechSynthesis.cancel(); }catch(e){} const n=++SAYN;
     const mark=j=>{ const pg=document.getElementById('stpg'); if(pg) pg.querySelectorAll('.stw').forEach((b,m)=>b.classList.toggle('on',m===j)); };
     const go=()=>{ if(n!==SAYN||my!==run) return; try{
-      const ut=new SpeechSynthesisUtterance(p.en), v=pickVoice('en-US'); ut.lang='en-US'; ut.rate=.76; ut.pitch=/[!?]$/.test(p.en)?1.15:1.05; if(v) ut.voice=v;
+      const ut=new SpeechSynthesisUtterance(p.en), v=pickVoice('en-US'); ut.lang='en-US'; ut.rate=.53; ut.pitch=/[!?]$/.test(p.en)?1.15:1.05; if(v) ut.voice=v;
       ut.onboundary=e=>{ if(e.name&&e.name!=='word') return; let j=0; st.forEach((s,m)=>{ if(s<=e.charIndex) j=m; }); mark(j); };
       ut.onend=()=>{ mark(-1); if(my!==run||n!==SAYN) return;
         if(kread){ const kv=pickVoice('ko-KR'), uk=new SpeechSynthesisUtterance(p.ko); uk.lang='ko-KR'; uk.rate=.95; if(kv) uk.voice=kv; uk.onend=()=>{ if(n===SAYN) fin(); }; speechSynthesis.speak(uk); } else fin(); };
@@ -3876,7 +3878,7 @@ function stQuiz(u,l){
     wordPic:w=>({t:'c',inst:'낱말에 알맞은 그림을 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}),
     listenPic:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 그림을 고르세요.',listen:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}:T.wordPic(w),
     build:w=>({t:'w',inst:'흩어진 글자를 끌어다 낱말을 만드세요.',w,ex:w.en+' : '+w.ko}),
-    sq:q=>({t:'c',inst:q.q,stim:'<div class="mtxt">'+q.cv+' <span class="en">'+q.st+'</span></div>',ch:shuffle([{h:q.a,ok:1},{h:q.b},{h:q.c}]),ex:'정답: '+q.a.replace(/^[^가-힣A-Za-z“]+/,'')}),
+    sq:q=>({t:'c',inst:q.q,stim:'',ch:shuffle([{h:q.a,ok:1},{h:q.b},{h:q.c}]),ex:'정답: '+q.a.replace(/^[^가-힣A-Za-z“]+/,'')}),
     pageSent:p=>({t:'c',inst:'그림에 알맞은 문장을 고르세요.',stim:sc(p),ch:opts(p,same(p),x=>x.en,2).map(x=>({h:EN(x.en),ok:x===p})),ex:p.en+' : '+p.ko,sayAns:p.en}),
     meaning:p=>({t:'c',inst:'문장의 뜻을 고르세요.',stim:'<div class="line en">'+p.en+'</div>',say:p.en,ch:opts(p,same(p),x=>x.ko,2).map(x=>({h:x.ko,ok:x===p})),ex:p.en+' : '+p.ko}),
     listenSent:p=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 문장을 고르세요.',listen:p.en,ch:opts(p,same(p),x=>x.en,2).map(x=>({h:EN(x.en),ok:x===p})),ex:p.en+' : '+p.ko}:T.meaning(p),
@@ -5692,23 +5694,30 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
   const due=()=>{ const R=RV(), d=TODAY(); return sync().filter(x=>R.w[x.k].d<=d).sort((a,b)=>(R.w[a.k].d-R.w[b.k].d)||(R.w[a.k].b-R.w[b.k].b)); };
   const stage=b=>b>=4?'🌳':b>=2?'🌿':'🌱';
   function mark(k,ok){ const R=RV(), x=R.w[k]; if(!x) return; const d=TODAY(); x.n++; if(ok){ x.b=Math.min(5,x.b+1); x.d=d+INT[Math.min(INT.length-1,x.b-1)]; } else { x.b=0; x.d=d+1; } }
-  function wordQ(x,pool){ const o2=mix(pool.filter(y=>y.k!==x.k)).slice(0,2), opts=mix([x,...o2]);
-    const blank=x.s&&/\[.+\]/.test(x.s), kinds=['listen'].concat(x.d?['mean','mean']:[]).concat(blank?['sent','sent']:[]), t=kinds[Math.floor(Math.random()*kinds.length)];
-    if(t==='sent'){ const ans=x.s.match(/\[(.+?)\]/)[1], show_=x.s.replace(/\[.+?\]/,'<u class="rvs-gap">　?　</u>'), alt=o2.map(y=>y.form||y.w);
+  /* 끝이 ‘다’인 말(움직임·모양을 나타내는 말)과 이름을 나타내는 말을 나눠요 */
+  const isPred=w=>/다$/.test(String(w).trim());
+  function wordQ(x,pool){ let o2=mix(pool.filter(y=>y.k!==x.k)).slice(0,2), opts=mix([x,...o2]);
+    /* 빈칸 문제의 오답은 품사가 다른 낱말만 골라요 (기쁘다·즐겁다처럼 둘 다 들어갈 수 있는 보기가 없게) */
+    const o3=mix(pool.filter(y=>y.k!==x.k&&isPred(y.w)!==isPred(x.w))).slice(0,2);
+    const blank=x.s&&/\[.+\]/.test(x.s)&&o3.length===2, kinds=['listen'].concat(x.d?['mean','mean']:[]).concat(blank?['sent','sent']:[]), t=kinds[Math.floor(Math.random()*kinds.length)];
+    if(t==='sent'){ o2=o3; opts=mix([x,...o2]); const ans=x.s.match(/\[(.+?)\]/)[1], show_=x.s.replace(/\[.+?\]/,'<u class="rvs-gap">　?　</u>'), alt=o2.map(y=>y.form||y.w);
       return {k:x.k,q:'빈칸에 알맞은 말을 골라요',stim:'<p class="rvs-sent">'+E(x.s.replace(/\[.+?\]/,'@@')).replace('@@','<u class="rvs-gap">　?　</u>')+'</p>',speak:x.s.replace(/\[.+?\]/,'뭐뭐'),opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.s.replace(/[\[\]]/g,'')+' ('+x.w+')'}; }
     if(t==='mean') return {k:x.k,q:'이 뜻을 가진 낱말을 골라요',stim:'<p class="rvs-mean">“'+E(x.d)+'”</p>',speak:x.d,opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.w+' : '+x.d};
     return {k:x.k,q:'🔊 소리를 듣고 같은 낱말을 골라요',stim:'<div class="rvs-ear">👂</div>',speak:x.w,opts:opts.map(y=>({t:y.w,ok:y===x})),ex:x.w+(x.d?' : '+x.d:'')}; }
 
   /* ---------- 2) 수 세기 복습 ---------- */
   const EM=['🍎','🐥','⭐','🍓','🚗','🐟','🌸','🎈'];
+  /* 그림에 맞게: 동물은 ‘마리’, 빼기는 그림마다 알맞은 말로 */
+  const U=e=>(e==='🐥'||e==='🐟')?'마리':'개';
+  const GONE={'🍎':['을','먹었어요'],'🍓':['를','먹었어요'],'🐥':['가','엄마에게 갔어요'],'🐟':['가','헤엄쳐 갔어요'],'⭐':['가','구름에 가려졌어요'],'🚗':['가','떠났어요'],'🌸':['가','떨어졌어요'],'🎈':['가','날아갔어요']};
   const row=(n,e)=>'<div class="rvs-em">'+Array(n).fill(e).join('')+'</div>';
   const near=(n,lo,hi)=>{ const s=new Set([n]); while(s.size<3){ const v=n+rnd(-3,3); if(v>=lo&&v<=hi) s.add(v); } return mix([...s]); };
   const NUMG=[
-    ()=>{ const n=rnd(4,15), e=EM[rnd(0,7)]; return {q:'모두 몇 개일까요? 하나씩 세어 봐요',stim:row(n,e),speak:'모두 몇 개일까요?',opts:near(n,1,20).map(v=>({t:String(v),ok:v===n})),ex:'모두 '+n+'개예요.'}; },
-    ()=>{ let a=rnd(3,9), b=rnd(3,9); if(a===b) b=a+1; const e1=EM[rnd(0,3)], e2=EM[rnd(4,7)]; return {q:'어느 쪽이 더 많을까요?',stim:'<div class="rvs-two"><div>'+row(a,e1)+'</div><div>'+row(b,e2)+'</div></div>',speak:'어느 쪽이 더 많을까요?',opts:[{t:e1+' 쪽',ok:a>b},{t:e2+' 쪽',ok:b>a}],ex:e1+' '+a+'개, '+e2+' '+b+'개. '+(a>b?e1:e2)+' 쪽이 더 많아요.'}; },
+    ()=>{ const n=rnd(4,15), e=EM[rnd(0,7)]; return {q:'모두 몇 '+U(e)+'일까요? 하나씩 세어 봐요',stim:row(n,e),speak:'모두 몇 '+U(e)+'일까요?',opts:near(n,1,20).map(v=>({t:String(v),ok:v===n})),ex:'모두 '+n+U(e)+'예요.'}; },
+    ()=>{ let a=rnd(3,9), b=rnd(3,9); if(a===b) b=a+1; const e1=EM[rnd(0,3)], e2=EM[rnd(4,7)]; return {q:'어느 쪽이 더 많을까요?',stim:'<div class="rvs-two"><div>'+row(a,e1)+'</div><div>'+row(b,e2)+'</div></div>',speak:'어느 쪽이 더 많을까요?',opts:[{t:e1+' 쪽',ok:a>b},{t:e2+' 쪽',ok:b>a}],ex:e1+' '+a+U(e1)+', '+e2+' '+b+U(e2)+'. '+(a>b?e1:e2)+' 쪽이 더 많아요.'}; },
     ()=>{ const n=rnd(3,28); return {q:n+' 다음 수는 무엇일까요?',stim:'<div class="rvs-line">'+[n-1,n].map(v=>'<b>'+v+'</b>').join('')+'<b class="q">?</b></div>',speak:n+' 다음 수는 무엇일까요?',opts:near(n+1,1,30).map(v=>({t:String(v),ok:v===n+1})),ex:n+' 다음 수는 '+J(n+1,'이에요')+'.'}; },
-    ()=>{ const a=rnd(1,6), b=rnd(1,9-a), e=EM[rnd(0,7)]; return {q:'모두 몇 개가 될까요?',stim:'<div class="rvs-sum">'+row(a,e)+'<b>+</b>'+row(b,e)+'</div><p class="rvs-eq">'+a+' + '+b+' = ?</p>',speak:a+' 더하기 '+b+'는 얼마일까요?',opts:near(a+b,1,12).map(v=>({t:String(v),ok:v===a+b})),ex:a+' + '+b+' = '+(a+b)}; },
-    ()=>{ const a=rnd(4,9), b=rnd(1,a-1), e=EM[rnd(0,7)]; return {q:b+'개를 먹었어요. 몇 개 남았을까요?',stim:'<div class="rvs-em">'+Array(a).fill(e).map((x,i)=>i<b?'<s>'+x+'</s>':x).join('')+'</div><p class="rvs-eq">'+a+' − '+b+' = ?</p>',speak:a+'개에서 '+b+'개를 먹었어요. 몇 개 남았을까요?',opts:near(a-b,0,10).map(v=>({t:String(v),ok:v===a-b})),ex:a+' − '+b+' = '+(a-b)}; },
+    ()=>{ const a=rnd(1,6), b=rnd(1,9-a), e=EM[rnd(0,7)]; return {q:'모두 몇 '+U(e)+'가 될까요?',stim:'<div class="rvs-sum">'+row(a,e)+'<b>+</b>'+row(b,e)+'</div><p class="rvs-eq">'+a+' + '+b+' = ?</p>',speak:a+' 더하기 '+b+'는 얼마일까요?',opts:near(a+b,1,12).map(v=>({t:String(v),ok:v===a+b})),ex:a+' + '+b+' = '+(a+b)}; },
+    ()=>{ const a=rnd(4,9), b=rnd(1,a-1), e=EM[rnd(0,7)]; const gw=GONE[e], u=U(e), gq=a+u+' 중에서 '+b+u+(gw[0]==='가'?'가 ':(u==='개'?'를 ':'를 '))+gw[1]+'. 몇 '+u+' 남았을까요?'; return {q:gq,stim:'<div class="rvs-em">'+Array(a).fill(e).map((x,i)=>i<b?'<s>'+x+'</s>':x).join('')+'</div><p class="rvs-eq">'+a+' − '+b+' = ?</p>',speak:gq,opts:near(a-b,0,10).map(v=>({t:String(v),ok:v===a-b})),ex:a+' − '+b+' = '+(a-b)}; },
     ()=>{ let a=rnd(2,30), b=rnd(2,30); if(a===b) b=a+2; return {q:'더 큰 수를 골라요',stim:'',speak:'더 큰 수를 골라요',opts:[{t:String(a),ok:a>b},{t:String(b),ok:b>a}],ex:J(Math.max(a,b),'이','가')+' '+Math.min(a,b)+'보다 커요.'}; }
   ];
 
@@ -5730,8 +5739,8 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
       talk(KID.name+', 잘했어요!'); credit(); };
     paint(); }
   function note(kind,ok){ const R=RV(), d=TODAY(), S=R.st[d]=R.st[d]||{}, a=S[kind]=S[kind]||[0,0]; a[1]++; if(ok) a[0]++; Object.keys(R.st).forEach(k=>{ if(+k<d-40) delete R.st[k]; }); }
-  function startWord(){ const L=sync(), D=due().slice(0,6); if(!D.length) return boxView(L.length?'오늘 복습할 낱말이 없어요! 🎉':'아직 배운 낱말이 없어요. 어휘나 낱말 탐험의 첫 차시를 끝내면 여기에 모여요.');
-    const pool=L.length>=3?L:learnedAll(); play('word','낱말 복습','#E0457B',D.map(x=>wordQ(x,pool))); }
+  function startWord(){ const L=sync(); let D=due().slice(0,6), extra=false; if(!D.length){ if(!L.length) return boxView('아직 배운 낱말이 없어요. 어휘나 낱말 탐험의 첫 차시를 끝내면 여기에 모여요.'); D=mix(L).slice(0,6); extra=true; }
+    const pool=L.length>=3?L:learnedAll(); play('word',extra?'낱말 복습 한 번 더':'낱말 복습','#E0457B',D.map(x=>{ const q=wordQ(x,pool); if(extra) q.k=null; return q; })); }
   function learnedAll(){ const out=[]; WG.forEach(g=>{ const G=GRADES[g]; if(G) G.units.forEach(u=>(u.words||[]).forEach(w=>{ if(w&&w.w) out.push({k:w.w,w:w.w,d:w.d||'',s:w.s||'',form:w.form||'',u}); })); }); return out; }
   function startNum(){ const gens=mix(NUMG).slice(0,5); play('num','수 세기 복습','#2FA36B',gens.map(g=>g())); }
 
@@ -5755,8 +5764,8 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
 
   /* ---------- 복습 상자 ---------- */
   function items(){ const R=RV(), d=TODAY(), L=sync(), D=due().length;
-    return [['word','🗣️','낱말 복습',L.length?(D?'오늘 '+Math.min(6,D)+'개 · 배운 낱말 '+L.length+'개':'오늘 복습 끝! ✅'):'첫 차시를 끝내면 열려요',D>0,'#E0457B'],
-      ['num','🔢','수 세기 복습',R.dn.num===d?'오늘 복습 끝! ✅':'날마다 5문제',R.dn.num!==d,'#2FA36B'],
+    return [['word','🗣️','낱말 복습',L.length?(D?'오늘 '+Math.min(6,D)+'개 · 배운 낱말 '+L.length+'개':'오늘 복습 끝! ✅ 한 번 더 해도 좋아요'):'첫 차시를 끝내면 열려요',D>0,'#E0457B'],
+      ['num','🔢','수 세기 복습',R.dn.num===d?'오늘 복습 끝! ✅ 한 번 더 해도 좋아요':'날마다 5문제',R.dn.num!==d,'#2FA36B'],
       ['rep','👪','부모님 리포트','최근 7일 기록',false,'#1B2750']]; }
   function boxView(msg){ VIEW='rv'; const it=items();
     show('<button class="back" data-go="start">← 처음 화면</button><section class="panel rvs"><h2>🧰 복습 상자</h2><p class="lead">배운 것을 잊기 전에 다시 만나요!</p>'+(msg?'<p class="rvs-msg">'+E(msg)+'</p>':'')
@@ -5937,113 +5946,99 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 <!-- ===== 생일 이벤트 끝 ===== -->
 <!-- ===== 게임 뽑기 시작 ===== -->
 <script>
-/* ===== 게임 뽑기 기계 (심플 스타일): 학습 2개를 끝내 게임이 열리면, 먼저 뽑기 기계가 나와요 =====
-   1) 손잡이 주위에 빛나는 고리·돌리는 화살표·손가락이 나타나고 "손잡이를 돌려줘!" 말풍선이 손잡이를 가리켜요
-   2) 손잡이를 톡 누르면 한 바퀴 돌며 캡슐이 섞이고, 하나가 출구로 떨어져요 → 이번엔 말풍선이 출구를 가리켜요
-   3) 캡슐을 누르면 커다란 캡슐이 떠오르고, 한 번 더 누르면 열리면서 이번 게임 카드가 짠! → '게임 열기' */
+/* ===== 네온 게임 뽑기: 학습 2개를 끝내 게임이 열리면, 먼저 네온 뽑기 기계가 나와요 =====
+   (‘네온 뽑기.html’ 디자인) 유리 돔 안에서 네온 구슬이 굴러다녀요.
+   1) 손잡이를 누르면 구슬이 소용돌이치며 섞이고, 하나가 배출구로 떨어져요
+   2) 반짝이는 배출구의 캡슐을 누르면 이번 게임 카드가 짠! → ‘게임 열기’ */
 (function(){
   const css=document.createElement('style');
-  css.textContent='#gacha{position:fixed;inset:0;z-index:8500;display:flex;flex-direction:column;align-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#fff6f9 0%,#f2efff 100%);color:#2b2350;overflow:hidden;touch-action:manipulation;font-family:"Jua","Gowun Dodum",system-ui,sans-serif}'
-   +'#gacha .ghead{font-size:1.5rem;letter-spacing:.01em;text-align:center}#gacha .gsub{margin:4px 0 0;font-size:.95rem;color:#8a83a8;text-align:center}'
-   +'#gacha .gmain{position:relative;flex:1;width:100%;max-width:420px;min-height:0}'
-   +'#gacha canvas{position:absolute;inset:0;width:100%;height:100%;display:block}'
-   +'#gacha .gcall{position:absolute;top:0;left:0;padding:11px 20px;border:0;border-radius:999px;font:inherit;font-size:1.2rem;color:#fff;background:#2b2350;white-space:nowrap;box-shadow:0 8px 20px rgba(43,35,80,.25);cursor:pointer;touch-action:manipulation;animation:gbob 1.2s ease-in-out infinite;transition:left .35s}'
-   +'#gacha .gcall::before{content:"";position:absolute;top:-9px;left:var(--tx,50%);margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#2b2350}'
-   +'#gacha .gcall.busy{animation:none;opacity:.75}@keyframes gbob{50%{transform:translateY(-4px)}}'
-   +'#gacha .gbtn{font:inherit;font-size:1.25rem;color:#fff;border:0;border-radius:999px;padding:14px 22px;min-height:54px;background:#ff6b8b;box-shadow:0 8px 20px rgba(255,107,139,.4);cursor:pointer;touch-action:manipulation;transition:transform .15s}#gacha .gbtn:active{transform:scale(.96)}'
-   +'#gacha .greveal{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(250,247,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}#gacha .greveal.on{display:flex}'
-   +'#gacha .bigcap{position:relative;width:160px;height:160px;border-radius:50%;cursor:pointer;animation:gfloat 2.4s ease-in-out infinite;box-shadow:0 24px 40px rgba(43,35,80,.18)}'
-   +'#gacha .bigcap .t,#gacha .bigcap .b{position:absolute;left:0;width:100%;height:50%;transition:transform .6s cubic-bezier(.18,.89,.32,1.28),opacity .5s}#gacha .bigcap .t{top:0;border-radius:80px 80px 0 0;background:var(--gc)}#gacha .bigcap .b{bottom:0;border-radius:0 0 80px 80px;background:#fff}'
-   +'#gacha .bigcap .t::after{content:"";position:absolute;left:24%;top:22%;width:26%;height:30%;border-radius:50%;background:rgba(255,255,255,.45)}'
-   +'#gacha .bigcap .seam{position:absolute;top:50%;left:0;width:100%;height:6px;margin-top:-3px;background:rgba(43,35,80,.12);z-index:2;transition:opacity .3s}'
-   +'#gacha .bigcap.open{animation:none}#gacha .bigcap.open .t{transform:translateY(-110px) rotate(-18deg);opacity:0}#gacha .bigcap.open .b{transform:translateY(110px) rotate(16deg);opacity:0}#gacha .bigcap.open .seam{opacity:0}'
-   +'@keyframes gfloat{50%{transform:translateY(-12px)}}'
-   +'#gacha .gtap{font-size:1.1rem;color:#2b2350;padding:8px 18px;border-radius:999px;background:#fff;box-shadow:0 6px 16px rgba(43,35,80,.12);animation:gbob 1.2s ease-in-out infinite}'
-   +'#gacha .gcard{display:none;flex-direction:column;align-items:center;gap:6px;width:min(300px,86vw);padding:24px 20px 20px;border-radius:28px;background:#fff;box-shadow:0 24px 50px rgba(43,35,80,.18);transform:scale(.6);opacity:0;transition:all .5s cubic-bezier(.18,.89,.32,1.28)}'
-   +'#gacha .gcard.on{display:flex;transform:scale(1);opacity:1}#mg-re{display:none!important}'
-   +'#gacha .gtag{padding:4px 14px;border-radius:12px;font-size:.85rem;background:#fff1c2;color:#8a5a00}'
-   +'#gacha .gicon{font-size:80px;line-height:1.1;animation:gpop .6s ease}@keyframes gpop{0%{transform:scale(0) rotate(-20deg)}80%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1)}}'
-   +'#gacha .gname{font-size:1.6rem;text-align:center;word-break:keep-all}#gacha .gsec{font-size:.95rem;color:#8a83a8;margin-bottom:8px}';
+  css.textContent='#gacha{position:fixed;inset:0;z-index:8500;display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:#030308;background-image:radial-gradient(600px 400px at 20% 10%,rgba(0,243,255,.10),transparent 60%),radial-gradient(600px 400px at 80% 90%,rgba(255,0,127,.12),transparent 60%);color:#fff;overflow:hidden;touch-action:manipulation;font-family:"Jua","Gowun Dodum",system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}'
+   +'#gacha *{box-sizing:border-box}'
+   +'#gacha .npanel{position:relative;width:100%;max-width:380px;background:rgba(13,17,33,.88);border:1px solid rgba(0,243,255,.35);border-radius:28px;padding:22px 20px 24px;display:flex;flex-direction:column;align-items:center;box-shadow:0 0 30px rgba(0,243,255,.15)}'
+   +'#gacha h1{margin:0;font-weight:900;font-size:28px;letter-spacing:.06em;background:linear-gradient(90deg,#22d3ee,#f472b6,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px rgba(244,114,182,.45))}'
+   +'#gacha .nsub{margin:4px 0 14px;font-size:14px;color:#aab3c8;text-align:center}'
+   +'#gacha .ndome{position:relative;width:264px;height:264px;border-radius:50%;z-index:2;border:2px solid #00f3ff;background:radial-gradient(circle at 50% 40%,rgba(20,30,60,.65),rgba(3,6,16,.9));box-shadow:0 0 18px rgba(0,243,255,.65),inset 0 0 22px rgba(0,243,255,.3)}'
+   +'#gacha .ndome canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:50%}'
+   +'#gacha .nshine{position:absolute;top:18px;left:34px;width:80px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);filter:blur(4px);transform:rotate(-38deg);pointer-events:none}'
+   +'#gacha .nbase{position:relative;z-index:1;width:290px;margin-top:-40px;padding:54px 18px 18px;border-radius:26px;background:rgba(5,8,20,.92);border:2px solid #ff007f;box-shadow:0 0 20px rgba(255,0,127,.6),inset 0 0 20px rgba(255,0,127,.2);display:flex;flex-direction:column;align-items:center;gap:16px}'
+   +'#gacha .nrow{width:100%;display:flex;justify-content:space-around;align-items:center}'
+   +'#gacha .nhandle{position:relative;width:96px;height:96px;border-radius:50%;border:2px solid #00f3ff;background:rgba(8,51,68,.55);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 16px rgba(0,243,255,.35);padding:0;color:inherit;transition:transform .15s,box-shadow .2s;touch-action:manipulation}'
+   +'#gacha .nhandle:not(:disabled){animation:npulse 1.8s infinite alternate}#gacha .nhandle:active:not(:disabled){transform:scale(.94)}#gacha .nhandle:disabled{cursor:default;opacity:.85}'
+   +'#gacha .nring{position:absolute;inset:4px;border-radius:50%;border:1px dashed rgba(103,232,249,.5);animation:nspin 12s linear infinite}'
+   +'#gacha .nlever{width:66px;height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.8);background:linear-gradient(90deg,#ec4899,#9333ea);display:grid;place-items:center;box-shadow:0 0 10px rgba(236,72,153,.6)}#gacha .nlever i{width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}'
+   +'@keyframes npulse{to{box-shadow:0 0 28px rgba(0,243,255,.7);filter:brightness(1.2)}}@keyframes nspin{to{transform:rotate(360deg)}}'
+   +'#gacha .nslot{position:relative;width:84px;height:84px;border-radius:18px;border:2px solid rgba(168,85,247,.7);background:#0b1020;overflow:hidden;box-shadow:inset 0 6px 16px rgba(0,0,0,.8),0 0 10px rgba(168,85,247,.35);cursor:default;padding:0;touch-action:manipulation}'
+   +'#gacha .nslot::before{content:"";position:absolute;inset:0;background:linear-gradient(#000c,transparent 60%);z-index:2;pointer-events:none}'
+   +'#gacha .nslot.ready{cursor:pointer;animation:nslotg .8s infinite alternate}@keyframes nslotg{to{box-shadow:inset 0 6px 16px rgba(0,0,0,.8),0 0 22px rgba(168,85,247,.9)}}'
+   +'#gacha .nslot canvas{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;transform:translateY(-90px);opacity:0}'
+   +'#gacha .nslot canvas.drop{animation:ndrop .7s cubic-bezier(.3,1.4,.5,1) forwards}@keyframes ndrop{0%{transform:translateY(-90px);opacity:1}100%{transform:translateY(0);opacity:1}}'
+   +'#gacha .ntip{padding:6px 16px;border-radius:999px;background:rgba(80,7,36,.8);border:1px solid rgba(236,72,153,.55);color:#f9a8d4;font-size:15px;text-shadow:0 0 8px rgba(255,0,127,.8);animation:nbob 1s infinite;min-height:30px;text-align:center}@keyframes nbob{50%{transform:translateY(-4px)}}'
+   +'#gacha .nover{position:fixed;inset:0;background:rgba(2,3,10,.78);display:grid;place-items:center;padding:16px;z-index:3}#gacha .nover[hidden]{display:none}'
+   +'#gacha .ncard{width:100%;max-width:340px;border-radius:24px;padding:26px 22px 22px;text-align:center;background:#0a0e1d;border:2px solid var(--c,#00f3ff);box-shadow:0 0 30px var(--c,#00f3ff),inset 0 0 24px rgba(255,255,255,.06);animation:npop .45s cubic-bezier(.3,1.5,.5,1)}@keyframes npop{from{transform:scale(.4);opacity:0}}'
+   +'#gacha .nlbl{color:#aab3c8;font-size:15px}#gacha .nicon{font-size:64px;line-height:1.15;margin-top:4px;filter:drop-shadow(0 0 10px var(--c))}'
+   +'#gacha .ngame{margin:8px 0 6px;font-size:32px;line-height:1.2;color:#fff;word-break:keep-all;text-shadow:0 0 6px var(--c),0 0 18px var(--c),0 0 36px var(--c)}'
+   +'#gacha .nsec{color:#aab3c8;font-size:15px;margin-bottom:16px}'
+   +'#gacha .nbtn{font-family:inherit;font-size:18px;padding:12px 22px;border-radius:999px;cursor:pointer;color:#fff;border:1px solid var(--c,#00f3ff);box-shadow:0 0 12px var(--c,#00f3ff);background:rgba(255,255,255,.08);min-height:48px;width:100%;touch-action:manipulation}'
+   +'@media (prefers-reduced-motion:reduce){#gacha .nhandle,#gacha .ntip,#gacha .nring{animation:none!important}}'
+   +'@media (max-height:640px){#gacha .ndome{width:220px;height:220px}#gacha .nbase{width:260px}#gacha .nsub{margin-bottom:8px}}#mg-re{display:none!important}';
   document.head.appendChild(css);
-  const COLS=['#ff6b8b','#4dabf7','#51cf66','#ffc928','#9775fa','#ff922b'];
-  let AC=null; const ac=()=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; };
-  const tone=(f,t,d,type,v)=>{ const c=AC; if(!c) return; const o=c.createOscillator(), g=c.createGain(); o.type=type||'square'; o.frequency.setValueAtTime(f,c.currentTime+t); g.gain.setValueAtTime(v||.06,c.currentTime+t); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+d); o.connect(g); g.connect(c.destination); o.start(c.currentTime+t); o.stop(c.currentTime+t+d+.02); };
-  const sRatchet=()=>{ for(let i=0;i<12;i++) tone(820+(i%2)*260,i*.07,.035,'square',.045); };
-  const sDrop=()=>{ tone(320,0,.12,'sine',.16); tone(230,.16,.1,'sine',.12); tone(270,.28,.08,'sine',.08); };
-  const sPop=()=>{ tone(180,0,.08,'triangle',.18); [523,659,784,1047,1319].forEach((f,i)=>tone(f,.08+i*.08,.26,'triangle',.08)); };
+  const NEON=['#00f3ff','#ff2bd6','#39ff14','#ffe600','#b14bff','#ff6a00','#2f7bff','#ff1f4b','#00ffa3','#ff9df5'];
+  function shade(hex,p){ const n=parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255; const t=p<0?0:255, a=Math.abs(p); r=Math.round((t-r)*a+r); g=Math.round((t-g)*a+g); b=Math.round((t-b)*a+b); return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1); }
+  /* 네온 구슬: 어두운 속 + 빛나는 테두리 + 캡슐 이음새 + 하이라이트 */
+  function drawBall(ctx,x,y,r,col,ang,glow){ ang=ang||0; glow=glow==null?1:glow; ctx.save(); ctx.translate(x,y); ctx.rotate(ang);
+    ctx.shadowColor=col; ctx.shadowBlur=r*1.1*glow;
+    const g=ctx.createRadialGradient(-r*.3,-r*.35,r*.1,0,0,r); g.addColorStop(0,'#ffffff'); g.addColorStop(.18,col); g.addColorStop(.75,shade(col,-.55)); g.addColorStop(1,shade(col,-.25));
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+    ctx.lineWidth=Math.max(1.5,r*.14); ctx.strokeStyle=col; ctx.beginPath(); ctx.arc(0,0,r-ctx.lineWidth/2,0,Math.PI*2); ctx.stroke();
+    ctx.shadowBlur=r*.5; ctx.lineWidth=Math.max(1,r*.1); ctx.strokeStyle='#ffffffcc'; ctx.beginPath(); ctx.moveTo(-r*.92,0); ctx.bezierCurveTo(-r*.4,r*.22,r*.4,r*.22,r*.92,0); ctx.stroke(); ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-r*.38,-r*.45,r*.26,r*.14,-.6,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+  /* 소리 (외부 파일 없이) */
+  let AC=null; const audio=()=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; };
+  function beep(f,t0,dur,type,vol){ const a=audio(); if(!a) return; const o=a.createOscillator(), g=a.createGain(), t=a.currentTime+t0; o.type=type||'square'; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(vol||.06,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+.02); }
+  const clicks=()=>{ for(let i=0;i<10;i++) beep(900+i*40,i*.12,.04,'square',.04); };
+  const plop=()=>{ beep(320,0,.15,'sine',.15); beep(180,.08,.2,'sine',.12); };
+  const fanfare=()=>[523,659,784,1047].forEach((f,i)=>beep(f,i*.1,.25,'triangle',.08));
   const buzz=p=>{ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} };
   let busy=false;
   function show(done){ const M=mgState(), p=M.pend; if(!p||busy){ done(); return; } busy=true;
-    const G=MGAMES[p.k]||['🎮','게임'], gc=COLS[Math.floor(Math.random()*COLS.length)];
+    const G=MGAMES[p.k]||['🎮','게임'], col=NEON[Math.floor(Math.random()*NEON.length)];
     const el=document.createElement('div'); el.id='gacha'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','게임 뽑기');
-    el.innerHTML='<div class="ghead">게임 뽑기</div><p class="gsub">공부 두 개 완료! 어떤 게임이 나올까요?</p>'
-      +'<div class="gmain"><canvas></canvas><button type="button" class="gcall" id="gcall">손잡이를 돌려줘!</button></div>'
-      +'<div class="greveal" id="grev"><div class="bigcap" id="gbig" style="--gc:'+gc+'"><div class="t"></div><div class="seam"></div><div class="b"></div></div><div class="gtap" id="gtap">캡슐을 톡! 눌러 열어요</div>'
-      +'<div class="gcard" id="gcard"><span class="gtag">🎉 이번 게임</span><div class="gicon">'+G[0]+'</div><div class="gname">'+G[1]+'</div><div class="gsec">'+p.sec+'초 동안 할 수 있어요</div><button type="button" class="gbtn" id="gopen" style="width:100%">게임 열기 ▶</button></div></div>';
+    el.innerHTML='<main class="npanel"><h1>게임 뽑기</h1><p class="nsub">공부 두 개 완료! 어떤 게임이 나올까요?</p>'
+      +'<div class="ndome"><canvas width="528" height="528"></canvas><div class="nshine"></div></div>'
+      +'<div class="nbase"><div class="nrow"><button class="nhandle" type="button" aria-label="손잡이 돌리기"><span class="nring"></span><span class="nlever"><i></i></span></button>'
+      +'<button class="nslot" type="button" aria-label="나온 캡슐 열기" disabled><canvas width="112" height="112"></canvas></button></div><div class="ntip">손잡이를 돌려줘!</div></div></main>'
+      +'<div class="nover" hidden><div class="ncard" style="--c:'+col+'"><div class="nlbl">이번 게임은…</div><div class="nicon">'+G[0]+'</div><div class="ngame">'+G[1]+'</div><div class="nsec">'+p.sec+'초 동안 할 수 있어요</div><button type="button" class="nbtn">게임 열기 ▶</button></div></div>';
     document.body.appendChild(el); document.body.style.overflow='hidden';
-    const cv=el.querySelector('canvas'), g=cv.getContext('2d'), call=el.querySelector('#gcall');
-    let W=300, H=460, DPR=1; const fit=()=>{ const r=cv.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width||300; H=r.height||460; cv.width=W*DPR; cv.height=H*DPR; g.setTransform(DPR,0,0,DPR,0,0); };
-    fit(); addEventListener('resize',fit);
-    /* 기계 크기와 자리: 아래쪽에 말풍선 자리(70px)를 남겨요 */
-    const geo=()=>{ const s=Math.min(W/290,(H-80)/400), R=108*s, cx=W/2, top=Math.max(4,(H-80-400*s)/2), cy=top+R, bodyTop=cy+R+6*s, bodyBot=bodyTop+170*s;
-      return {s,R,cx,cy,bodyTop,bodyBot,kx:cx-50*s,ky:bodyTop+78*s,hx:cx+58*s,hy:bodyTop+78*s}; };
-    let mix=0, caps=[], hAng=0, turning=false, drop=null, state='idle', t=0, run=true;
-    { const q=geo(); for(let i=0;i<22;i++){ const a=Math.random()*6.283, d=Math.random()*(q.R-24*q.s); caps.push({x:q.cx+Math.cos(a)*d,y:q.cy+Math.sin(a)*d,vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3,a:Math.random()*6.283,va:(Math.random()-.5)*.08,c:COLS[i%COLS.length]}); } }
-    const capsule=(x,y,r,c,ang)=>{ g.save(); g.translate(x,y); g.rotate(ang||0); g.beginPath(); g.arc(0,0,r,Math.PI,0); g.fillStyle=c; g.fill(); g.beginPath(); g.arc(0,0,r,0,Math.PI); g.fillStyle='#fbfaff'; g.fill(); g.beginPath(); g.arc(0,0,r-.9,0,6.283); g.lineWidth=Math.max(1.6,r*.12); g.strokeStyle='rgba(60,50,110,.45)'; g.stroke(); g.fillStyle='rgba(43,35,80,.14)'; g.fillRect(-r,-1.2,r*2,2.4); g.beginPath(); g.arc(-r*.35,-r*.42,r*.22,0,6.283); g.fillStyle='rgba(255,255,255,.5)'; g.fill(); g.restore(); };
-    const rr=(x,y,w,h,r)=>{ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); };
-    /* 눈길을 끄는 표시: 퍼지는 고리 + 손가락 */
-    const attention=(x,y,r0,s)=>{ for(let k=0;k<2;k++){ const ph=(t*.9+k*.5)%1; g.beginPath(); g.arc(x,y,r0+ph*26*s,0,6.283); g.strokeStyle='rgba(255,107,139,'+(.55*(1-ph))+')'; g.lineWidth=3*s; g.stroke(); }
-      g.save(); g.font=Math.round(34*s)+'px sans-serif'; g.textAlign='center'; g.textBaseline='top'; g.fillText('👆',x+r0*.55,y+r0*.45+Math.abs(Math.sin(t*4))*8*s); g.restore(); };
-    let lastCall='';
-    const placeCall=(tx,y)=>{ const key=Math.round(tx)+','+Math.round(y)+call.textContent; if(key===lastCall) return; lastCall=key;
-      const w=call.offsetWidth, L=Math.max(0,Math.min(W-w,tx-w/2)); call.style.left=L+'px'; call.style.top=y+'px'; call.style.setProperty('--tx',Math.max(22,Math.min(w-22,tx-L))+'px'); };
-    const frame=()=>{ if(!run) return; t+=1/60; const q=geo(), s=q.s, cr=15.5*s; g.clearRect(0,0,W,H);
-      /* 바닥 그림자 */
-      g.beginPath(); g.ellipse(q.cx,q.bodyBot+6*s,128*s,12*s,0,0,6.283); g.fillStyle='rgba(43,35,80,.08)'; g.fill();
-      /* 몸통: 둥근 네모 하나 + 아래 띠 */
-      rr(q.cx-118*s,q.bodyTop,236*s,170*s,30*s); g.fillStyle='#ff6b8b'; g.fill();
-      g.save(); g.clip(); g.fillStyle='#f25579'; g.fillRect(q.cx-118*s,q.bodyBot-26*s,236*s,26*s); g.restore();
-      /* 구슬 받침 */
-      rr(q.cx-70*s,q.cy+q.R-12*s,140*s,22*s,11*s); g.fillStyle='#f25579'; g.fill();
-      /* 출구 */
-      rr(q.hx-34*s,q.hy-30*s,68*s,60*s,16*s); g.fillStyle='#3a2f5c'; g.fill();
-      /* 유리 구슬 */
-      g.beginPath(); g.arc(q.cx,q.cy,q.R,0,6.283); g.fillStyle='rgba(226,222,250,.55)'; g.fill();
-      /* 섞는 동안에는 캡슐들이 소용돌이처럼 빙글빙글 돌며 위아래로 뒤섞여요 */
-      if(mix>0) caps.forEach((c,i)=>{ const dx=c.x-q.cx, dy=c.y-q.cy, d=Math.hypot(dx,dy)||1, sp=(i%2?1:-1)*(d<q.R*.5?-1:1); c.vx+=(-dy/d)*.9*mix*s*sp+(Math.random()-.5)*1.6*mix*s; c.vy+=(dx/d)*.9*mix*s*sp-.17*s*mix+(Math.random()-.5)*1.6*mix*s; const v=Math.hypot(c.vx,c.vy), mx=10*s; if(v>mx){ c.vx*=mx/v; c.vy*=mx/v; } c.va=(c.va+(Math.random()-.5)*.08)*.98; });
-      caps.forEach(c=>{ c.x+=c.vx; c.y+=c.vy; c.a+=c.va; c.vy+=.15*s; const dx=c.x-q.cx, dy=c.y-q.cy, d=Math.hypot(dx,dy)||1; if(d+cr>q.R){ const o=d+cr-q.R, nx=dx/d, ny=dy/d; c.x-=nx*o; c.y-=ny*o; const dot=c.vx*nx+c.vy*ny; c.vx=(c.vx-2*dot*nx)*.72; c.vy=(c.vy-2*dot*ny)*.72; } });
-      /* 캡슐끼리 부딪히면 서로 밀어내요 (한곳에 겹쳐 쌓이지 않게) */
-      for(let i=0;i<caps.length;i++) for(let j=i+1;j<caps.length;j++){ const A=caps[i], B=caps[j], dx=B.x-A.x, dy=B.y-A.y, d=Math.hypot(dx,dy)||.01, m=2*cr-d; if(m>0){ const nx=dx/d, ny=dy/d; A.x-=nx*m/2; A.y-=ny*m/2; B.x+=nx*m/2; B.y+=ny*m/2; const rv=(B.vx-A.vx)*nx+(B.vy-A.vy)*ny; if(rv<0){ const k=rv*.85; A.vx+=k*nx; A.vy+=k*ny; B.vx-=k*nx; B.vy-=k*ny; } } }
-      caps.forEach(c=>{ const dx=c.x-q.cx, dy=c.y-q.cy, d=Math.hypot(dx,dy)||1; if(d+cr>q.R){ const o=d+cr-q.R; c.x-=dx/d*o; c.y-=dy/d*o; } capsule(c.x,c.y,cr,c.c,c.a); });
-      g.beginPath(); g.arc(q.cx,q.cy,q.R,0,6.283); g.lineWidth=5*s; g.strokeStyle='#fff'; g.stroke(); g.lineWidth=1.2; g.strokeStyle='rgba(43,35,80,.12)'; g.beginPath(); g.arc(q.cx,q.cy,q.R+2.5*s,0,6.283); g.stroke();
-      g.beginPath(); g.arc(q.cx,q.cy,q.R-14*s,-Math.PI*.8,-Math.PI*.55); g.lineWidth=8*s; g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.85)'; g.stroke(); g.lineCap='butt';
-      /* 손잡이: 하얀 동그라미 + 돌아가는 막대 */
-      const kr=34*s;
-      if(state==='idle'){ /* 돌리는 방향 화살표 */ const a0=t*1.6, r=kr+12*s; g.beginPath(); g.arc(q.kx,q.ky,r,a0,a0+Math.PI*1.25); g.lineWidth=3.5*s; g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.95)'; g.stroke(); g.lineCap='butt';
-        const ea=a0+Math.PI*1.25, ex=q.kx+Math.cos(ea)*r, ey=q.ky+Math.sin(ea)*r, tg=ea+Math.PI/2; g.beginPath(); g.moveTo(ex+Math.cos(tg)*9*s,ey+Math.sin(tg)*9*s); g.lineTo(ex+Math.cos(tg+2.4)*8*s,ey+Math.sin(tg+2.4)*8*s); g.lineTo(ex+Math.cos(tg-2.4)*8*s,ey+Math.sin(tg-2.4)*8*s); g.closePath(); g.fillStyle='#fff'; g.fill(); }
-      g.beginPath(); g.arc(q.kx,q.ky,kr,0,6.283); g.fillStyle='#fff'; g.shadowColor='rgba(43,35,80,.25)'; g.shadowBlur=10*s; g.shadowOffsetY=4*s; g.fill(); g.shadowColor='transparent';
-      g.save(); g.translate(q.kx,q.ky); g.rotate(hAng); rr(-25*s,-7*s,50*s,14*s,7*s); g.fillStyle='#ff6b8b'; g.fill(); g.beginPath(); g.arc(0,0,5*s,0,6.283); g.fillStyle='#fff'; g.fill(); g.restore();
-      /* 떨어진 캡슐 (출구 안에서만 보여요) */
-      if(drop){ drop.vy+=.7*s; drop.x+=drop.vx; drop.y+=drop.vy; const fy=q.hy+30*s-19*s; if(drop.y>=fy){ drop.y=fy; drop.vy*=-.35; drop.vx*=.6; if(Math.abs(drop.vy)<1) drop.vy=0; } if(drop.x<q.hx-12*s){ drop.x=q.hx-12*s; drop.vx*=-.5; } if(drop.x>q.hx+12*s){ drop.x=q.hx+12*s; drop.vx*=-.5; }
-        g.save(); rr(q.hx-34*s,q.hy-30*s,68*s,60*s,16*s); g.clip(); capsule(drop.x,drop.y,19*s,gc,0); g.restore(); }
-      /* 지금 눌러야 할 곳을 반짝여요 */
-      if(state==='idle') attention(q.kx,q.ky,kr+6*s,s);
-      const tx=state==='dropped'||state==='reveal'?q.hx:q.kx; placeCall(tx,q.bodyBot+22*s);
-      requestAnimationFrame(frame); };
-    requestAnimationFrame(frame);
-    const finish=()=>{ run=false; removeEventListener('resize',fit); el.remove(); document.body.style.overflow=''; busy=false; p.rev=1; try{ persist(); }catch(e){} done(); };
-    const reveal=()=>{ if(state!=='dropped') return; state='reveal'; const rv=el.querySelector('#grev'); rv.classList.add('on'); const big=el.querySelector('#gbig');
-      const openIt=()=>{ if(big.classList.contains('open')) return; ac(); big.classList.add('open'); el.querySelector('#gtap').style.display='none'; sPop(); buzz(60);
-        setTimeout(()=>{ big.style.display='none'; el.querySelector('#gcard').classList.add('on'); },380); };
-      big.onclick=openIt; el.querySelector('#gtap').onclick=openIt; el.querySelector('#gtap').textContent='두근두근… 어떤 게임일까?'; setTimeout(openIt,1300); el.querySelector('#gopen').onclick=finish; };
-    /* 한 번만 누르면 끝까지 저절로: 손잡이가 두 바퀴 돌며 섞기(2.4초) → 캡슐이 출구로 → 큰 캡슐이 떠올라 저절로 열려요 */
-    const turn=()=>{ if(state!=='idle'||turning) return; ac(); turning=true; state='turning'; call.textContent='빙글빙글 섞는 중… 🌀'; call.classList.add('busy'); sRatchet(); setTimeout(sRatchet,900); setTimeout(sRatchet,1700); buzz([20,40,20,40,20,40,20,40,20]);
-      caps.forEach(c=>{ c.vx=(Math.random()-.5)*10; c.vy=-Math.random()*8-3; });
-      const a0=hAng, t0=performance.now(), D=2400; const an=now=>{ const k=Math.min(1,(now-t0)/D), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; hAng=a0+Math.PI*4*e; mix=Math.sin(Math.PI*Math.min(1,k*1.15)); if(k<1) requestAnimationFrame(an); else { mix=0; turning=false; const q=geo(); drop={x:q.hx,y:q.hy-50*q.s,vx:(Math.random()-.5)*2,vy:2}; state='dropped'; sDrop(); buzz(40);
-          call.textContent='캡슐이 나왔어요! 🎉'; setTimeout(reveal,1000); } }; requestAnimationFrame(an); };
-    call.onclick=()=>{ if(state==='idle') turn(); };
-    cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top, q=geo();
-      if(state==='idle'&&Math.hypot(x-q.kx,y-q.ky)<62*q.s) turn(); });
+    /* 돔 물리 */
+    const cv=el.querySelector('.ndome canvas'), ctx=cv.getContext('2d'), S=cv.width, C=S/2, R=S/2-10, BR=30;
+    let balls=[], stirUntil=0, stirDir=1, run=true;
+    for(let i=0;i<16;i++){ const a=Math.random()*Math.PI*2, d=Math.random()*(R-BR-10); balls.push({x:C+Math.cos(a)*d,y:C+Math.sin(a)*d*.5+R*.3,vx:0,vy:0,c:NEON[i%NEON.length],ang:Math.random()*6,va:0}); }
+    const step=now=>{ const stirring=now<stirUntil;
+      for(const b of balls){ b.vy+=.55;
+        if(stirring){ const dx=b.x-C, dy=b.y-C, d=Math.hypot(dx,dy)||1; b.vx+=(-dy/d)*1.6*stirDir+(Math.random()-.5)*2; b.vy+=(dx/d)*1.6*stirDir-(b.y>C+R*.3?2.6:0); }
+        b.vx*=.992; b.vy*=.992; b.x+=b.vx; b.y+=b.vy; b.ang+=b.vx*.02+b.va; b.va*=.95;
+        const dx=b.x-C, dy=b.y-C, d=Math.hypot(dx,dy), lim=R-BR;
+        if(d>lim){ const nx=dx/d, ny=dy/d; b.x=C+nx*lim; b.y=C+ny*lim; const vn=b.vx*nx+b.vy*ny; if(vn>0){ b.vx-=1.6*vn*nx; b.vy-=1.6*vn*ny; b.vx*=.9; b.va+=(b.vx*ny-b.vy*nx)*.002; } } }
+      for(let k=0;k<3;k++) for(let i=0;i<balls.length;i++) for(let j=i+1;j<balls.length;j++){ const a=balls[i], c=balls[j]; const dx=c.x-a.x, dy=c.y-a.y, d=Math.hypot(dx,dy);
+        if(d<BR*2&&d>0){ const nx=dx/d, ny=dy/d, ov=(BR*2-d)/2; a.x-=nx*ov; a.y-=ny*ov; c.x+=nx*ov; c.y+=ny*ov; const rv=(c.vx-a.vx)*nx+(c.vy-a.vy)*ny; if(rv<0){ const imp=-rv*.85; a.vx-=imp*nx; a.vy-=imp*ny; c.vx+=imp*nx; c.vy+=imp*ny; } } } };
+    const render=()=>{ ctx.clearRect(0,0,S,S); ctx.save(); ctx.beginPath(); ctx.arc(C,C,R+8,0,Math.PI*2); ctx.clip();
+      ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.3; for(const b of balls){ ctx.fillStyle=b.c; ctx.beginPath(); ctx.arc(b.x,b.y,BR*1.5,0,Math.PI*2); ctx.fill(); }
+      ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; for(const b of balls) drawBall(ctx,b.x,b.y,BR,b.c,b.ang); ctx.restore(); };
+    const loop=now=>{ if(!run) return; step(now); render(); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
+    /* 뽑기 */
+    const handle=el.querySelector('.nhandle'), lever=el.querySelector('.nlever'), slot=el.querySelector('.nslot'), slotCv=slot.querySelector('canvas'), tip=el.querySelector('.ntip'), over=el.querySelector('.nover');
+    let rot=0, state='idle';
+    const drawStatic=(canvas,c)=>{ const g=canvas.getContext('2d'), s=canvas.width; g.clearRect(0,0,s,s); drawBall(g,s/2,s/2,s*.3,c,-.3,.55); };
+    handle.onclick=()=>{ if(state!=='idle') return; state='turning'; handle.disabled=true; audio(); clicks(); buzz([20,40,20,40,20,40,20]);
+      rot+=360; lever.style.transition='transform 1.4s cubic-bezier(.34,1.3,.64,1)'; lever.style.transform='rotate('+rot+'deg)';
+      stirDir=Math.random()<.5?1:-1; stirUntil=performance.now()+1300; tip.textContent='드르륵 드르륵…';
+      setTimeout(()=>{ const i=balls.findIndex(b=>b.c===col); if(i>=0) balls.splice(i,1); else balls.pop();
+        drawStatic(slotCv,col); void slotCv.offsetWidth; slotCv.classList.add('drop'); setTimeout(plop,350); buzz(40);
+        slot.disabled=false; slot.classList.add('ready'); tip.textContent='캡슐을 눌러 열어 봐!'; state='dropped'; },1700); };
+    slot.onclick=()=>{ if(state!=='dropped') return; state='open'; slot.disabled=true; slot.classList.remove('ready'); slotCv.classList.remove('drop'); slotCv.style.opacity=0;
+      over.hidden=false; fanfare(); buzz(60); };
+    const finish=()=>{ run=false; el.remove(); document.body.style.overflow=''; busy=false; p.rev=1; try{ persist(); }catch(e){} done(); };
+    el.querySelector('.nbtn').onclick=finish;
   }
   /* 원래 '게임 시간' 창을 띄우기 전에 뽑기부터: 이번에 열린 게임을 아직 뽑지 않았다면 */
   const _mo=mgOffer; mgOffer=function(){ try{ const M=mgState(), p=M.pend; if(p&&!p.rev&&!document.getElementById('mg-modal')&&!document.getElementById('bp-modal')&&!document.getElementById('gacha')){ const self=this, args=arguments; return show(()=>_mo.apply(self,args)); } }catch(e){} return _mo.apply(this,arguments); };
@@ -6091,6 +6086,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   const pick = a => a[Math.floor(Math.random() * a.length)], shf = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
   const others = (ok, pool, n) => shf(pool.filter(x => x !== ok)).slice(0, n);
   const C = (inst, stim, ok, bad, ex) => ({ t: 'c', inst, stim, ch: shf([{ h: ok, ok: 1 }, ...bad.map(h => ({ h }))]), ex });
+  /* 번호 보기(①②③)는 섞지 않고 1번부터 차례대로 */
+  const CN = (inst, stim, ok, all, ex) => ({ t: 'c', inst, stim, ch: all.map(h => (h === ok ? { h, ok: 1 } : { h })), ex });
   /* 건반: 파부터 라까지 흰 건반 10개 (가운데에 도가 하나 있어요) */
   const WK = ['파', '솔', '라', '시', '도', '레', '미', '파', '솔', '라'], HASB = n => ['도', '레', '파', '솔', '라'].includes(n);
   const kb = (mark, labels) => { const w = 28, H = 104; let s = '<svg class="muakb" style="overflow:hidden" viewBox="0 0 ' + (w * WK.length + 2) + ' ' + (H + 4) + '" role="img" aria-label="피아노 건반">';
@@ -6122,8 +6119,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 
   const GEN = {
     K: () => { const i = Math.floor(Math.random() * WK.length), n = WK[i], m = []; m[i] = 1; return C('노랗게 색칠된 건반의 이름은 무엇일까요?', '<div class="muaimg">' + kb(m) + '</div>' + play(FREQ[n] * (i >= 4 ? 1 : .5), '소리 듣기'), n, others(n, NOTE, 2), '검은 건반 두 개 묶음 왼쪽 아래가 도예요. 정답: ' + n); },
-    KD: () => { const di = WK.indexOf('도'), rest = shf([0, 1, 2, 3, 5, 6, 7, 8, 9]).slice(0, 2), set = shf([di, ...rest]), lab = []; set.forEach((ix, k) => { lab[ix] = ['①', '②', '③'][k]; });
-      return C('‘도’ 건반은 몇 번일까요?', '<div class="muaimg">' + kb(null, lab) + '</div>', lab[di] + '번', rest.map(ix => lab[ix] + '번'), '검은 건반 두 개 묶음 바로 왼쪽 아래 흰 건반이 도예요.'); },
+    KD: () => { const di = WK.indexOf('도'), rest = shf([0, 1, 2, 3, 5, 6, 7, 8, 9]).slice(0, 2), set = [di, ...rest].sort((a, b) => a - b), lab = []; set.forEach((ix, k) => { lab[ix] = ['①', '②', '③'][k]; });
+      return CN('‘도’ 건반은 몇 번일까요?', '<div class="muaimg">' + kb(null, lab) + '</div>', lab[di] + '번', ['①번', '②번', '③번'], '검은 건반 두 개 묶음 바로 왼쪽 아래 흰 건반이 도예요. 정답: ' + lab[di] + '번'); },
     FN: () => { const n = 1 + Math.floor(Math.random() * 5), di = WK.indexOf('도'), lab = []; for (let k = 0; k < 5; k++) lab[di + k] = String(k + 1);
       return C('오른손 엄지(1번)를 도에 올렸어요. ' + n + '번 손가락이 치는 음은 무엇일까요?', '<div class="muaimg">' + kb(null, lab) + '</div>', NOTE[n - 1], others(NOTE[n - 1], NOTE.slice(0, 6), 2), '도 자리: 1번 도, 2번 레, 3번 미, 4번 파, 5번 솔'); },
     ST: () => { const n = pick(['도', '레', '미', '파', '솔', '라']); return C('오선 위 음표의 계이름은 무엇일까요?', '<div class="muaimg">' + staff(n) + '</div>' + play(FREQ[n], '소리 듣기'), n, others(n, NOTE.slice(0, 6), 2), n === '도' ? '가운데 도는 오선 아래 짧은 덧줄 위에 있어요.' : '도(덧줄)부터 한 칸, 한 줄씩 올라가며 세어 봐요. 정답: ' + n); },
@@ -6133,7 +6130,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     RH: () => { const arr = pick([[4, 4], [4, 2], [2, 4], [4, 4, 4], [2, 2], [4, 4, 2], [1]]), tot = arr.reduce((s, k) => s + NOTEV[k][1], 0), ok = tot + '박';
       return C('음표의 박을 모두 더하면 몇 박일까요?', '<div class="muaimg">' + notes(arr) + '</div>', ok, others(ok, ['1박', '2박', '3박', '4박', '5박'], 2), arr.map(k => NOTEV[k][1]).join(' + ') + ' = ' + tot + '박'); },
     HL: () => { const a = pick(NOTE), b = pick(NOTE.filter(x => Math.abs(STEP[x] - STEP[a]) >= 2)), hi = STEP[a] > STEP[b] ? '①번' : '②번';
-      return C('두 소리를 들어 보고, 더 높은 소리를 골라요.', '<div class="muaplays">' + play(FREQ[a], '①번 소리') + play(FREQ[b], '②번 소리') + '</div>', hi, [hi === '①번' ? '②번' : '①번'], '①번은 ' + a + ', ②번은 ' + b + '예요. 건반 오른쪽에 있을수록 높은 소리예요.'); },
+      return CN('두 소리를 들어 보고, 더 높은 소리를 골라요.', '<div class="muaplays">' + play(FREQ[a], '①번 소리') + play(FREQ[b], '②번 소리') + '</div>', hi, ['①번', '②번'], '①번은 ' + a + ', ②번은 ' + b + '예요. 건반 오른쪽에 있을수록 높은 소리예요.'); },
     FP: () => { const k = pick(['f', 'p']); return C('이 악보 기호는 어떻게 치라는 뜻일까요?', '<div class="muasym">' + k + '</div>', k === 'f' ? '세게' : '여리게', [k === 'f' ? '여리게' : '세게', '빠르게'], k === 'f' ? 'f(포르테)는 세게' : 'p(피아노)는 여리게'); },
     IN: () => { const x = pick(INS); return C(jo(x[1], '은', '는') + ' 어떤 악기일까요?', '<div class="muaemoji">' + x[0] + '</div>', x[2], others(x[2], CAT, 2), x[1] + ': ' + x[2]); },
     PR: () => { const yes = Math.random() < .5, c = yes ? pick(['빨강', '노랑', '파랑']) : pick(['초록', '주황', '보라']);
@@ -6509,13 +6506,20 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   function decorateHome() {
     const g = $app.querySelector('.todaygrid'); if (!g || g.dataset.flow) return; g.dataset.flow = 1;
     /* 다시 풀기 칸 */
-    try { const R = window.__rv; let n = 0, lab = '', go = '';
+    /* 서이: 복습 상자의 낱말 복습·수 세기 복습도 오늘의 학습 칸으로 (놓치지 않게) */
+    if (SEOI) try { const R = window.__rv, rv = R.RV(), n0 = new Date(), td = Math.floor(Date.UTC(n0.getFullYear(), n0.getMonth(), n0.getDate()) / 864e5), L = R.sync().length, D = R.due().length;
+      const card = (go, ic, name, tw, tl, did, col) => '<button class="todaycard rvcard' + (did ? ' did' : '') + '" style="--u:' + col + '" data-go="' + go + '"><span class="tmark">' + ic + '</span><span class="tt"><b>' + name + '</b><span class="tw">' + tw + '</span><span class="tl">' + tl + '</span></span>' + (did ? '<span class="tdone" role="img" aria-label="오늘 완료">완료</span>' : '<span class="tgo" aria-hidden="true">▶</span>') + '</button>';
+      let h = '';
+      if (L) { const did = rv.dn.word === td || !D; h += card('rv:word', '🗣️', '낱말 복습', did ? '오늘 몫을 끝냈어요' : '배운 낱말 ' + Math.min(6, D) + '개를 다시 만나요', did ? '한 번 더 해도 좋아요' : '잊기 전에 한 번 더!', did, '#E0457B'); }
+      { const did = rv.dn.num === td; h += card('rv:num', '🔢', '수 세기 복습', did ? '오늘 몫을 끝냈어요' : '수 세기·더하기·빼기 5문제', did ? '한 번 더 해도 좋아요' : '날마다 5문제', did, '#2FA36B'); }
+      g.insertAdjacentHTML('afterbegin', h); } catch (e) {}
+    else try { const R = window.__rv; let n = 0, lab = '', go = '';
       if (R && R.wrongDue) { n = R.wrongDue().length; lab = '틀린 문제 다시 풀기'; go = 'tdrv:wrong'; }
       else if (R && R.due) { n = R.due().length; lab = '낱말 복습'; go = 'tdrv:word'; }
       if (n > 0) g.insertAdjacentHTML('afterbegin', '<button class="todaycard rvtoday" style="--u:#D9534F" data-go="' + go + '"><span class="tmark">🔁</span><span class="tt"><b>' + lab + '</b><span class="tw">전에 ' + (SEOI ? '배운 낱말' : '틀린 문제') + ' ' + Math.min(n, SEOI ? 6 : 10) + '개를 다시 만나요</span><span class="tl">잊기 전에 한 번 더! <span class="tmin">약 ' + (SEOI ? 3 : 5) + '분</span></span></span><span class="tgo" aria-hidden="true">▶</span></button>'); } catch (e) {}
     /* 걸리는 시간 */
     let left = 0; const list = [];
-    g.querySelectorAll('.todaycard').forEach(c => { if (c.classList.contains('resume') || c.classList.contains('rvtoday')) return; const n = nameOf(c); if (!n) return; const m = minOf(n), did = c.classList.contains('did') || c.classList.contains('done');
+    g.querySelectorAll('.todaycard').forEach(c => { if (c.classList.contains('resume') || c.classList.contains('rvtoday')) return; if (c.classList.contains('rvcard')) { const did = c.classList.contains('did'), m = SEOI ? 3 : 5; const tl = c.querySelector('.tl'); if (tl && !c.querySelector('.tmin')) tl.insertAdjacentHTML('beforeend', ' <span class="tmin">⏱ 약 ' + m + '분</span>'); if (!did) left += m; list.push({ go: c.dataset.go, name: nameOf(c), did }); return; } const n = nameOf(c); if (!n) return; const m = minOf(n), did = c.classList.contains('did') || c.classList.contains('done');
       const tl = c.querySelector('.tl') || c.querySelector('.tt'); if (tl && !c.querySelector('.tmin')) tl.insertAdjacentHTML('beforeend', ' <span class="tmin">⏱ 약 ' + m + '분</span>');
       if (!did) left += m; if (c.dataset.go && /^today:|^dad|^top/.test(c.dataset.go)) list.push({ go: c.dataset.go, name: n, did }); });
     const h = $app.querySelector('.todaybox h2'); if (h && !$app.querySelector('.tleft')) h.insertAdjacentHTML('afterend', '<span class="tleft">' + (left ? '남은 학습을 다 하면 ⏱ 약 ' + fmtMin(left) : '오늘의 학습을 모두 끝냈어요! 🎉') + '</span>');
@@ -6524,7 +6528,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   { const _st = start; start = function () { const r = _st.apply(this, arguments); try { if (!CURSUBJ) decorateHome(); } catch (e) {} return r; }; }
 
   /* 오늘의 학습에서 고른 과목 기억 */
-  document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-go]'); if (!t) return; const go = t.dataset.go || ''; if (/^today:|^dad|^top/.test(go)) ss.set('tdcur', go); }, true);
+  document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-go]'); if (!t) return; const go = t.dataset.go || ''; if (/^today:|^dad|^top|^rv:(word|num)$/.test(go)) ss.set('tdcur', go); }, true);
 
   /* 결과 화면: 다음 과목 단추 */
   const decorateResult = () => { try { const P = $app.querySelector('.panel.result'); if (!P || P.dataset.flow) return; const cur = ss.get('tdcur'), q = ss.get('tdq'); if (!cur || !q) return; P.dataset.flow = 1;
@@ -6921,5 +6925,111 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 })();
 </script>
 <!-- ===== 보물 상자 끝 ===== -->
+<!-- ===== 시계 보기 시작 ===== -->
+<script>
+/* ===== 서이: ⏰ 시계 보기 =====
+   날마다 8문제. 지금 단계 문제 6개 + 앞 단계 복습 2개. 처음에 6개 넘게 맞히면 다음 단계가 열려요.
+   1단계 몇 시 · 2단계 몇 시 30분 · 3단계 시계 그림 고르기 · 4단계 몇 시 몇 분(5분씩) · 5단계 바늘 맞추기 · 6단계 몇 시간 뒤 */
+(function () {
+  if (!(typeof KID !== 'undefined' && /서이/.test(KID.name || ''))) return;
+  const LV = [['몇 시', '긴바늘이 12를 가리킬 때'], ['몇 시 30분', '긴바늘이 6을 가리킬 때'], ['시계 그림 고르기', '시각에 맞는 시계 찾기'], ['몇 시 몇 분', '긴바늘 숫자 × 5분'], ['바늘 맞추기', '내가 직접 시계 바늘 돌리기'], ['시간이 흐르면', '1시간 뒤, 30분 뒤는 몇 시?']];
+  const C = () => (STATE.clk = STATE.clk || { lv: 1, best: {} });
+  const dk = () => { const n = new Date(); return n.getFullYear() + '-' + (n.getMonth() + 1) + '-' + n.getDate(); };
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const mix = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const H = h => ((h - 1 + 12) % 12) + 1;
+  const T = (h, m) => H(h) + '시' + (m ? ' ' + m + '분' : '');
+  /* 받침에 맞는 조사: 3시를, 30분을, 3시로, 30분으로, 12를, 6을 */
+  const bat = s => { s = String(s); if (/분$/.test(s)) return true; if (/시$/.test(s)) return false; const n = +s.replace(/\D/g, '').slice(-2); if (n === 10) return true; return [1, 3, 6, 7, 8, 0].indexOf(n % 10) >= 0; };
+  const eul = s => s + (bat(s) ? '을' : '를'), ro = s => s + (bat(s) ? '으로' : '로'), yo = s => s + (bat(s) ? '이에요' : '예요');
+  /* 시계 그림: 짧은바늘(빨강) = 시, 긴바늘(파랑) = 분 */
+  function face(h, m, sz) { const ha = ((h % 12) + m / 60) * 30, ma = m * 6, P = (a, r) => [100 + r * Math.sin(a * Math.PI / 180), 100 - r * Math.cos(a * Math.PI / 180)];
+    let s = '<svg class="ckf" viewBox="0 0 200 200" width="' + sz + '" height="' + sz + '" role="img" aria-label="시계"><circle cx="100" cy="100" r="94" fill="#FFFDF5" stroke="#2B2520" stroke-width="5"/>';
+    for (let k = 0; k < 60; k++) { const a = P(k * 6, 88), b = P(k * 6, k % 5 ? 84 : 78); s += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" stroke="#2B2520" stroke-width="' + (k % 5 ? 1.2 : 3) + '"/>'; }
+    for (let k = 1; k <= 12; k++) { const p = P(k * 30, 64); s += '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 8).toFixed(1) + '" text-anchor="middle" font-size="23" font-weight="900" fill="#2B2520" font-family="Jua,sans-serif">' + k + '</text>'; }
+    const hp = P(ha, 46), mp = P(ma, 74);
+    s += '<line x1="100" y1="100" x2="' + hp[0].toFixed(1) + '" y2="' + hp[1].toFixed(1) + '" stroke="#D9482B" stroke-width="9" stroke-linecap="round"/><line x1="100" y1="100" x2="' + mp[0].toFixed(1) + '" y2="' + mp[1].toFixed(1) + '" stroke="#2F6FD6" stroke-width="5.5" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="#2B2520"/></svg>';
+    return s; }
+  const big = (h, m) => '<div class="ckbig">' + face(h, m, 210) + '</div><p class="cklegend"><i class="r"></i>짧은바늘 = 시 &nbsp; <i class="b"></i>긴바늘 = 분</p>';
+  const opts3 = (ok, bads) => { const seen = new Set([ok]), o = [ok]; bads.forEach(b => { if (o.length < 3 && !seen.has(b)) { seen.add(b); o.push(b); } }); return mix(o).map(t => ({ t, ok: t === ok })); };
+  /* 단계별 문제 */
+  const GEN = {
+    1: () => { const h = rnd(1, 12); return { q: '시계가 가리키는 시각은 몇 시일까요?', stim: big(h, 0), opts: opts3(T(h, 0), [T(h + 1, 0), T(h - 1, 0), T(h + 6, 0)]), ex: '짧은바늘이 ' + h + ', 긴바늘이 12를 가리키면 ' + yo(T(h, 0)) + '.' }; },
+    2: () => { const h = rnd(1, 12); return { q: '시계가 가리키는 시각은 언제일까요?', stim: big(h, 30), opts: opts3(T(h, 30), [T(h + 1, 30), T(h, 0), T(h - 1, 30)]), ex: '짧은바늘이 ' + h + (bat(String(h)) ? '과 ' : '와 ') + H(h + 1) + ' 사이 한가운데, 긴바늘이 6을 가리키면 ' + yo(T(h, 30)) + '.' }; },
+    3: () => { const h = rnd(1, 12), m = Math.random() < .5 ? 0 : 30, ok = [h, m], bad = mix([[h + 1, m], [h, m ? 0 : 30], [h - 1, m], [h + 6, m]]).slice(0, 2);
+      return { q: eul(T(h, m)) + ' 나타내는 시계를 골라요.', speak: eul(T(h, m)) + ' 나타내는 시계를 골라요.', pic: 1, stim: '', opts: mix([ok, ...bad]).map(x => ({ t: face(H(x[0]), x[1], 92), ok: x === ok })), ex: T(h, m) + ': 짧은바늘은 ' + (m ? h + ', ' + H(h + 1) + ' 사이' : h) + ', 긴바늘은 ' + (m ? '6을' : '12를') + ' 가리켜요.' }; },
+    4: () => { const h = rnd(1, 12), k = rnd(1, 11), m = k * 5; return { q: '시계가 가리키는 시각은 언제일까요?', stim: big(h, m) + '<p class="cktip">긴바늘이 가리키는 숫자 × 5 = 몇 분</p>', opts: opts3(T(h, m), [T(h, k), T(h + 1, m), T(h, m + 5 > 55 ? m - 5 : m + 5)]), ex: '긴바늘이 ' + eul(String(k)) + ' 가리키면 ' + k + ' × 5 = ' + m + '분, 그래서 ' + yo(T(h, m)) + '.' }; },
+    5: () => { const h = rnd(1, 12), m = [0, 30, rnd(1, 11) * 5][rnd(0, 2)]; return { set: [h, m], q: '시계 바늘을 돌려서 ' + ro(T(h, m)) + ' 맞춰요.', speak: '시계 바늘을 돌려서 ' + ro(T(h, m)) + ' 맞춰요.', ex: T(h, m) + ': 짧은바늘은 ' + h + (m ? ' 근처' : '') + ', 긴바늘은 ' + eul(String(m ? m / 5 : 12)) + ' 가리켜요.' }; },
+    6: () => { const h = rnd(1, 11), half = Math.random() < .4, add = half ? 30 : rnd(1, 3), m0 = half ? 0 : (Math.random() < .5 ? 0 : 30);
+      const tm = half ? 30 : m0, th = half ? h : h + add, ok = T(th, tm), q = '지금은 ' + yo(T(h, m0)) + '. ' + (half ? '30분' : add + '시간') + ' 뒤는 몇 시일까요?';
+      return { q, stim: big(h, m0), opts: opts3(ok, [T(th + 1, tm), T(th - 1, tm), T(h, m0), T(th, tm === 30 ? 0 : 30)]), ex: T(h, m0) + '에서 ' + (half ? '30분' : add + '시간') + ' 뒤는 ' + yo(ok) + '.' }; }
+  };
+  /* 문제 풀기 화면 */
+  let AC = null; const tone = ok => { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t = AC.currentTime; (ok ? [660, 880, 1175] : [300, 200]).forEach((f, i) => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f; g.gain.setValueAtTime(.12, t + i * .1); g.gain.exponentialRampToValueAtTime(.001, t + i * .1 + .25); o.connect(g); g.connect(AC.destination); o.start(t + i * .1); o.stop(t + i * .1 + .3); }); } catch (e) {} };
+  const talk = t => { try { say(t); } catch (e) {} };
+  function play(lv) { const S = C(), list = []; for (let k = 0; k < 6; k++) list.push(GEN[lv]()); for (let k = 0; k < 2; k++) list.push(GEN[lv > 1 ? rnd(1, lv - 1) : lv]()); const qs = mix(list.slice(0, 6)).concat(list.slice(6)); let i = 0, right = 0;
+    const paint = () => { const q = qs[i]; VIEW = 'clock';
+      let h = '<button class="back" data-go="clock">← 시계 보기</button><div class="meter">' + (i + 1) + ' / ' + qs.length + '</div><div class="bar"><i style="width:' + (i / qs.length * 100) + '%"></i></div><section class="panel rvs ckp">'
+        + '<p class="rvs-q">' + q.q + ' <button class="rvs-say" type="button" id="cksay" aria-label="다시 듣기">🔊</button></p>' + (q.stim || '');
+      if (q.set) h += '<div class="ckbig" id="ckset">' + face(12, 0, 210) + '</div><div class="ckctl"><div><span><i class="r"></i>짧은바늘</span><button type="button" class="btn" data-d="h-">◀</button><button type="button" class="btn" data-d="h+">▶</button></div><div><span><i class="b"></i>긴바늘</span><button type="button" class="btn" data-d="m-">◀</button><button type="button" class="btn" data-d="m+">▶</button></div></div><div class="row center"><button type="button" class="btn main" id="ckchk">다 맞췄어요</button></div>';
+      else h += '<div class="rvs-opts' + (q.pic ? ' ckpics' : '') + '">' + q.opts.map((o, j) => '<button class="rvs-opt" type="button" data-j="' + j + '">' + o.t + '</button>').join('') + '</div>';
+      h += '<div id="rvsfb"></div></section>';
+      show(h, '#3E7F6F'); talk(q.speak || q.q.replace(/<[^>]+>/g, '')); document.getElementById('cksay').onclick = () => talk(q.speak || q.q);
+      let tries = 0;
+      const good = () => { if (tries === 0) right++; tone(true); talk(q.ex); document.getElementById('rvsfb').innerHTML = '<div class="rvs-fbok"><b>' + (tries ? '맞았어요!' : '딩동댕! 🎉') + '</b><p>' + q.ex + '</p></div><div class="row center"><button class="btn main" id="cknx">' + (i < qs.length - 1 ? '다음 ▶' : '끝내기') + '</button></div>'; document.getElementById('cknx').onclick = () => { i++; i < qs.length ? paint() : end(); }; };
+      const bad = () => { tries++; tone(false); document.getElementById('rvsfb').innerHTML = '<p class="rvs-fbno">다시 한 번 봐요! 짧은바늘은 시, 긴바늘은 분이에요.</p>'; };
+      if (q.set) { let sh = 12, sm = 0; const box = document.getElementById('ckset'), draw = () => { box.innerHTML = face(sh, sm, 210); };
+        $app.querySelectorAll('.ckctl .btn').forEach(b => b.onclick = () => { const d = b.dataset.d; if (d === 'h+') sh = H(sh + 1); if (d === 'h-') sh = H(sh - 1); if (d === 'm+') sm = (sm + 5) % 60; if (d === 'm-') sm = (sm + 55) % 60; draw(); });
+        document.getElementById('ckchk').onclick = () => { if (sh === H(q.set[0]) && sm === q.set[1]) { $app.querySelectorAll('.ckctl .btn,#ckchk').forEach(x => x.disabled = true); good(); } else bad(); }; }
+      else $app.querySelectorAll('.rvs-opt').forEach(b => b.onclick = () => { const o = q.opts[+b.dataset.j]; if (!o.ok) { b.disabled = true; b.classList.add('no'); bad(); return; } b.classList.add('ok'); $app.querySelectorAll('.rvs-opt').forEach(x => x.disabled = true); good(); }); };
+    const end = () => { const S = C(), pass = right >= 6, first = S.day !== dk(); S.day = dk(); S.best[lv] = Math.max(S.best[lv] || 0, right); let up = false; if (pass && lv === S.lv && S.lv < LV.length) { S.lv++; up = true; }
+      try { if (first) { const k = dkey(new Date()); STATE.days[k] = (STATE.days[k] || 0) + 1; grantGame(); } } catch (e) {} try { persist(); } catch (e) {}
+      show('<section class="panel result rvs"><div class="big">⏰</div><h2>시계 보기 ' + lv + '단계 끝!</h2><p>' + qs.length + '문제 중 <b>' + right + '문제</b>를 한 번에 맞혔어요.</p>' + (up ? '<p class="ckup">🎉 ' + (lv + 1) + '단계 「' + LV[lv][0] + '」가 열렸어요!</p>' : pass ? '' : '<p class="rvs-note">6문제 넘게 한 번에 맞히면 다음 단계가 열려요. 내일 또 해 봐요!</p>') + '<div class="row center"><button class="btn main" data-go="clock">단계 보기</button><button class="btn" data-go="start">처음 화면</button></div></section>', '#3E7F6F'); talk(KID.name + ', 잘했어요!'); };
+    paint(); }
+  function view() { VIEW = 'clock'; const S = C();
+    show('<button class="back" data-go="start">← 처음 화면</button><section class="panel"><h2>⏰ 시계 보기</h2><p class="lead">짧은바늘은 <b style="color:#D9482B">시</b>, 긴바늘은 <b style="color:#2F6FD6">분</b>을 알려 줘요. 한 단계씩 올라가요!</p><div class="ckhero">' + face(3, 30, 120) + '</div><div class="cklv">'
+      + LV.map((x, k) => { const n = k + 1, open = n <= S.lv, b = S.best[n] || 0; return '<button class="cklvb' + (open ? '' : ' lock') + (n === S.lv ? ' cur' : '') + '" type="button" ' + (open ? 'data-go="clock:' + n + '"' : 'disabled') + '><span class="n">' + (open ? n : '🔒') + '</span><span><b>' + n + '단계 ' + x[0] + '</b><small>' + x[1] + (b ? ' · 최고 ' + b + '/8' + (b >= 6 ? ' ⭐' : '') : '') + '</small></span></button>'; }).join('') + '</div></section>', '#3E7F6F'); }
+  const css = document.createElement('style');
+  css.textContent = '.ckbig{display:flex;justify-content:center;margin:6px 0}.ckbig svg{max-width:62vw;height:auto}.cklegend{text-align:center;font-size:.85rem;color:#5b6378;margin:0 0 6px}.cklegend i,.ckctl i{display:inline-block;width:16px;height:5px;border-radius:3px;vertical-align:middle;margin-right:4px}i.r{background:#D9482B}i.b{background:#2F6FD6}'
+    + '.cktip{text-align:center;font-weight:800;color:#2F6FD6;margin:0 0 4px}.ckpics{grid-template-columns:repeat(3,1fr)}.ckpics .rvs-opt{padding:8px 4px;display:flex;justify-content:center}.ckpics .rvs-opt svg{width:100%;max-width:110px;height:auto}'
+    + '.ckctl{display:grid;gap:8px;margin:8px auto 12px;max-width:320px}.ckctl>div{display:flex;align-items:center;gap:8px;justify-content:center}.ckctl span{min-width:92px;font-weight:800}.ckctl .btn{min-width:64px;font-size:1.3rem}'
+    + '.ckhero{display:flex;justify-content:center;margin:4px 0 10px}.cklv{display:grid;gap:8px}.cklvb{display:flex;align-items:center;gap:12px;text-align:left;font:inherit;color:inherit;background:#fff;border:2px solid #E3E7EF;border-radius:16px;padding:12px}.cklvb .n{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#3E7F6F;color:#fff;font-weight:900;font-size:1.2rem;flex:none}.cklvb b{display:block;font-size:1.08rem}.cklvb small{opacity:.7}.cklvb.cur{border-color:#3E7F6F;box-shadow:0 3px 0 #3E7F6F}.cklvb.lock{opacity:.55}.cklvb.lock .n{background:#B8BFCC}.ckup{font-weight:800;color:#2E8B57;font-size:1.1rem}';
+  document.head.appendChild(css);
+  /* 오늘의 학습에 ‘시계 보기’ 칸 */
+  { const _st = start; start = function () { const r = _st.apply(this, arguments);
+      try { if (!CURSUBJ) { const g = $app.querySelector('.todaygrid'); if (g && !g.querySelector('.cktoday')) { const S = C(), did = S.day === dk();
+        g.insertAdjacentHTML('beforeend', '<button class="todaycard cktoday' + (did ? ' did' : '') + '" style="--u:#3E7F6F" data-go="clock:' + S.lv + '"><span class="tmark">⏰</span><span class="tt"><b>시계 보기</b><span class="tw">' + S.lv + '단계 · ' + LV[S.lv - 1][0] + '</span><span class="tl">' + (did ? '오늘 연습 끝! 한 번 더 해도 좋아요' : '시계를 보고 8문제') + ' <span class="tmin">⏱ 약 4분</span></span></span>' + (did ? '<span class="tdone" role="img" aria-label="오늘 완료">완료</span>' : '<span class="tgo" aria-hidden="true">▶</span>') + '</button>'); } } } catch (e) {}
+      return r; }; }
+  { const _ri = routeInner; routeInner = function (v, a, b) { if (v === 'clock') { VIEW = 'clock'; const n = +a; return n >= 1 && n <= C().lv ? play(n) : view(); } return _ri.apply(this, arguments); }; }
+  window.__clock = { view, play, face, GEN };
+  /* 새로 고침하면 시계 보기 단계 화면으로 */
+  try { const o = JSON.parse(sessionStorage.getItem('seoi-hanja-view') || 'null'); if (o && o.v === 'clock') { routeInner('clock'); } } catch (e) {}
+  try { if (typeof VIEW !== 'undefined' && VIEW === 'start') start(CURSUBJ); } catch (e) {}
+})();
+</script>
+<!-- ===== 시계 보기 끝 ===== -->
+<!-- ===== 문제 화면 다듬기 시작 ===== -->
+<script>
+/* ===== 문제 화면 다듬기 (두 공부방) =====
+   1) 낱말을 순서대로 눌러 문장 만들기: 낱말을 다 올리면 빈 글자 상자 자리를 없애고, 올린 낱말이 낱말 조각이 아니라 한 문장처럼 보여요
+   2) 영어 동화 이야기 퀴즈: 책 제목을 문제 아래가 아니라 맨 위 가운데(몇 번째 문제 숫자 위)에 한 번만 보여 줘요 */
+(function () {
+  const css = document.createElement('style');
+  css.textContent = '#bank.oempty{display:none}#slots.ofull{display:flex;flex-wrap:wrap;justify-content:center;gap:0 .32em;padding:14px 8px;min-height:0;border:0;background:none}'
+    + '#slots.ofull .tile{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0!important;min-width:0!important;min-height:0!important;font-size:1.65rem;font-weight:800;line-height:1.5;color:var(--ink,#2B2520)}'
+    + '.stqt{text-align:center;margin:2px 0 4px;font-weight:800;font-size:1.05rem;color:#5b6378}.stqt .cv{margin-right:4px}';
+  document.head.appendChild(css);
+  function deco() {
+    /* 1) 문장 만들기 */
+    const bank = document.getElementById('bank'), slots = document.getElementById('slots');
+    if (bank && slots) { const full = !bank.querySelector('.tile:not(.used)') && !!slots.querySelector('.tile'); bank.classList.toggle('oempty', full); slots.classList.toggle('ofull', full); }
+    /* 2) 동화 퀴즈 제목 */
+    try { if (typeof VIEW !== 'undefined' && VIEW === 'quiz' && typeof Q !== 'undefined' && Q && Q.u && Q.u.kind === 'st' && Q.u.t) {
+      const m = $app.querySelector('.meter'); if (m && !$app.querySelector('.stqt')) m.insertAdjacentHTML('beforebegin', '<div class="stqt"><span class="cv">' + (Q.u.cv || '📖') + '</span><span class="en">' + esc(Q.u.t) + '</span></div>'); } } catch (e) {}
+  }
+  new MutationObserver(deco).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+})();
+</script>
+<!-- ===== 문제 화면 다듬기 끝 ===== -->
 </body>
 </html>
