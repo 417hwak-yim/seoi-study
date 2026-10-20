@@ -7087,7 +7087,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     const b = mr.querySelector('.trbat'); b.onclick = () => { if (b.dataset.go2) return; b.dataset.go2 = 1; b.insertAdjacentHTML('beforeend', flyers2(FLY[bg] || FLY.hw, 9, 1)); b.classList.add('pop');
       setTimeout(() => { try { typeof route === 'function' ? route('trbox') : routeInner('trbox'); } catch (e) { routeInner('trbox'); } }, 420); }; }
   /* 박쥐·복습·기분이 한 줄에 들어가도록: 칸이 모자라면 기분 단추가 조금씩 작아져요 (박쥐가 밖으로 나가지 않게) */
-  css.textContent += '.moodrow:has(.trbat){min-width:0;overflow:visible}.moodrow:has(.trbat)>.moodbar{flex:0 1 auto;min-width:0}.moodrow:has(.trbat)>.moodbar>button{flex:0 1 38px;min-width:24px;width:auto!important;max-width:38px;overflow:hidden}'
+  css.textContent += '.moodrow:has(.trbat){min-width:0;overflow:visible}.moodrow:has(.trbat)>.moodbar{flex:0 1 auto;min-width:0}.moodrow:has(.trbat)>.moodbar>button{flex:0 0 auto;width:clamp(28px,8.8vw,36px)!important;height:clamp(28px,8.8vw,36px)!important;padding:0!important;border-radius:50%!important;display:grid;place-items:center;font-size:1.18rem;line-height:1;overflow:visible}.moodrow:has(.trbat)>.moodbar>button.on{transform:scale(1.08)}'
     + '.trrv{position:relative;flex:none;margin:0 8px 0 0;padding:7px 10px;border:2px solid #E0457B;border-radius:12px;background:#FFF0F5;box-shadow:0 3px 0 #E0457B;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.trrv:active{transform:translateY(2px);box-shadow:none}'
     + '.trrv .ic{display:block;font-family:Jua,"Gowun Dodum",sans-serif;font-size:1.08rem;line-height:1;letter-spacing:.04em;color:#C2185B}'
     + '.trrv.done{border-color:#2E8B57;background:#2FA36B;box-shadow:0 3px 0 #1F7A47}.trrv.done .ic{color:#fff}'
