@@ -7287,5 +7287,66 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 })();
 </script>
 <!-- ===== 첫 화면 배치 끝 ===== -->
+<!-- ===== 영어 목소리 고르기 시작 ===== -->
+<script>
+/* ===== 🔊 영어 목소리 고르기 (두 공부방) =====
+   폰에 있는 영어 목소리를 하나씩 들어 보고 골라 두면, 영어를 읽는 모든 곳(낱말·문장·동화·복습)이 그 목소리와 빠르기로 읽어요.
+   고른 것은 그 기기에만 저장돼요. 고른 목소리가 사라지면 예전처럼 저절로 골라요. */
+(function () {
+  if (!('speechSynthesis' in window)) return;
+  const K_V = 'en-voice', K_R = 'en-rate';
+  const RATES = [['느리게', .85], ['보통', 1], ['조금 빠르게', 1.15]];
+  const get = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
+  const put = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} };
+  const voices = () => { try { return speechSynthesis.getVoices() || []; } catch (e) { return []; } };
+  const enVoices = () => voices().filter(v => /^en/i.test(String(v.lang || '').replace('_', '-')));
+  const chosen = () => { const id = get(K_V); return id ? enVoices().find(v => v.voiceURI === id || v.name === id) || null : null; };
+  const mult = () => { const r = +get(K_R); return r > 0 ? r : 1; };
+  /* 원래 목소리 고르는 곳에도 알려 줘요 */
+  try { const _pv = pickVoice; pickVoice = function (lang) { if (/^en/i.test(lang || '')) { const v = chosen(); if (v) return v; } return _pv.apply(this, arguments); }; } catch (e) {}
+  /* 영어로 말하는 모든 소리에 고른 목소리·빠르기를 써요 */
+  const _speak = speechSynthesis.speak.bind(speechSynthesis);
+  speechSynthesis.speak = function (u) {
+    try { if (u && /^en/i.test(String(u.lang || (u.voice && u.voice.lang) || ''))) { const v = chosen(); if (v) { u.voice = v; u.lang = v.lang; } if (!u._tv) u.rate = Math.max(.4, Math.min(1.6, (u.rate || 1) * mult())); } } catch (e) {}
+    return _speak(u);
+  };
+  const SAMPLE = 'Hello! I have a red ball. Cat, dog, apple.';
+  function test(v, r) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(SAMPLE); u.lang = v ? v.lang : 'en-US'; if (v) u.voice = v; u.rate = .82 * (r || mult()); u._tv = 1; setTimeout(() => _speak(u), 80); } catch (e) {} }
+  const css = document.createElement('style');
+  css.textContent = '.vcrow{display:flex;justify-content:center;margin:12px 0}.vcbtn{font:inherit;font-weight:800;font-size:1rem;padding:10px 18px;border-radius:999px;border:2px solid #3D7BF2;background:#F3F7FF;color:#1F4FB5;cursor:pointer}'
+    + '#vcpick{position:fixed;inset:0;z-index:9400;background:rgba(20,20,40,.55);display:flex;align-items:flex-end;justify-content:center}#vcpick .vin{background:#fff;color:#2B2520;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}'
+    + '#vcpick h3{margin:0 0 4px;font-size:1.2rem}#vcpick p{margin:4px 0 10px;color:#5b6378;font-size:.9rem;line-height:1.5}'
+    + '#vcpick .vrates{display:flex;gap:6px;margin:6px 0 12px}#vcpick .vrates button{flex:1;font:inherit;font-weight:700;padding:9px 4px;border-radius:12px;border:2px solid #E3E7EF;background:#fff}#vcpick .vrates button.on{border-color:#3D7BF2;background:#EAF1FF;color:#1F4FB5}'
+    + '#vcpick .vlist{display:grid;gap:8px}#vcpick .vrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;border:2px solid #E3E7EF;border-radius:14px;padding:10px 10px 10px 12px}#vcpick .vrow.on{border-color:#2E8B57;background:#F1FAF4}'
+    + '#vcpick .vrow b{display:block;font-size:.98rem;word-break:break-all}#vcpick .vrow small{color:#7a8090}#vcpick .vrow button{font:inherit;font-weight:700;font-size:.9rem;padding:8px 10px;border-radius:10px;border:1.5px solid #D5DEEF;background:#fff;white-space:nowrap}#vcpick .vrow .pick{background:#2FA36B;border-color:#2FA36B;color:#fff}#vcpick .vrow.on .pick{background:#fff;color:#2E8B57;border-color:#2E8B57}'
+    + '#vcpick .vfoot{display:flex;gap:8px;margin-top:14px}#vcpick .vfoot button{flex:1;font:inherit;font-weight:800;padding:12px;border-radius:12px;border:0;background:#EEF0F4}';
+  document.head.appendChild(css);
+  const label = v => { const L = String(v.lang || '').replace('_', '-'); return ({ 'en-US': '미국 영어', 'en-GB': '영국 영어', 'en-AU': '호주 영어', 'en-IN': '인도 영어', 'en-CA': '캐나다 영어' })[L] || L; };
+  function open() {
+    let list = enVoices();
+    const el = document.createElement('div'); el.id = 'vcpick';
+    const paint = () => { list = enVoices().sort((a, b) => (String(b.lang).replace('_', '-') === 'en-US') - (String(a.lang).replace('_', '-') === 'en-US')); const cur = chosen(), m = mult();
+      el.innerHTML = '<div class="vin"><h3>🔊 영어 목소리 고르기</h3><p>▶를 눌러 들어 보고, 가장 또렷한 목소리에서 <b>이 목소리로</b>를 눌러요. 이 기기에만 저장돼요.</p>'
+        + '<b>빠르기</b><div class="vrates">' + RATES.map(r => '<button type="button" data-r="' + r[1] + '" class="' + (Math.abs(r[1] - m) < .01 ? 'on' : '') + '">' + r[0] + '</button>').join('') + '</div>'
+        + '<b>목소리 (' + list.length + '개)</b><div class="vlist" style="margin-top:6px">' + (list.length ? list.map((v, i) => '<div class="vrow' + (cur && cur.voiceURI === v.voiceURI ? ' on' : '') + '"><span><b>' + (cur && cur.voiceURI === v.voiceURI ? '✅ ' : '') + v.name + '</b><small>' + label(v) + (v.localService ? ' · 기기에 저장됨' : ' · 인터넷 필요') + '</small></span><button type="button" data-t="' + i + '">▶ 듣기</button><button type="button" class="pick" data-p="' + i + '">' + (cur && cur.voiceURI === v.voiceURI ? '고름' : '이 목소리로') + '</button></div>').join('') : '<p>이 기기에서 영어 목소리를 찾지 못했어요. 폰 설정의 ‘글자 읽어주기’에서 영어 음성 데이터를 받아 주세요.</p>') + '</div>'
+        + '<div class="vfoot"><button type="button" data-a="auto">저절로 고르기</button><button type="button" data-a="close">닫기</button></div></div>';
+      el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => test(list[+b.dataset.t]));
+      el.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { const v = list[+b.dataset.p]; put(K_V, v.voiceURI || v.name); test(v); paint(); });
+      el.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { put(K_R, b.dataset.r === '1' ? '' : b.dataset.r); test(chosen(), +b.dataset.r); paint(); });
+      el.querySelector('[data-a="auto"]').onclick = () => { put(K_V, ''); put(K_R, ''); paint(); };
+      el.querySelector('[data-a="close"]').onclick = () => { try { speechSynthesis.cancel(); } catch (e) {} el.remove(); }; };
+    el.onclick = e => { if (e.target === el) { try { speechSynthesis.cancel(); } catch (x) {} el.remove(); } };
+    document.body.appendChild(el); paint();
+    if (!list.length) { try { speechSynthesis.addEventListener('voiceschanged', function h() { speechSynthesis.removeEventListener('voiceschanged', h); if (el.isConnected) paint(); }); } catch (e) {} }
+  }
+  window.__voicePick = open;
+  /* 처음 화면: 과목 살펴보기 아래에 단추 */
+  { const _st = start; start = function () { const r = _st.apply(this, arguments);
+      try { if (!CURSUBJ && !document.querySelector('#app .vcrow')) { const at = document.querySelector('#app .subjfold') || document.querySelector('#app section.grades'); if (at) { at.insertAdjacentHTML('afterend', '<div class="vcrow"><button type="button" class="vcbtn">🔊 영어 목소리 고르기' + (get(K_V) ? ' ✅' : '') + '</button></div>'); document.querySelector('#app .vcbtn').onclick = open; } } } catch (e) {}
+      return r; }; }
+  try { if (typeof VIEW !== 'undefined' && VIEW === 'start') start(CURSUBJ); } catch (e) {}
+})();
+</script>
+<!-- ===== 영어 목소리 고르기 끝 ===== -->
 </body>
 </html>
