@@ -7348,5 +7348,44 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 })();
 </script>
 <!-- ===== 영어 목소리 고르기 끝 ===== -->
+<!-- ===== 스프링 노트 동화 시작 ===== -->
+<script>
+/* ===== 서이 영어 동화: 스프링 노트처럼 넘겨요 =====
+   · 책장 넘기는 소리는 없앴어요.
+   · 쪽 위쪽에 스프링(고리)이 달려 있고, 다음 쪽으로 가면 지금 쪽이 위로 휙 넘어가며 아래 쪽이 보여요.
+     앞 쪽으로 돌아가면 넘겼던 쪽이 위에서 내려와요. */
+(function () {
+  try { stSwish = function () {}; } catch (e) {}
+  const css = document.createElement('style');
+  css.textContent = '.sbk{position:relative}.sbpage{border-radius:8px 8px 16px 16px!important;padding-top:30px;box-shadow:0 1px 0 #e9dcc0,0 3px 0 #f6eedc,0 4px 0 #e9dcc0,0 8px 18px rgba(0,0,0,.14)!important;transform-origin:50% 0!important}'
+    + '.sbpage::before{content:"";position:absolute;left:10px;right:10px;top:12px;height:12px;background:radial-gradient(circle at 50% 50%,#5d554c 0 3.4px,transparent 3.9px) 0 0/24px 12px repeat-x;pointer-events:none;z-index:3}'
+    + '.sbpage::after{content:"";position:absolute;left:10px;right:10px;top:0;height:20px;background:radial-gradient(ellipse 4.2px 9px at 50% 30%,transparent 0 2px,#a9aeb4 2.4px 3.8px,transparent 4.2px) 0 0/24px 20px repeat-x;pointer-events:none;z-index:4;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}'
+    + '.sbpage.fr,.sbpage.fl{animation:none!important}.sbpage.sbdown{animation:spdown .55s cubic-bezier(.3,.7,.4,1)}'
+    + '.spflip{position:absolute;z-index:20;background:#fffdf6!important;pointer-events:none;transform-origin:50% 0;animation:spup .55s cubic-bezier(.45,.05,.55,.95) forwards;backface-visibility:hidden}'
+    + '@keyframes spup{0%{transform:perspective(1100px) rotateX(0);opacity:1;filter:brightness(1)}80%{opacity:1;filter:brightness(.88)}100%{transform:perspective(1100px) rotateX(100deg);opacity:0;filter:brightness(.8)}}'
+    + '@keyframes spdown{0%{transform:perspective(1100px) rotateX(100deg);opacity:0}20%{opacity:1}100%{transform:perspective(1100px) rotateX(0);opacity:1}}'
+    + '@media (prefers-reduced-motion:reduce){.spflip{display:none}.sbpage.sbdown{animation:none}}';
+  document.head.appendChild(css);
+  let lastEl = null, lastHTML = '', lastCls = '';
+  function watch() {
+    const pg = document.getElementById('stpg');
+    if (!pg) { lastEl = null; lastHTML = ''; return; }
+    if (pg === lastEl) { lastHTML = pg.innerHTML; return; }
+    const fwd = pg.classList.contains('fr'), back = pg.classList.contains('fl');
+    if (fwd && lastHTML && pg.parentElement) {
+      /* 지금까지 보던 쪽을 그 자리에 똑같이 올려 두고, 위로 넘겨요 */
+      const host = pg.parentElement, r = pg.getBoundingClientRect(), hr = host.getBoundingClientRect();
+      const ov = document.createElement('div'); ov.className = lastCls.replace(/\b(fr|fl|sbdown)\b/g, '') + ' spflip'; ov.setAttribute('aria-hidden', 'true'); ov.innerHTML = lastHTML;
+      ov.style.left = (r.left - hr.left) + 'px'; ov.style.top = (r.top - hr.top) + 'px'; ov.style.width = r.width + 'px'; ov.style.height = r.height + 'px'; ov.style.margin = '0';
+      ov.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
+      host.appendChild(ov); ov.addEventListener('animationend', () => ov.remove()); setTimeout(() => ov.remove(), 900);
+    }
+    if (back) { pg.classList.add('sbdown'); }
+    lastEl = pg; lastHTML = pg.innerHTML; lastCls = pg.className;
+  }
+  new MutationObserver(watch).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<!-- ===== 스프링 노트 동화 끝 ===== -->
 </body>
 </html>
