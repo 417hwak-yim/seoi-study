@@ -7441,5 +7441,32 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 })();
 </script>
 <!-- ===== 복습 잠금 끝 ===== -->
+<!-- ===== 도장 지도 아이콘 시작 ===== -->
+<script>
+/* ===== 도장 지도 아이콘 (두 공부방) =====
+   첫 화면의 '도장 지도' 카드 대신, 기분 줄의 박쥐와 복습 단추 사이에 🗺️ 지도 아이콘을 둬요. 누르면 바로 도장 지도로 가요.
+   자리를 만들려고 기분 아이콘은 조금 작게 했어요. */
+(function () {
+  const css = document.createElement('style');
+  css.textContent = '#app .todaywrap>.smapcard{display:none!important}'
+    + '.trmap{position:relative;flex:none;display:grid;place-items:center;width:36px;height:34px;margin:0 6px 0 0;padding:0;border:2px solid #C98A2E;border-radius:12px;background:#FFF6E0;box-shadow:0 3px 0 #C98A2E;font-size:1.25rem;line-height:1;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}'
+    + '.trmap:active{transform:translateY(2px);box-shadow:none}'
+    + '.trmap .st{position:absolute;right:-5px;bottom:-5px;width:15px;height:15px;border-radius:50%;background:#E0457B;border:1.5px solid #fff;color:#fff;font-size:.55rem;font-weight:900;display:grid;place-items:center;transform:rotate(-12deg)}'
+    + '.moodrow:has(.trmap)>.moodbar{gap:2px}'
+    + '.moodrow:has(.trmap)>.moodbar>button{width:clamp(24px,7.2vw,30px)!important;height:clamp(24px,7.2vw,30px)!important;font-size:1rem}'
+    + '.moodrow:has(.trmap)>.trrv{margin-right:6px}';
+  document.head.appendChild(css);
+  function add() {
+    const bat = document.querySelector('#app .moodrow > .trbat'); if (!bat) return;
+    const mr = bat.parentElement; if (mr.querySelector('.trmap')) return;
+    bat.insertAdjacentHTML('afterend', '<button type="button" class="trmap" data-go="smap" aria-label="도장 지도 보기">🗺️<span class="st" aria-hidden="true">★</span></button>');
+    const b = mr.querySelector('.trmap');
+    b.onclick = e => { e.stopPropagation(); try { route('smap'); } catch (x) { routeInner('smap'); } };
+  }
+  { const _st = start; start = function () { const r = _st.apply(this, arguments); try { if (!CURSUBJ) { add(); setTimeout(add, 0); } } catch (e) {} return r; }; }
+  try { if (typeof VIEW !== 'undefined' && VIEW === 'start') start(CURSUBJ); } catch (e) {}
+})();
+</script>
+<!-- ===== 도장 지도 아이콘 끝 ===== -->
 </body>
 </html>
