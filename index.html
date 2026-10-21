@@ -7399,10 +7399,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   const MSG = '오늘의 학습을 다 하면 열려요!';
   function read() {
     const tb = document.querySelector('#app .todaybox'); if (!tb) return null;
-    if (tb.classList.contains('alldone')) return true;
-    const m = /(\d+)\s*\/\s*(\d+)/.exec((tb.querySelector('h2') || tb).textContent || '');
-    if (m) return +m[1] >= +m[2];
-    return true; /* 오늘 할 학습이 없으면 열어 둬요 */
+    /* 오늘의 학습 목록에 보이는 카드(시계·아빠와 복습·최상위 수학 포함)를 모두 끝내야 열려요. 할 학습이 없으면 열어 둬요 */
+    return !tb.querySelector('.todaygrid > .todaycard:not(.did):not(.done):not(.rvcard)');
   }
   function toast(t) {
     let el = document.getElementById('rvltoast'); if (el) el.remove();
@@ -7419,8 +7417,6 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   function deco() {
     const v = read(); if (v === null) return; set(v);
     document.querySelectorAll('#app .rvhome, #app .rvs-home, #app .todaycard.rvcard').forEach(x => x.classList.toggle('rvlock', !v));
-    /* 잠긴 복습 카드는 오늘의 학습 맨 아래로 */
-    if (!v) document.querySelectorAll('#app .todaycard.rvcard.rvlock').forEach(c => { const p = c.parentElement; if (p && p.lastElementChild !== c) p.appendChild(c); });
     document.querySelectorAll('.trrv').forEach(b => {
       b.classList.toggle('rvlock', !v);
       const ic = b.querySelector('.ic'); if (ic && !v) ic.textContent = '복습';
@@ -7468,5 +7464,46 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 })();
 </script>
 <!-- ===== 도장 지도 아이콘 끝 ===== -->
+<!-- ===== 오늘의 학습 순서 시작 ===== -->
+<script>
+/* ===== 오늘의 학습 순서 (두 공부방) =====
+   아직 안 한 학습 → 🧰 복습 상자 → ✅ 끝낸 학습 순서로 보여요.
+   · 학습을 끝내면 그 카드는 복습 상자 아래로 내려가요.
+   · 위쪽 학습을 모두 끝내면 복습 상자가 맨 위에 남아요.
+   · 복습까지 끝내면 복습 상자는 오늘의 학습 상자 아래로 내려가요. */
+(function () {
+  const css = document.createElement('style');
+  css.textContent = '.todaygrid>.rvhome,.todaygrid>.rvs-home{margin:4px 0!important}'
+    + '.todaygrid>.tddiv{margin:8px 2px 0;font-size:.85rem;font-weight:800;color:var(--ok,#2E8B57);display:flex;align-items:center;gap:8px}.todaygrid>.tddiv::after{content:"";flex:1;height:1.5px;background:currentColor;opacity:.3}';
+  document.head.appendChild(css);
+  const isDone = c => c.classList.contains('did') || c.classList.contains('done');
+  function rvDone() {
+    try { const it = window.__rv && __rv.items ? __rv.items() : null; if (it && it.some(x => x[4])) return false; } catch (e) {}
+    const rc = document.querySelector('#app .todaycard.rvcard:not(.did)'); return !rc;
+  }
+  function arrange() {
+    const tb = document.querySelector('#app .todaybox'), g = tb && tb.querySelector('.todaygrid'); if (!g) return;
+    const box = document.querySelector('#app .rvhome, #app .rvs-home'); if (!box) return;
+    g.querySelectorAll(':scope > .tddiv').forEach(x => x.remove());
+    const cards = [...g.querySelectorAll(':scope > .todaycard')];
+    const rvc = cards.filter(c => c.classList.contains('rvcard') && !isDone(c));
+    const pend = cards.filter(c => !c.classList.contains('rvcard') && !isDone(c));
+    const done = cards.filter(c => isDone(c));
+    const frag = [];
+    pend.forEach(c => frag.push(c));
+    const finished = rvDone();
+    if (!finished) { frag.push(box); rvc.forEach(c => frag.push(c)); }
+    else rvc.forEach(c => frag.push(c));
+    if (done.length && frag.length) { const d = document.createElement('p'); d.className = 'tddiv'; d.textContent = '✅ 끝낸 학습 ' + done.length + '개'; frag.push(d); }
+    done.forEach(c => frag.push(c));
+    frag.forEach(x => g.appendChild(x));
+    if (finished && box.parentElement === g) tb.after(box);
+    else if (finished && box.previousElementSibling !== tb) tb.after(box);
+  }
+  { const _st = start; start = function () { const r = _st.apply(this, arguments); try { if (!CURSUBJ) { arrange(); setTimeout(arrange, 0); } } catch (e) {} return r; }; }
+  try { if (typeof VIEW !== 'undefined' && VIEW === 'start') start(CURSUBJ); } catch (e) {}
+})();
+</script>
+<!-- ===== 오늘의 학습 순서 끝 ===== -->
 </body>
 </html>
