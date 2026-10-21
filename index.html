@@ -5920,10 +5920,12 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
     $app.querySelectorAll('.rvs-word').forEach(b=>b.onclick=()=>talk(b.dataset.say)); }
 
   /* ---------- 복습 상자 ---------- */
+  /* 오늘 끝낸 복습은 ‘할 복습’ 개수에서 빼요 */
+  function fixDue(a){ return a.map(x=>{ if(x[6]) x[4]=false; return x; }); }
   function items(){ const R=RV(), d=TODAY(), L=sync(), D=due().length;
-    return [['word','🗣️','낱말 복습',L.length?(D?'오늘 '+Math.min(6,D)+'개 · 배운 낱말 '+L.length+'개':'오늘 복습 끝! 한 번 더 해도 좋아요'):'첫 차시를 끝내면 열려요',D>0,'#E0457B',R.dn.word===d||(L.length>0&&!D)],
+    return fixDue([['word','🗣️','낱말 복습',L.length?(D?'오늘 '+Math.min(6,D)+'개 · 배운 낱말 '+L.length+'개':'오늘 복습 끝! 한 번 더 해도 좋아요'):'첫 차시를 끝내면 열려요',D>0,'#E0457B',R.dn.word===d||(L.length>0&&!D)],
       ['num','🔢','수 세기 복습',R.dn.num===d?'오늘 복습 끝! 한 번 더 해도 좋아요':'날마다 5문제',R.dn.num!==d,'#2FA36B',R.dn.num===d],
-      ['rep','👪','부모님 리포트','최근 7일 기록',false,'#1B2750']]; }
+      ['rep','👪','부모님 리포트','최근 7일 기록',false,'#1B2750']]); }
   function boxView(msg){ VIEW='rv'; const it=items();
     show('<button class="back" data-go="start">← 처음 화면</button><section class="panel rvs"><h2>🧰 복습 상자</h2><p class="lead">배운 것을 잊기 전에 다시 만나요!</p>'+(msg?'<p class="rvs-msg">'+E(msg)+'</p>':'')
       +'<div class="rvs-grid">'+it.map(x=>'<button class="rvs-item'+(x[4]?' due':'')+(x[6]?' done':'')+'" style="--k:'+x[5]+'" data-go="rv:'+x[0]+'"><span class="ic">'+x[1]+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span>'+(x[6]?'<span class="rvdone">완료</span>':'')+'</button>').join('')+'</div><div class="row center" style="margin-top:12px"><button class="btn" data-go="rv:book">📒 내 낱말장</button></div></section>','#3D7BF2'); }
