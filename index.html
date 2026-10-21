@@ -6668,18 +6668,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   /* 처음 화면: 시간 표시, 다시 풀기 칸, 오늘의 학습 목록 기억 */
   function decorateHome() {
     const g = $app.querySelector('.todaygrid'); if (!g || g.dataset.flow) return; g.dataset.flow = 1;
-    /* 다시 풀기 칸 */
-    /* 서이: 복습 상자의 낱말 복습·수 세기 복습도 오늘의 학습 칸으로 (놓치지 않게) */
-    if (SEOI) try { const R = window.__rv, rv = R.RV(), n0 = new Date(), td = Math.floor(Date.UTC(n0.getFullYear(), n0.getMonth(), n0.getDate()) / 864e5), L = R.sync().length, D = R.due().length;
-      const card = (go, ic, name, tw, tl, did, col) => '<button class="todaycard rvcard' + (did ? ' did' : '') + '" style="--u:' + col + '" data-go="' + go + '"><span class="tmark">' + ic + '</span><span class="tt"><b>' + name + '</b><span class="tw">' + tw + '</span><span class="tl">' + tl + '</span></span>' + (did ? '<span class="tdone" role="img" aria-label="오늘 완료">완료</span>' : '<span class="tgo" aria-hidden="true">▶</span>') + '</button>';
-      let h = '';
-      if (L) { const did = rv.dn.word === td || !D; h += card('rv:word', '🗣️', '낱말 복습', did ? '오늘 몫을 끝냈어요' : '배운 낱말 ' + Math.min(6, D) + '개를 다시 만나요', did ? '한 번 더 해도 좋아요' : '잊기 전에 한 번 더!', did, '#E0457B'); }
-      { const did = rv.dn.num === td; h += card('rv:num', '🔢', '수 세기 복습', did ? '오늘 몫을 끝냈어요' : '수 세기·더하기·빼기 5문제', did ? '한 번 더 해도 좋아요' : '날마다 5문제', did, '#2FA36B'); }
-      g.insertAdjacentHTML('afterbegin', h); } catch (e) {}
-    else try { const R = window.__rv; let n = 0, lab = '', go = '';
-      if (R && R.wrongDue) { n = R.wrongDue().length; lab = '틀린 문제 다시 풀기'; go = 'tdrv:wrong'; }
-      else if (R && R.due) { n = R.due().length; lab = '낱말 복습'; go = 'tdrv:word'; }
-      if (n > 0) g.insertAdjacentHTML('afterbegin', '<button class="todaycard rvtoday" style="--u:#D9534F" data-go="' + go + '"><span class="tmark">🔁</span><span class="tt"><b>' + lab + '</b><span class="tw">전에 ' + (SEOI ? '배운 낱말' : '틀린 문제') + ' ' + Math.min(n, SEOI ? 6 : 10) + '개를 다시 만나요</span><span class="tl">잊기 전에 한 번 더! <span class="tmin">약 ' + (SEOI ? 3 : 5) + '분</span></span></span><span class="tgo" aria-hidden="true">▶</span></button>'); } catch (e) {}
+    /* 복습(틀린 문제 다시 풀기·낱말 복습·수 세기 복습)은 오늘의 학습 목록에 넣지 않아요. 아래 복습 상자에서만 해요 */
     /* 걸리는 시간 */
     let left = 0; const list = [];
     g.querySelectorAll('.todaycard').forEach(c => { if (c.classList.contains('resume') || c.classList.contains('rvtoday')) return; if (c.classList.contains('rvcard')) { const did = c.classList.contains('did'), m = SEOI ? 3 : 5; const tl = c.querySelector('.tl'); if (tl && !c.querySelector('.tmin')) tl.insertAdjacentHTML('beforeend', ' <span class="tmin">⏱ 약 ' + m + '분</span>'); if (!did) left += m; list.push({ go: c.dataset.go, name: nameOf(c), did }); return; } const n = nameOf(c); if (!n) return; const m = minOf(n), did = c.classList.contains('did') || c.classList.contains('done');
@@ -7427,7 +7416,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   }
   /* 잠긴 동안은 복습 화면으로 가지 않아요 (리포트는 예외) */
   { const _ri = routeInner; routeInner = function (v, a) {
-      if (v === 'rv' && a !== 'rep' && !get()) { const r = _ri.call(this, 'start'); toast(MSG); return r; }
+      if (((v === 'rv' && a !== 'rep') || v === 'tdrv') && !get()) { const r = _ri.call(this, 'start'); toast(MSG); return r; }
       return _ri.apply(this, arguments); }; }
   /* 단추를 누르면 잠긴 경우 안내만 해요 */
   document.addEventListener('click', e => {
