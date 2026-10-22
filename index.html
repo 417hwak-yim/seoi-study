@@ -7616,7 +7616,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     + 'html,body{overscroll-behavior-y:contain}'
     + 'html.hid *,html.hid *::before,html.hid *::after{animation-play-state:paused!important}'
     + '.offs,.offs *,.offs *::before,.offs *::after{animation-play-state:paused!important}'
-    + 'html.lowfx .trscene .tra,html.lowfx .trslot{filter:none!important}'
+    + 'html.lowfx .trslot:not(.no),html.lowfx .trslot:not(.no) .tra{filter:none!important}'
     + 'html.lowfx .starttop .leaves>:nth-child(2n){display:none}'
     + 'html.lowfx .sesq img{filter:none}';
   document.head.appendChild(css);
