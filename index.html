@@ -5607,6 +5607,7 @@ const WHY=[
 const WHYORD=['sky1','nat5','body1','ani1','sky4','life1','sky2','nat6','body2','ani2','sky5','nat1','body3','nat7','nat2','ani3','sky6','life2','sky3','nat8','body4','ani4','nat9','nat3','life3','body5','nat4','ani5'];
 WHY.sort((a,b)=>WHYORD.indexOf(a.id)-WHYORD.indexOf(b.id));   /* 날씨·계절 이야기를 사이사이에 넣었어요 (10월 17일 안개) */
 
+const WHYPIC={"sky1": ["Clear blue sky.jpg", "Prism flat rainbow.jpg", "Blue sky white clouds looking up at trees.jpg", "Red sunset.jpg"], "body1": ["Yawning newborn baby.jpg", "Yawning Infant, August 2018.jpg", "Kids smiling.jpg", "COVER"], "ani1": ["Cat getting headpats.jpg", "Cat Face Closed Eyes.jpg", "Sleepy cat.jpg", "Mother cat breastfeeding (nursing) her 4 kittens.jpg"], "life1": ["Cortando cebolla.jpg", "Red onion cut.jpg", "Crying eye.jpg", "Tear.jpg"], "sky2": ["Waxing crescent moon.jpg", "Half Moon.jpg", "#Lunar Phases.jpg", "Full Moon - June 6th, 2022.jpg"], "body2": ["Child in swimming pool.jpg", "Wrinkly Fingers 001.JPG", "Tire tread.jpg", "VW Fingers touching water.jpg"], "ani2": ["Zebras, Serengeti savana plains, Tanzania.jpg", "Horse fly Tabanus 2.jpg", "Mountain zebra stripes.jpg", "Zebraherde.JPG"], "nat1": ["Rain clouds.jpg", "Rainbow droplet.jpg", "Rainbow over Chagford - geograph.org.uk - 1478754.jpg", "Boy making a rainbow with a garden hose.jpg"], "body3": ["Child Eating Rice with Chopsticks.jpg", "#Diaphragmatic breathing.gif", null, "Korean.food-Bibimbap-02.jpg"], "nat2": ["Ginkgo Tree Ginkgo biloba Leaves Tree 3008px.jpg", "GinkgoLeaves.jpg", "Shafts of sunlight through green leaves.JPG", "Autumn leaves.jpg"], "ani3": ["Galapagos Tortoise (5213306875).jpg", "Sulcata Tortoise (5) (8679964197).jpg", "Giant Tortoise.JPG", "COVER"], "life2": ["Korean Air and Asiana Airlines Airbus A380 at Incheon Airport.jpg", "United Airlines Boeing 777 -200 takeoff roll runway 28L, SFO (28693213225).jpg", "#Simple airfoil streamlines.png", "Airplane taking off on airport.jpg"], "sky3": ["Starry night sky.jpg", "The Sun by the Atmospheric Imaging Assembly of NASA's Solar Dynamics Observatory - 20100819.jpg", "Night Sky above the city.jpg", "Starry Night at La Silla.jpg"], "body4": ["Classroom with students.JPG", "#Stomach colon rectum diagram unlabeled.svg", "Bubbles in glass of water.jpg", "Korean.food-Bibimbap-02.jpg"], "ani4": ["Dog nose.jpg", "Dog nose macro close up.JPG", "Dog's nose Macro.JPG", "Flatcoated retriever with tongue.jpg"], "nat3": ["Haeundae Beach.jpg", "Shallow rocky mountain stream.jpg", "The Nile River flows into the Mediterranean Sea (iss071e405499).jpg", "Saltfarm.jpg"], "life3": ["Glass of water with ice cubes.JPG", "Snowflake macro photography 1 (cropped).jpg", "Ice cubes in a cup of soda.jpg", "Frozen lake (2152865126).jpg"], "body5": ["The Crescent Moon.jpg", "A child sleeping.jpg", "Children sleeping.jpg", "Children Playing in Playground.jpg"], "nat4": ["Dark storm clouds.jpg", "Cloud to ground lightning.jpg", "Lightning bolt, Johnston, Iowa (27661834650).jpg", "Raindrops on a window.jpg"], "ani5": ["Pink Flamingos in the Camargue.jpg", "Baby Flamingo (7532380514).jpg", "Artemia salina.jpg", "American flamingo (Phoenicopterus ruber).JPG"], "nat5": ["Manhattan Bridge in morning fog.jpg", "Watervapor cup.jpg", "Dew drops on blade of grass in the morning.jpg", "Fog sunrise.jpg"], "sky4": ["Korea Seoul Snow 14.jpg", "#Axial Tilt of Earth.svg", "South Korea Busan Haeundae Beach.jpg", "Korae-South Jeolla province-Snow in a hanok village-01.jpg"], "nat6": ["Gyeongpo Lake Cherry Blossoms.JPG", "Frog chilling in pond.jpg", "Cicada.jpg", "Black-bear-winter-sleep - West Virginia - ForestWander.jpg"], "sky5": ["WallCalendar.jpg", "#Earths orbit and ecliptic.PNG", "One Page Calendar 2021.jpg", "Korea-Gyeongju-Rice paddy field-01.jpg"], "sky6": ["First sunrise of 2018 in Seoul, South Korea (38708195074).jpg", "#Earth rotation.gif", "Skyline view from Seoul City (South Korea).jpg", "Seoul Night Skyline 2022.jpg"], "nat7": ["Rain Cloud.jpg", "Sunlight In Evaporation From Sea.JPG", "Blue-skies-cumulus-clouds.jpg", "Rain shower after cold front 3.JPG"], "nat8": ["Trees bent by the wind - geograph.org.uk - 4693309.jpg", "Balloons hot air cluster sky.jpg", "#Sea Land Breeze.svg", "Kite Flying on Talacre Beach - geograph.org.uk - 5392293.jpg"], "nat9": ["Umbrella with raindrops.jpg", "Snow on the Korean Peninsula (MODIS).jpg", "Cumulus clouds in fair weather.jpeg", "BBC weather forecast from Broadcasting House newsroom.jpg"]};
 const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
 /* ===== 오늘의 왜?: 날마다 궁금증 하나를 그림책처럼 한 장씩 넘기며 읽어요 =====
    표지(실제 사진) → 궁금해요 → 부엉 박사의 설명(장마다 삽화) → 정리 → 퀴즈 순서예요.
@@ -5665,6 +5666,8 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
   +'.wbnav{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:16px}'
   +'.wbnav .btn{margin:0;min-height:48px;white-space:nowrap;padding:8px 10px;font-size:.98rem}.wbnav .btn[disabled]{opacity:.35}'
   +'.wdots{display:flex;justify-content:center;gap:5px;margin-top:10px}.wdots i{width:8px;height:8px;border-radius:50%;background:#D8CCB0}.wdots i.on{background:var(--k);transform:scale(1.3)}'
+  +'.wph{margin:0;padding:8px}.wphbox{position:relative;height:clamp(170px,46vw,240px);border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}.wph img{display:block;width:100%;height:100%;object-fit:cover}.wph.fit img{object-fit:contain;background:#fff}.wph .sc{display:none}.wph.off img{display:none}.wph.off .wphbox{background:transparent;box-shadow:none;height:auto}.wph.off .sc{display:block;padding:8px 0}.wph.off .wphcr{display:none}.wph figcaption{margin-top:6px}.wphcr{display:block;font-size:.66rem;opacity:.5;color:inherit;margin-top:2px}.wbookp.big .wphbox{height:clamp(210px,58vw,300px)}'
+  +'.whylist>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;min-height:44px;box-sizing:border-box;background:#fff;border:2px dashed #E2D3B2;border-radius:14px;font-size:1.02rem}.whylist>summary::-webkit-details-marker{display:none}.whylist>summary::after{content:"▼";margin-left:auto;font-size:.8rem;opacity:.6}.whylist[open]>summary{margin-bottom:8px}.whylist[open]>summary::after{content:"▲"}'
   +'.whys{border-radius:5px;transition:background .2s}.whys.on{background:#FFE08A}'
   +'.wbookp.big .wtx{font-size:1.45rem;line-height:1.85}.wbookp.big .wil .sc{font-size:3.4rem}.wbookp.big .wctitle{font-size:1.75rem}.wbookp.big .wqq{font-size:1.35rem}.wbookp.big .wopt{font-size:1.25rem;padding:14px}'
   +'.whylist{margin-top:20px}.whylist h3{font-size:1.05rem;margin:0 0 8px}'
@@ -5677,14 +5680,27 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
     return '<button class="whybanner'+(did?' did':'')+'" style="--k:'+K[2]+'" data-go="why:'+N.id+'"><span class="whythumb">'+(im?'<img src="'+im+'" alt="">':N.i)+'</span>'+(did?'<span class="whystamp">✅ 읽음</span>':'')
       +'<span class="whybt"><span class="whybk">🦉 오늘의 왜? · '+K[0]+'</span><b>'+E(N.t)+'</b><span class="whybs">'+(did?'읽었어요 ✅':'그림책처럼 넘겨 읽고 퀴즈 1개')+'</span></span><span class="whygo" aria-hidden="true">›</span></button>'; }
 
+
+  /* 장마다 실제 사진: 위키미디어 공용에서 그때그때 불러와요. 인터넷이 없거나 사진을 못 불러오면 원래 그림(이모지 장면)이 나와요.
+     '#'로 시작하면 그림표(잘리지 않게 전체 보기), 'COVER'는 표지 사진을 다시 써요. */
+  const PICU=(f,w)=>'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+w;
+  const PICP=f=>'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(f.replace(/ /g,'_'));
+  const picOf=(N,i)=>{ let f=(WHYPIC[N.id]||[])[i]; if(!f) return null; let fit=false; if(f[0]==='#'){ f=f.slice(1); fit=true; }
+    if(f==='COVER') return WHYIMG[N.id]?{src:WHYIMG[N.id],cover:true}:null; return {src:PICU(f,640),f,fit}; };
+  function ill(N,i,sc,cp){ const P=picOf(N,i);
+    if(!P) return '<div class="wil"><div class="sc">'+sc+'</div><span class="cp">'+E(cp)+'</span></div>';
+    return '<figure class="wil wph'+(P.fit?' fit':'')+'"><div class="wphbox"><img src="'+P.src+'" alt="'+E(cp)+'" onerror="this.closest(\'.wph\').classList.add(\'off\')"><div class="sc">'+sc+'</div></div>'
+      +'<figcaption><span class="cp">'+E(cp)+'</span>'+(P.cover?'':'<a class="wphcr" href="'+PICP(P.f)+'" target="_blank" rel="noopener">사진: 위키미디어 공용</a>')+'</figcaption></figure>'; }
+  const preload=N=>{ try{ for(let i=0;i<4;i++){ const P=picOf(N,i); if(P&&!P.cover){ const im=new Image(); im.src=P.src; } } }catch(e){} };
   /* 책 한 권의 쪽들 */
   function pages(N){ const K=KIND[N.k], P=[]; let k=0;
     const sp=t=>sents(t).map(s=>'<span class="whys" data-s="'+(k++)+'">'+E(s)+'</span>').join(' ');
     const cr=WHYCR[N.id];
     P.push('<span class="wcrib">'+K[1]+' '+K[0]+'</span>'+(WHYIMG[N.id]?'<figure class="wcphoto" style="margin:8px auto 0"><img src="'+WHYIMG[N.id]+'" alt="'+E(N.t)+'">'+(cr?'<figcaption class="wccr">사진: '+E(cr[1]||'')+' · '+E(cr[2]||'')+' · 위키미디어 공용</figcaption>':'')+'</figure>':'<div class="wil"><div class="sc">'+N.i+'</div></div>')
       +'<h2 class="wctitle">'+E(N.t)+'</h2><p class="wcowl">🦉 부엉 박사와 함께 알아봐요</p>');
-    P.push('<div class="wil"><div class="sc">'+N.hi+'</div><span class="cp">궁금해요!</span></div><div class="wsay"><span class="wav">🙋</span><div class="wbub wtx"><b>'+E(KN)+'</b><p>'+sp(N.hook)+'</p></div></div>');
-    N.p.forEach((x,j)=>P.push('<div class="wil"><div class="sc">'+x[1]+'</div><span class="cp">'+E(x[2]||'')+'</span></div><div class="wsay"><span class="wav">'+(j===0?'🦉':'')+'</span><div class="wtx">'+(j===0?'<b style="display:block;font-size:.85rem;color:var(--k)">부엉 박사</b>':'')+'<p>'+sp(x[0])+'</p></div></div>'));
+    preload(N);
+    P.push(ill(N,0,N.hi,'궁금해요!')+'<div class="wsay"><span class="wav">🙋</span><div class="wbub wtx"><b>'+E(KN)+'</b><p>'+sp(N.hook)+'</p></div></div>');
+    N.p.forEach((x,j)=>P.push(ill(N,j+1,x[1],x[2]||'')+'<div class="wsay"><span class="wav">'+(j===0?'🦉':'')+'</span><div class="wtx">'+(j===0?'<b style="display:block;font-size:.85rem;color:var(--k)">부엉 박사</b>':'')+'<p>'+sp(x[0])+'</p></div></div>'));
     if(N.sum) P.push('<div class="wsum"><h3>📌 한 줄 정리</h3><p>'+sp(N.sum)+'</p></div>'+(N.fun?'<div class="wfun"><h3>😲 더 궁금해요</h3><p>'+sp(N.fun)+'</p></div>':'')+(N.w?'<div class="wwd"><h3>📘 낱말 풀이</h3><dl>'+N.w.map(w=>'<div><dt>'+E(w[0])+'</dt><dd>'+E(w[1])+'</dd></div>').join('')+'</dl></div>':''));
     P.push('QUIZ');
     return P; }
@@ -5696,7 +5712,7 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
       +'<div class="wbstage" id="wbstage"></div>'
       +'<div class="wbnav"><button class="btn" type="button" id="wbprev">◀ 앞장</button>'+(canSpeak?'<button class="btn sun" type="button" id="wbread">🔊 읽어 주기</button>':'<span></span>')+'<button class="btn main" type="button" id="wbnext">다음 장 ▶</button></div><div class="wdots" id="wbdots"></div></section>';
     const others=W.filter(x=>x!==N);
-    h+='<section class="whylist"><h3>다른 궁금증도 읽어 봐요 <small style="font-weight:400;opacity:.65">(모두 '+W.length+'권)</small></h3>'+others.map(x=>'<button class="whyitem'+(R[x.id]?' did':'')+'" data-go="why:'+x.id+'"><span class="whyic">'+x.i+'</span><span><b>'+E(x.t)+'</b><small>'+KIND[x.k][0]+(x===todayW()?' · 오늘의 왜?':'')+'</small></span><span>'+(R[x.id]?'✅':'›')+'</span></button>').join('')+'</section>';
+    h+='<details class="whylist"><summary><b>📚 다른 궁금증도 읽어 봐요</b> <small style="font-weight:400;opacity:.65">(모두 '+W.length+'권 · 눌러서 펼쳐요)</small></summary>'+others.map(x=>'<button class="whyitem'+(R[x.id]?' did':'')+'" data-go="why:'+x.id+'"><span class="whyic">'+x.i+'</span><span><b>'+E(x.t)+'</b><small>'+KIND[x.k][0]+(x===todayW()?' · 오늘의 왜?':'')+'</small></span><span>'+(R[x.id]?'✅':'›')+'</span></button>').join('')+'</details>';
     show(h,K[2]);
     const st=document.getElementById('wbstage'), prev=document.getElementById('wbprev'), next=document.getElementById('wbnext'), no=document.getElementById('wbno'), dots=document.getElementById('wbdots');
     const doneTag=d=>'<div class="wdone wstampbig"><span>다 읽었어요</span>'+(d?'<small>'+fmt(d)+'</small>':'')+'</div>';
@@ -7695,7 +7711,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 
     /* 1) 오늘 진행 막대 */
     const pr=document.createElement('div'); pr.className='tdprog';
-    pr.innerHTML='<span class="tpk">📊 <b>오늘 진행</b></span><span class="tpk">공부 <b>'+done+'/'+total+'</b></span>'+(reads.length?'<span class="tpk">읽을거리 <b>'+rdone+'/'+reads.length+'</b></span>':'')
+    pr.innerHTML='<span class="tpk tpcall">'+(done<total?KID.name+'야, 오늘 공부 <b>'+(total-done)+'개</b> 남았어!':'🎉 '+KID.name+'야, 오늘 공부 끝!')+'</span>'+(reads.length?'<span class="tpk">읽을거리 <b>'+rdone+'/'+reads.length+'</b></span>':'')
       +'<span class="tpbar" aria-hidden="true"><i style="width:'+(total?Math.round(done/total*100):0)+'%"></i></span>';
     (mood||tw.firstChild) && (mood?mood.after(pr):tw.prepend(pr));
 
@@ -7713,6 +7729,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
       nw.classList.add('alldone'); nw.innerHTML='<p>🎉 오늘의 학습을 모두 끝냈어요!</p>';
     }
     tb.before(nw);
+    /* 이어서 풀기·게임 시간 단추: 맨 아래(보호자 메뉴 밑)에 떨어져 있지 않게 '지금 할 공부' 바로 아래로 옮겨요 */
+    [...app.querySelectorAll('button.lesson[data-go="resume"],button.lesson[data-go="mg"]')].reverse().forEach(b=>{ b.style.marginTop='0'; b.style.marginBottom='12px'; nw.after(b); });
 
     /* 3) 오늘의 학습 목록 접기/펼치기 (목록과 순서는 그대로) */
     const tg=document.createElement('button'); tg.type='button'; tg.className='tdtoggle';
@@ -7791,6 +7809,19 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   css.textContent=''
    +'.moodrow .trmap{display:none!important}.moodrow:has(.trmap)>.moodbar>button{width:clamp(28px,8.8vw,36px)!important;height:clamp(28px,8.8vw,36px)!important;font-size:1.18rem}'
    +'.tdprog .tplinks{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px}.tdprog .tplink{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:4px 10px;border-radius:999px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;font-size:.84rem;touch-action:manipulation}'
+   /* 두 단추를 한 줄에 반씩: 줄바꿈 없이 */
+   +'.tdprog .tplinks{flex-wrap:nowrap!important}.tdprog .tplink{flex:1 1 0;min-width:0;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8rem!important;padding:4px 8px!important}'
+   /* 이달의 나무 · 첫 화면 단순하게: 도장 지도·박쥐·반짝 소품은 첫 화면에서 빼요 (기록은 그대로) */
+   +'.mtree{flex-basis:100%;display:grid;grid-template-columns:84px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;margin-top:4px;padding:8px 10px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);color:var(--ink);font:inherit;text-align:left;touch-action:manipulation}'
+   +'.mtree svg{width:84px;height:84px;display:block;border-radius:12px}.mtree .mtt{display:grid;gap:2px;min-width:0}.mtree .mtt b{font-family:Jua,sans-serif;font-weight:400;font-size:1rem;line-height:1.3;word-break:keep-all}'
+   +'.mtree .mtn{font-size:.92rem}.mtree .mtn b{font-size:1.15rem}.mtree small{font-size:.78rem;opacity:.75;word-break:keep-all;line-height:1.4}.mtree .mtgo{font-size:1.5rem;font-weight:800}'
+   +'.trscene.trtree .trslot.no{display:none!important}.trscene.trtree .trslot{transition:none}'
+   +'.trscene.trtree .trslot>.tra{animation:trhang 2.8s ease-in-out infinite alternate!important;transform-origin:50% 0}@keyframes trhang{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}'
+   +'@media (prefers-reduced-motion:reduce){.trscene.trtree .trslot>.tra{animation:none!important}}'
+   +'.mtree.got{background:#FFF3BF;border-color:#C98A00}'
+   +'#app .moodrow .trbat,#app .moodrow .trmap,#app .smapcard,.spnote,.spbox,.spslot{display:none!important}'
+   /* 박쥐(보물 상자 단추)에 오늘 보물 표시: +1 = 오늘 다 하면 보물, ✅ = 오늘 받음 */
+   +'.trbat .tbbadge{position:absolute;top:-7px;right:-12px;z-index:2;min-width:20px;height:18px;padding:0 4px;border-radius:9px;border:1.5px solid #fff;background:#E0457B;color:#fff;font-style:normal;font-size:.66rem;font-weight:900;line-height:15px;text-align:center;pointer-events:none}.trbat .tbbadge.ok{background:#2E8B57}'
    +'.tdprog .tplink.got{background:#FFF3BF;border-color:#C98A00;color:#5C4300}'
    +'.spslot{position:absolute;transform:translate(-50%,-50%);font-size:calc(clamp(1.3rem,6.6vw,2rem) * var(--s,1));line-height:1;z-index:2;filter:drop-shadow(0 0 4px #FFD43B) drop-shadow(0 0 9px rgba(255,212,59,.7));animation:spbob 3s ease-in-out infinite}'
    +'.spslot::after{content:"✨";position:absolute;right:-.45em;top:-.35em;font-size:.45em;animation:sptw 1.6s ease-in-out infinite}'
@@ -7811,10 +7842,65 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     p.addEventListener('click',e=>{ const b=e.target.closest('[data-sp]'); if(!b) return; p.remove(); busy=false; if(b.dataset.sp==='see'){ try{ route('trbox'); }catch(x){ routeInner('trbox'); } } else setTimeout(pump,300); }); }
 
   /* 첫 화면: 오늘 진행 상자에 도장 지도 · 오늘의 보물 */
-  function home(){ const fresh=award(); const pr=document.querySelector('#app .tdprog'); if(pr&&!pr.querySelector('.tplinks')){
+
+  /* 🌳 이달의 나무 그림 (첫 화면 작은 나무와 들어가서 보는 큰 나무가 같은 그림이에요)
+     좌표는 가로 100 × 세로 105. 소품 자리는 나무 안에 겹치지 않게 벌집 모양으로 미리 정해 두고,
+     소품마다 늘 같은 자리에 걸려요 (그달 소품 수에 맞춰 칸 간격을 정해요). */
+  const TCOL={hw:{sky:['#2A1F45','#5A4387'],c1:'#6B4A9E',c2:'#8360BD',tr:'#3B2A26',gr:'#22192F',moon:1},
+              fa:{sky:['#FFE7C2','#FFF6E6'],c1:'#E0702E',c2:'#F2A33A',tr:'#7A4520',gr:'#D9B98A'},
+              xm:{sky:['#CFE3FA','#F2F8FF'],c1:'#237A45',c2:'#2F9A58',tr:'#6B4A2B',gr:'#FFFFFF',snow:1}};
+  const tcol=bg=>TCOL[bg]||{sky:['#DFF2DF','#F6FFF2'],c1:'#3E9A4C',c2:'#5DB86A',tr:'#7A5230',gr:'#CDE6B8'};
+  const CROWN=[[28,48,17],[72,48,17],[50,56,18],[36,30,18],[64,30,18],[50,24,17],[50,42,19]];
+  /* 소품이 나무 그림 밖으로 삐져나오지 않게, 잎 가장자리에서 한 칸 안쪽만 써요 */
+  const inCrown=(bg,x,y)=> bg==='xm' ? (y>16&&y<76&&Math.abs(x-50)<(y-6)*.486-5)
+                                      : CROWN.some(c=>Math.hypot(x-c[0],y-c[1])<c[2]-5.5);
+  const SLOTC={};
+  function treeSlots(bg,n){ const key=bg+n; if(SLOTC[key]) return SLOTC[key];
+    let sp=14, pts=[];
+    for(;sp>6;sp-=.5){ pts=[]; const h=sp*.866; let r=0; for(let y=8;y<84;y+=h,r++) for(let x=6+(r%2?sp/2:0);x<96;x+=sp) if(inCrown(bg,x,y)) pts.push([x,y]); if(pts.length>=n) break; }
+    /* 늘 같은 차례로 섞어서 처음 몇 개도 나무 전체에 고루 퍼지게 */
+    let s=n*7919+(bg.charCodeAt(0)||1); for(let i=pts.length-1;i>0;i--){ s=(s*9301+49297)%233280; const j=Math.floor(s/233280*(i+1)); [pts[i],pts[j]]=[pts[j],pts[i]]; }
+    return SLOTC[key]={pts,sp}; }
+  function treeSVG(bg,fr){ const c=tcol(bg), id='tg'+bg+Math.round(fr*100); let g='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.sky[0]+'"/><stop offset="1" stop-color="'+c.sky[1]+'"/></linearGradient></defs>'
+      +'<rect width="100" height="105" fill="url(#'+id+')"/>';
+    if(c.moon) g+='<circle cx="84" cy="14" r="7" fill="#FFE9A8" opacity=".9"/><g fill="#fff" opacity=".7"><circle cx="12" cy="10" r=".7"/><circle cx="30" cy="5" r=".5"/><circle cx="70" cy="7" r=".6"/><circle cx="93" cy="34" r=".5"/><circle cx="6" cy="40" r=".6"/></g>';
+    if(c.snow) g+='<g fill="#fff" opacity=".9"><circle cx="10" cy="12" r="1"/><circle cx="88" cy="20" r="1.2"/><circle cx="20" cy="50" r=".9"/><circle cx="92" cy="60" r="1"/><circle cx="6" cy="78" r="1.1"/></g>';
+    g+='<ellipse cx="50" cy="99" rx="46" ry="8" fill="'+c.gr+'"/>';
+    /* 줄기와 가지 */
+    g+='<path d="M45 99 C46 88 47 80 46 70 L54 70 C53 80 54 88 55 99Z" fill="'+c.tr+'"/>';
+    if(bg==='xm') g+='<path d="M50 6 L86 80 L14 80Z" fill="'+c.c1+'"/><path d="M50 6 L76 56 L24 56Z" fill="'+c.c2+'"/><path d="M50 6 L66 34 L34 34Z" fill="'+c.c1+'" opacity=".55"/>';
+    else g+='<path d="M47 72 L36 58 M53 72 L64 56 M50 70 L50 52" stroke="'+c.tr+'" stroke-width="2.4" stroke-linecap="round" fill="none"/>'
+      +'<g fill="'+c.c1+'"><circle cx="28" cy="48" r="17"/><circle cx="72" cy="48" r="17"/><circle cx="50" cy="56" r="18"/><circle cx="36" cy="30" r="18"/><circle cx="64" cy="30" r="18"/></g>'
+      +'<g fill="'+c.c2+'"><circle cx="50" cy="24" r="17"/><circle cx="50" cy="42" r="19"/></g>';
+    return g; }
+  /* 🌳 첫 화면 카드: 열매(소품) 수만큼 나무가 자라요 */
+  function treeCard(T,today){ const st=T.st, n=T.own.length, tot=Math.min(st.items.length,T.days.length)||st.items.length, fr=Math.min(1,n/Math.max(1,tot));
+    const bg=st.bg, sl=treeSlots(bg,st.items.length), sc=.6+.4*fr;
+    let g='<g transform="translate(50 99) scale('+sc.toFixed(3)+') translate(-50 -99)">'+treeSVG(bg,fr).replace(/<rect[^>]*\/>/,'').replace(/<ellipse[^>]*\/>/,'');
+    const fs=Math.max(6,sl.sp*.78);
+    T.own.forEach(o=>{ const p=sl.pts[st.items.indexOf(o.it)]; if(!p) return; g+='<text x="'+p[0].toFixed(1)+'" y="'+(p[1]+fs*.35).toFixed(1)+'" font-size="'+fs.toFixed(1)+'" text-anchor="middle">'+o.it[0]+'</text>'; });
+    if(!n) g+='<text x="50" y="62" font-size="12" text-anchor="middle">🌱</text>';
+    g+='</g>';
+    const bgl=treeSVG(bg,fr).match(/<defs>[\s\S]*?<\/defs><rect[^>]*\/>/)[0]+'<ellipse cx="50" cy="99" rx="46" ry="8" fill="'+tcol(bg).gr+'"/>';
+    return '<button type="button" class="mtree'+(today?' got':'')+'" data-go="trbox" aria-label="이달의 나무 보기"><svg viewBox="0 0 100 105" aria-hidden="true">'+bgl+g+'</svg>'
+      +'<span class="mtt"><b>'+st.ic+' 이달의 나무</b><span class="mtn">열매 <b>'+n+'</b> / '+tot+'개 <small>· '+E(st.t)+'</small></span><small>'+(today?'오늘 열매가 열렸어요 ✅':'오늘 공부를 다 하면 열매 하나 더!')+'</small></span><span class="mtgo" aria-hidden="true">›</span></button>'; }
+  /* 🌳 들어가서 보는 큰 나무: 보물 상자 화면의 배경을 그달 나무로 바꾸고, 모은 소품을 나무에 겹치지 않게 걸어요 (아래 날짜 목록은 그대로) */
+  function treeView(){ try{ const sec=document.querySelector('#app .panel'); if(!sec) return; const sc=sec.querySelector('.trscene'); if(!sc) return;
+      const on=sec.querySelector('.trtab.on'), k=(on&&(on.dataset.go||'').split(':')[1])||ym(new Date()); if(sc.dataset.tree===k) return;
+      const st=window.__tr&&__tr.SETS&&__tr.SETS[k]; if(!st) return; sc.dataset.tree=k; sc.classList.add('trtree');
+      const h=sec.querySelector('h2'); if(h) h.textContent='🌳 '+((typeof KID!=='undefined'&&KID.name)||'')+'의 이달의 나무';
+      sec.querySelectorAll('p').forEach(p=>{ if(/하루에 하나씩 생겨요/.test(p.textContent)) p.textContent=p.textContent.replace('하루에 하나씩 생겨요','하루에 하나씩 나무에 열려요'); });
+      const slots=[...sc.querySelectorAll(':scope > .trslot')], got=slots.filter(x=>!x.classList.contains('no')).length, fr=got/Math.max(1,slots.length);
+      const bgsvg=sc.querySelector(':scope > svg'); if(bgsvg){ bgsvg.setAttribute('viewBox','0 0 100 105'); bgsvg.setAttribute('preserveAspectRatio','none'); bgsvg.innerHTML=treeSVG(st.bg,fr); }
+      const sl=treeSlots(st.bg,st.items.length), s=Math.min(1.05,sl.sp/11);
+      slots.forEach((x,i)=>{ const p=sl.pts[i]; if(!p){ x.style.display='none'; return; } x.style.left=p[0]+'%'; x.style.top=(p[1]/105*100)+'%'; x.style.setProperty('--s',s.toFixed(2)); });
+    }catch(e){} }
+  function home(){ const fresh=[]; /* 반짝 소품은 쉬어요 (첫 화면 단순하게) */ const pr=document.querySelector('#app .tdprog'); if(pr&&!pr.querySelector('.tplinks')){
       const today=!!(TR().days||{})[dk(new Date())], m=ym(new Date()), nsp=SPS().list.filter(x=>x.m===m).length;
-      pr.insertAdjacentHTML('beforeend','<span class="tplinks"><button type="button" class="tplink" data-go="smap">🗺️ 도장 지도 · 도장 '+stampTotal()+'개</button>'
-        +'<button type="button" class="tplink'+(today?' got':'')+'" data-go="trbox">🧰 '+(today?'오늘의 보물 받았어요 ✅':'오늘 다 하면 보물 1개')+(nsp?' · ✨'+nsp:'')+'</button></span>'); }
+
+      /* 🌳 이달의 나무: 오늘의 학습을 다 한 날마다 그달 소품이 나무에 하나씩 열려요 (보물 상자와 같은 기록) */
+      const T=(window.__tr&&__tr.setOf)?__tr.setOf(new Date()):null;
+      if(T){ pr.insertAdjacentHTML('beforeend',treeCard(T,today)); } }
     fresh.forEach(o=>queue.push(o)); pump(); }
   { const _st=start; start=function(subj){ const r=_st.apply(this,arguments); try{ if(!CURSUBJ) setTimeout(home,0); }catch(e){} return r; }; }
 
@@ -7823,19 +7909,26 @@ const BDSIB={call:'채이 언니',m:10,d:18};
       const on=sec.querySelector('.trtab.on'), k=(on&&(on.dataset.go||'').split(':')[1])||a||ym(new Date()), bg=bgOf(k); if(!bg) return;
       const L=SPS().list.filter(x=>x.m===k), sc=sec.querySelector('.trscene');
       if(sc) L.slice(0,SPPOS[bg].length).forEach((o,i)=>{ const p=SPPOS[bg][i]; sc.insertAdjacentHTML('beforeend','<span class="spslot" title="'+E(o.it[1])+'" style="left:'+p[0]+'%;top:'+p[1]+'%;--s:'+p[2]+';animation-delay:-'+(i*.6)+'s">'+o.it[0]+'</span>'); });
-      const box='<div class="spbox"><h3>✨ 반짝 소품 '+L.length+'개</h3><p>도장 지도에서 한 마을의 도장을 모두 모으면 생겨요.'+(L.length?'':' 아직 없어요. 도전해 볼까요?')+'</p>'
+      const box='<div class="spbox"><h3>✨ 반짝 소품 '+L.length+'개</h3><p>도장 지도에서 한 마을(단원 하나)의 도장을 모두 모으면 생겨요.'+(L.length?'':' 아직 없어요. 도전해 볼까요?')+'</p>'
         +(L.length?'<div class="splist">'+L.map(o=>{ const a2=o.d.split('-'); return '<div class="spit"><b>'+o.it[0]+'</b>'+E(o.it[1])+'<br><small>'+a2[1]+'/'+a2[2]+'</small></div>'; }).join('')+'</div>':'')+'</div>';
       const li=sec.querySelector('.trlist'); if(li) li.insertAdjacentHTML('afterend',box); else sec.insertAdjacentHTML('beforeend',box); }catch(e){} }
   /* 도장 지도 화면: 반짝 소품 안내 */
-  function smapExtra(){ try{ const sec=document.querySelector('#app .panel'); if(!sec||sec.querySelector('.spnote')) return;
-      const n=SPS().list.length, h=sec.querySelector('h2'); const note='<p class="spnote">✨ 한 마을의 도장을 모두 모으면 그달 <b>보물 상자</b>에 <b>반짝 소품</b>이 하나 생겨요. 지금까지 반짝 소품 <b>'+n+'개</b>를 모았어요.</p>';
+  function smapExtra(s){ try{ const sec=document.querySelector('#app .panel'); if(!sec||sec.querySelector('.spnote')) return;
+      const n=SPS().list.length, h=sec.querySelector('h2'); let note;
+      /* 마을 = 단원 하나. 지도 위 번호 동그라미 하나가 마을 하나예요 */
+      const k=(s&&SUBJ[s]&&window.__smap)?__smap.stats(s):null, us=(k&&k.us)||[];
+      if(us.length){ const ns=us.map(x=>(slots(x.u)||[]).length), same=ns.every(v=>v===ns[0]);
+        const ci=us.findIndex(x=>{ const sl=slots(x.u)||[]; return sl.length&&!sl.every(l=>prog[x.u.id+'-'+l]); });
+        let now=''; if(ci>=0){ const sl=slots(us[ci].u)||[], got=sl.filter(l=>prog[us[ci].u.id+'-'+l]).length; now='<br>👉 지금은 <b>'+(ci+1)+'번 마을</b>이에요. 도장 '+got+' / '+sl.length+'개, <b>'+(sl.length-got)+'개</b> 더 모으면 반짝 소품이 생겨요!'; }
+        note='<p class="spnote">🏘️ <b>마을</b>은 단원 하나예요. 아래 길 위의 번호 동그라미(1, 2, 3 …) 하나가 마을 하나예요.<br>마을마다 도장이 '+(same?'<b>'+ns[0]+'개</b>':'몇 개씩')+' 있고, 단계를 하나 끝낼 때마다 하나씩 찍혀요. 한 마을의 도장을 다 모으면 ⭐ 마을이 되고, 그달 <b>보물 상자</b>에 <b>반짝 소품</b>이 하나 생겨요.'+now+'<br><small>지금까지 모은 반짝 소품: '+n+'개</small></p>'; }
+      else note='<p class="spnote">✨ 과목 나라마다 단원 하나가 <b>마을</b> 하나예요. 한 마을(단원)의 도장을 모두 모으면 그달 <b>보물 상자</b>에 <b>반짝 소품</b>이 하나 생겨요. 나라를 누르면 마을이 보여요. 지금까지 반짝 소품 <b>'+n+'개</b>를 모았어요.</p>';
       if(h) h.insertAdjacentHTML('afterend',note); else sec.insertAdjacentHTML('afterbegin',note); }catch(e){} }
-  { const _ri=routeInner; routeInner=function(v,a,b){ const r=_ri.apply(this,arguments); try{ if(v==='trbox') trboxExtra(a); else if(v==='smap') smapExtra(); }catch(e){} return r; }; }
+  { const _ri=routeInner; routeInner=function(v,a,b){ const r=_ri.apply(this,arguments); try{ if(v==='trbox'){ trboxExtra(a); treeView(); } else if(v==='smap') smapExtra(a); }catch(e){} return r; }; }
   /* 보물 상자의 달 탭을 누를 때도 다시 붙여요 */
-  try{ new MutationObserver(()=>{ try{ if(typeof VIEW!=='undefined'&&VIEW==='trbox') trboxExtra(); }catch(e){} }).observe(document.getElementById('app'),{childList:true}); }catch(e){}
+  try{ new MutationObserver(()=>{ try{ if(typeof VIEW!=='undefined'&&VIEW==='trbox'){ trboxExtra(); treeView(); } }catch(e){} }).observe(document.getElementById('app'),{childList:true}); }catch(e){}
 
   window.__spark={award,units,list:()=>SPS().list};
-  try{ if(typeof VIEW!=='undefined'&&VIEW==='start') setTimeout(home,0); else if(VIEW==='trbox') trboxExtra(); else if(VIEW==='smap') smapExtra(); }catch(e){}
+  try{ if(typeof VIEW!=='undefined'&&VIEW==='start') setTimeout(home,0); else if(VIEW==='trbox'){ trboxExtra(); treeView(); } else if(VIEW==='smap') smapExtra(); }catch(e){}
 })();
 </script>
 <!-- ===== 반짝 소품: 도장 지도 ↔ 보물 상자 잇기 (2026-10-23) 끝 ===== -->
