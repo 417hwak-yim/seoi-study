@@ -4751,14 +4751,16 @@ function mgFit(M){ const c=M.c||0, R=M.R; if(typeof R!=='number'){ mgGoal(M); re
   let L=M.goal?M.goal-c:0;
   if(!ok(L)){ const good=cand.filter(ok); if(good.length) L=good[Math.floor(Math.random()*good.length)]; else { L=0; for(let x=1;x<=R;x++) if(ok(x)){ L=x; break; } if(!L) L=R; } }
   M.goal=c+L; }
+/* 2026-10-24: 게임 하나의 시간 — 평일 50초, 일요일 60초 (한 달 내내 공부한 말일은 아래 꾸준함 보너스에서 90초) */
+function GSEC(){ return new Date().getDay()===0?60:50; }
 function grantGame(){
   const M=mgState(); mgGoal(M); M.n++; (STATE.bp=STATE.bp||{}).tix=0;
   const was=M.R; M.c=(M.c||0)+1; if(typeof M.R==='number') M.R=Math.max(0,M.R-1);
   /* 2~3개를 채웠거나, 방금 오늘의 마지막 학습을 끝냈으면 게임을 열어요 */
   if(M.c>=M.goal||was===1){ M.c=0; M.goal=0;
-    if(M.pend) M.pend.sec+=60;   /* 아직 안 한 게임이 있으면, 그 게임 시간을 60초 늘려 줘요 (세는 것은 멈추지 않아요) */
+    if(M.pend) M.pend.sec+=GSEC();   /* 아직 안 한 게임이 있으면, 그 게임 시간을 한 판만큼 늘려 줘요 (세는 것은 멈추지 않아요) */
     else { let pool=Object.keys(MGAMES).filter(k=>M.open.indexOf(k)<0); if(!pool.length) pool=Object.keys(MGAMES);
-      const k=pool[Math.floor(Math.random()*pool.length)]; if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:60}; }
+      const k=pool[Math.floor(Math.random()*pool.length)]; if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:GSEC()}; }
     setTimeout(mgOffer,1100); }
   mgFit(M);
 }
@@ -5010,11 +5012,11 @@ function bubbleGame(){
   let quit=closeModal;
   document.addEventListener('keydown',onEsc); document.body.style.overflow='hidden'; document.body.appendChild(modal);
   if(!(B.left>0)){
-    if(!(B.tix>0)){ modal.innerHTML='<div class="modalcard result"><div class="big">🫧</div><h2>방울 게임 이용권이 없어요</h2><p>단계를 하나 끝내면 60초 이용권을 받아요.</p><div class="row center"><button class="btn main" id="bp-x">공부하러 가기</button></div></div>'; document.getElementById('bp-x').onclick=closeModal; return; }
-    B.tix--; B.left=60; persist();
+    if(!(B.tix>0)){ modal.innerHTML='<div class="modalcard result"><div class="big">🫧</div><h2>방울 게임 이용권이 없어요</h2><p>단계를 하나 끝내면 게임 이용권을 받아요.</p><div class="row center"><button class="btn main" id="bp-x">공부하러 가기</button></div></div>'; document.getElementById('bp-x').onclick=closeModal; return; }
+    B.tix--; B.left=GSEC(); persist();
   }
   const resume=!!(B.board&&B.board.length);
-  modal.innerHTML='<div class="modalcard bp"><div class="modalhead"><h2>🫧 말랑팝 방울 슈터</h2><button class="btn" id="bp-x" aria-label="게임 닫기">✕ 닫기</button></div><div class="bpstats"><div><small>남은 시간</small><strong id="bp-timer">60초</strong></div><div><small>점수</small><strong id="bp-score">0</strong></div><div><small>레벨</small><strong id="bp-level">1</strong></div></div><div class="bpstage" id="bp-stage"><canvas id="bp-cv" width="936" height="1260" tabindex="0" aria-label="방울 슈터. 누르고 조준한 뒤 손을 떼면 발사해요. 키보드는 좌우 화살표로 조준, 스페이스로 발사."></canvas><div class="bpover" id="bp-over"><div><h2 id="bp-h"></h2><p id="bp-m"></p><div class="row center" id="bp-b"></div></div></div></div><div class="row center" style="margin-top:10px"><button class="btn" id="bp-swap">방울 바꾸기 ⇄</button><button class="btn" id="bp-pause">잠깐 쉬기</button><button class="btn" id="bp-sound" aria-pressed="true">🔊 소리 켜짐</button></div><p class="lead" style="text-align:center;margin:8px 0 0;font-size:.9rem">같은 색 방울 3개를 이으면 팡! 닫아도 지금 상태가 저장돼요.</p></div>';
+  modal.innerHTML='<div class="modalcard bp"><div class="modalhead"><h2>🫧 말랑팝 방울 슈터</h2><button class="btn" id="bp-x" aria-label="게임 닫기">✕ 닫기</button></div><div class="bpstats"><div><small>남은 시간</small><strong id="bp-timer">50초</strong></div><div><small>점수</small><strong id="bp-score">0</strong></div><div><small>레벨</small><strong id="bp-level">1</strong></div></div><div class="bpstage" id="bp-stage"><canvas id="bp-cv" width="936" height="1260" tabindex="0" aria-label="방울 슈터. 누르고 조준한 뒤 손을 떼면 발사해요. 키보드는 좌우 화살표로 조준, 스페이스로 발사."></canvas><div class="bpover" id="bp-over"><div><h2 id="bp-h"></h2><p id="bp-m"></p><div class="row center" id="bp-b"></div></div></div></div><div class="row center" style="margin-top:10px"><button class="btn" id="bp-swap">방울 바꾸기 ⇄</button><button class="btn" id="bp-pause">잠깐 쉬기</button><button class="btn" id="bp-sound" aria-pressed="true">🔊 소리 켜짐</button></div><p class="lead" style="text-align:center;margin:8px 0 0;font-size:.9rem">같은 색 방울 3개를 이으면 팡! 닫아도 지금 상태가 저장돼요.</p></div>';
 
   const $=id=>document.getElementById(id), cv=$('bp-cv'), ctx=cv.getContext('2d'), W=468,H=630,R=25,DY=43.3013,OX=234,OY=563,LIMIT=492;
   const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5048,7 +5050,7 @@ function bubbleGame(){
   function begin(){ initAudio(); state='playing'; timerAt=performance.now(); $('bp-over').hidden=true; $('bp-pause').textContent='잠깐 쉬기'; cv.focus({preventScroll:true}); }
   function pause(){ if(state==='playing'){ state='paused'; saveState(false); overlay('잠깐 쉬는 중','쉬는 동안에는 시간도 멈춰요.','<button class="btn main" id="bp-go">계속하기</button>'); $('bp-go').onclick=begin; $('bp-pause').textContent='계속하기'; } else if(state==='paused') begin(); }
   function timeUp(){ state='over'; shot=null; remaining=0; timerHud(); saveState(true); fx('finish'); const left=B.tix||0;
-    overlay('60초 끝!','지금까지 <b>'+score.toLocaleString()+'점</b>, 레벨 '+(1+Math.floor(score/1200))+'!<br>'+KID.ya+', 다음 공부를 끝내면 <b>지금 멈춘 곳부터</b> 이어서 할 수 있어.','<button class="btn main" id="bp-done">공부하러 가기</button>'+(left?'<button class="btn sun" id="bp-more">이용권 '+left+'장 남음, 이어서 하기</button>':''));
+    overlay('시간 끝!','지금까지 <b>'+score.toLocaleString()+'점</b>, 레벨 '+(1+Math.floor(score/1200))+'!<br>'+KID.ya+', 다음 공부를 끝내면 <b>지금 멈춘 곳부터</b> 이어서 할 수 있어.','<button class="btn main" id="bp-done">공부하러 가기</button>'+(left?'<button class="btn sun" id="bp-more">이용권 '+left+'장 남음, 이어서 하기</button>':''));
     $('bp-done').onclick=quit; if(left) $('bp-more').onclick=()=>{ quit(); bubbleGame(); }; }
   function danger(){ texts.push({x:W/2,y:300,text:'앗! 새 판으로 다시!',life:1.8}); fx('over'); wave(); stage=0; elapsed=0; combo=0; shot=null; current=pickC(); next=pickC(); }
   function adjacent(a,b){ const p=pos(a.r,a.c), q=pos(b.r,b.c); return Math.hypot(p.x-q.x,p.y-q.y)<54; }
@@ -6775,8 +6777,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 /* ===== 🧰 보물 상자: 매일 오늘의 학습을 다 하면 계절 소품을 하나씩 모아요 (두 공부방) =====
    · 10월 18~31일 🎃 할로윈 14개 · 11월 🍁 가을 숲 30개 · 12월 🎄 크리스마스 31개 (하루에 하나)
    · 채이와 서이는 모을 소품은 똑같지만 나오는 차례가 달라요 → 서로 폰을 보여 주며 비교해요
-   · 일요일에는 그날 열리는 게임이 90초 (일주일에 한 번)
-   · 그달 첫날(10월은 시작한 날)부터 말일까지 하루도 빠지지 않으면 말일 게임이 120초 */
+   · 게임 시간: 평일 50초, 일요일 60초 (2026-10-24 줄였어요)
+   · 그달 첫날(10월은 시작한 날)부터 말일까지 하루도 빠지지 않으면 말일 게임이 90초 */
 (function () {
   const KN = (typeof KID !== 'undefined' && KID.name) || '';
   const SEED = /서이/.test(KN) ? 7 : 3;
@@ -6822,8 +6824,8 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   function bonusSec(t) { t = t || new Date(); const sb = streakBefore(t), last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate() === t.getDate();
     if (last) { const first = Object.keys(S().days).concat(Object.keys(STATE.full || {})).map(s => { const a = s.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }).filter(x => x.getMonth() === t.getMonth() && x.getFullYear() === t.getFullYear()).sort((a, b) => a - b)[0];
       const st = SETS[ym(t)], from = Math.max(st ? st.from : 1, first ? first.getDate() : 1); let ok = true; for (let i = from; i < t.getDate(); i++) if (!done(new Date(t.getFullYear(), t.getMonth(), i))) { ok = false; break; }
-      if (ok && t.getDate() - from >= 6) return [120, '한 달 내내 공부한 날']; }
-    if (t.getDay() === 0) return [90, '일요일'];
+      if (ok && t.getDate() - from >= 6) return [90, '한 달 내내 공부한 날']; }
+    if (t.getDay() === 0) return [60, '일요일'];
     return null; }
   { const _gg = grantGame; grantGame = function () { const r = _gg.apply(this, arguments); try { const b = bonusSec(); if (b) { const M = mgState(); if (M.pend && M.pend.sec < b[0]) { M.pend.sec = b[0]; save(); } } } catch (e) {} return r; }; }
   { const _mp = mgPlay; mgPlay = function (k, sec) { try { const b = bonusSec(); if (b) sec = Math.max(sec || 0, b[0]); } catch (e) {} return _mp.call(this, k, sec); }; }
@@ -7025,7 +7027,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     h += '<div class="trsndrow"><button class="trsnd" type="button"></button></div>';
     if (isCur) { const sb = streakBefore(t) + (done(t) ? 1 : 0), b = bonusSec(t);
       if (!full) h += '<p style="margin:0 0 10px;font-size:.9rem;color:#5b6378">오늘의 학습을 다 하면 하루에 하나씩 생겨요. 언니·동생과 모을 소품은 같지만 나오는 차례가 달라요! 다 모은 달은 나중에도 여기서 다시 볼 수 있어요.</p>';
-      h += scene(info) + '<p style="margin:10px 0 4px">🔥 연속 <b>' + sb + '일</b>째 · 일요일은 게임 90초, 한 달 내내 하면 말일 게임 120초' + (b ? '<br><span class="trbonus">오늘은 ' + b[1] + '! 게임 ' + b[0] + '초 ⏱</span>' : '') + '</p>'; }
+      h += scene(info) + '<p style="margin:10px 0 4px">🔥 연속 <b>' + sb + '일</b>째 · ' + (function () { const n = new Date(), e = new Date(n.getFullYear(), n.getMonth() + 1, 0); return e.getDay() === 0 ? (e.getMonth() + 1) + '월 ' + e.getDate() + '일은 일요일이면서 이달 마지막 날이에요. 한 달 내내 하면 그날 게임 90초!' : '평일 게임 50초, 일요일 60초, 한 달 내내 하면 말일 90초'; })() + (b ? '<br><span class="trbonus">오늘은 ' + b[1] + '! 게임 ' + b[0] + '초 ⏱</span>' : '') + '</p>'; }
     else h += (full ? '' : '<p style="margin:0 0 10px;font-size:.9rem;color:#5b6378">' + (+k.split('-')[1]) + '월에 모은 보물이에요.</p>') + scene(info);
     h += '<div class="trlist">' + info.st.items.map(it => { const o = info.own.find(x => x.it[1] === it[1]); return '<div class="trit' + (o ? '' : ' no') + '"><b>' + icon(it) + '</b>' + (o ? it[1] + '<br><small>' + (o.d.getMonth() + 1) + '/' + o.d.getDate() + '</small>' : '???') + '</div>'; }).join('') + '</div></section>';
     show(h, '#4B2A7A'); try { window.scrollTo(0, 0); } catch (e) {} sndBtn(info.st.bg); }
