@@ -8190,5 +8190,38 @@ details[open]:not(.subjfold)>summary::after{transform:rotate(180deg)}
 #app .tdnowcard .tt>.tl{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:4px}
 #app .tdnowcard .tmin{display:inline-flex!important;white-space:nowrap;margin:0!important}
 </style>
+<!-- ===== 새로고침 단추 (2026-10-24) 시작 ===== -->
+<!-- 화면을 당겨도 새로고침이 안 되어서(안드로이드 최적화가 당김을 막아요) 메인 화면 오른쪽 위 모서리에 동그란 화살표 단추를 둬요.
+     메인 화면(#hero) 안에 붙어 있어서 화면을 내리면 같이 올라가고, 공부·게임 화면에서는 보이지 않아요.
+     누르면 주소 뒤에 ?r=시간 을 붙여 다시 열어서, 휴대폰에 남아 있던 예전 파일 대신 GitHub의 최신 파일을 받아요. 공부 기록은 그대로예요. -->
+<style>
+#rfbtn{position:absolute;top:8px;right:8px;z-index:5;width:34px;height:34px;padding:0;border-radius:50%;
+  border:2px solid #1e2a4a;background:rgba(255,255,255,.92);color:#1e2a4a;box-shadow:0 2px 0 #1e2a4a;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#rfbtn::after{content:"";position:absolute;inset:-8px}
+#rfbtn svg{width:18px;height:18px;transition:transform .5s}
+#rfbtn:active{transform:translateY(2px);box-shadow:none}
+#rfbtn.spin svg{transform:rotate(360deg)}
+</style>
+<script>
+(function () {
+  var b = document.createElement('button');
+  b.id = 'rfbtn'; b.type = 'button'; b.title = '새로고침'; b.setAttribute('aria-label', '새로고침');
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>';
+  b.addEventListener('click', function () {
+    b.classList.add('spin');
+    setTimeout(function () {
+      var u = location.pathname + '?r=' + Date.now() + location.hash;
+      try { location.replace(u); } catch (e) { location.reload(); }
+    }, 250);
+  });
+  /* 메인 화면은 다시 그려질 때마다 새로 만들어져서, 그때마다 단추를 그 안에 다시 붙여요 */
+  function place() { var h = document.getElementById('hero'); if (h && b.parentNode !== h) h.appendChild(b); }
+  place();
+  var app = document.getElementById('app') || document.body;
+  new MutationObserver(place).observe(app, { childList: true, subtree: true });
+})();
+</script>
+<!-- ===== 새로고침 단추 (2026-10-24) 끝 ===== -->
 </body>
 </html>
