@@ -8010,7 +8010,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    +'.qrmsg{font-weight:700;color:#2E7D4F}.qrerr{font-weight:700;color:#C2185B}.qrbig{font-size:2.6rem;margin:4px 0}';
   document.head.appendChild(css);
 
-  const CHUNK=520;          /* QR 한 장에 넣는 글자 수 (오래된 폰 카메라도 잘 읽게 크지 않게) */
+  const CHUNK=900;          /* QR 한 장에 넣는 글자 수 (2026-10-24: 520에서 늘려 장 수를 줄였어요) */
   const b64u=u8=>{ let s=''; for(let i=0;i<u8.length;i+=8192) s+=String.fromCharCode.apply(null,u8.subarray(i,i+8192)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
   const ub64=s=>{ const b=atob(s.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(b,c=>c.charCodeAt(0)); };
   async function pipe(u8,Kind,fmt){ const st=new Blob([u8]).stream().pipeThrough(new Kind(fmt)); return new Uint8Array(await new Response(st).arrayBuffer()); }
@@ -8022,7 +8022,19 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     for(const id of Object.keys(P)){ try{ out[id]=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,110/Math.max(im.width,im.height)), c=document.createElement('canvas'); c.width=Math.round(im.width*s); c.height=Math.round(im.height*s); c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',.5)); }; im.onerror=rej; im.src=P[id]; }); }catch(e){} }
     return out; }
   const picCount=()=>{ try{ return Object.keys(JSON.parse(localStorage.getItem(XFER_PIC)||'{}')||{}).length; }catch(e){ return 0; } };
-  async function pack(pics){ let code; if(pics){ const ls=xferLS(false); ls[XFER_PIC]=JSON.stringify(await smallPics()); code=String(makeCode({ls})); } else code=String(makeCode()); let body;
+  /* 2026-10-24: QR에는 오답 노트(틀린 문제 다시 풀기 목록)를 빼요. 문제 글이 통째로 들어 있어서 QR이 수백 장이 되었거든요.
+     도장·달력·하던 곳·오늘의 학습·책장·설정은 모두 그대로 옮겨요. 오답 노트는 받는 폰에서 새로 쌓여요. */
+  const QR_CUT=['wrong','wrongDel'];
+  function slimCode(code){ const m=/^F1-([A-Za-z0-9_-]+)$/.exec(code); if(!m) return code;
+    try{ const o=JSON.parse(new TextDecoder().decode(ub64(m[1]))); let cut=false; QR_CUT.forEach(k=>{ if(k in o){ delete o[k]; cut=true; } }); return cut?'F1-'+b64u(new TextEncoder().encode(JSON.stringify(o))):code; }catch(e){ return code; } }
+  /* 어떤 기록이 큰지 재요(줄인 뒤 크기, 큰 순서) */
+  async function sizes(){ const m=/^F1-([A-Za-z0-9_-]+)$/.exec(slimCode(String(makeCode()))); if(!m) return [];
+    const o=JSON.parse(new TextDecoder().decode(ub64(m[1]))), L=o.__ls||{}; delete o.__ls; const rows=[];
+    const z=async s=>{ const u=new TextEncoder().encode(s); try{ return canZ?(await pipe(u,CompressionStream,'deflate-raw')).length:u.length; }catch(e){ return u.length; } };
+    for(const k of Object.keys(o)) rows.push([k,await z(JSON.stringify(o[k]))]);
+    for(const k of Object.keys(L)) rows.push([k,await z(String(L[k]))]);
+    return rows.sort((a,b)=>b[1]-a[1]); }
+  async function pack(pics){ let code; if(pics){ const ls=xferLS(false); ls[XFER_PIC]=JSON.stringify(await smallPics()); code=String(makeCode({ls})); } else code=String(makeCode()); code=slimCode(code); let body;
     const m=/^([A-Z][0-9])-([A-Za-z0-9_-]+)$/.exec(code);
     if(m&&canZ){ try{ body=m[1]+'z'+b64u(await pipe(ub64(m[2]),CompressionStream,'deflate-raw')); }catch(e){ body=null; } }
     if(!body) body='--t'+b64u(new TextEncoder().encode(code));
@@ -8040,7 +8052,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     OV.addEventListener('click',e=>{ if(e.target===OV||e.target.closest('[data-qrclose]')) close(); }); return OV.firstChild; }
 
   /* ---------- 📤 QR 보여 주기 (아이 기기) ---------- */
-  function drawQR(cv,txt){ const q=qrcode(0,'M'); q.addData(txt,'Byte'); q.make(); const n=q.getModuleCount(), qz=4, px=Math.max(3,Math.floor(720/(n+qz*2)));
+  function drawQR(cv,txt){ const q=qrcode(0,'L'); q.addData(txt,'Byte'); q.make(); const n=q.getModuleCount(), qz=4, px=Math.max(3,Math.floor(720/(n+qz*2)));
     cv.width=cv.height=(n+qz*2)*px; const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.fillStyle='#000';
     for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) g.fillRect((c+qz)*px,(r+qz)*px,px,px); }
   async function showQR(pics){ let parts; try{ parts=await pack(pics); }catch(e){ alert('QR을 만들지 못했어요. 아래 코드 복사나 기록 파일을 써 주세요.'); return; }
@@ -8114,7 +8126,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   /* 기록을 옮기고 새로 열렸으면 결과를 알려 줘요 */
   try{ const xm=sessionStorage.getItem('xfer-msg'); if(xm!==null){ sessionStorage.removeItem('xfer-msg'); const n=+xm||0;
     overlay('<div class="qrbig">🎉</div><h3>기록을 다 옮겼어요!</h3><p>'+(n?'도장 <b>'+n+'개</b>가 새로 생겼어요.<br>':'')+'도장, 달력, 하던 곳, 오늘의 학습, 기분, 책장, 설정까지 보낸 기기와 똑같이 맞췄어요.</p><button type="button" class="qrbtn main" data-qrclose>확인</button>'); } }catch(e){}
-  window.__qrx={pack,unpack,showQR,scanQR};
+  window.__qrx={pack,unpack,showQR,scanQR,sizes};
 })();
 </script>
 <!-- ===== 기록 옮기기 QR 끝 ===== -->
@@ -8223,5 +8235,58 @@ details[open]:not(.subjfold)>summary::after{transform:rotate(180deg)}
 })();
 </script>
 <!-- ===== 새로고침 단추 (2026-10-24) 끝 ===== -->
+<!-- ===== 기록 파일 보내기 (2026-10-24) 시작 ===== -->
+<!-- 기록이 많으면 QR이 수백 장이 되어서, 기록 파일을 카톡·Quick Share·블루투스로 바로 보내는 단추를 맨 앞에 둬요.
+     받은 폰에서는 같은 공부방을 열고 '📂 기록 파일 불러오기'로 그 파일을 고르면 돼요(이미 있는 기록은 지우지 않고 합쳐요).
+     QR은 몇 장 안 될 때만 보여 주고, 많으면 파일 보내기를 권해요. 코드 칸이 화면 밖으로 나가지 않게도 맞췄어요. -->
+<style>
+details .row{flex-wrap:wrap}
+#mycode,#incode{min-width:0;max-width:100%;flex:1 1 150px;box-sizing:border-box;text-overflow:ellipsis}
+details .row > .btn,details .row > label.btn{white-space:normal!important;word-break:keep-all;overflow-wrap:anywhere;flex:1 1 130px!important;min-width:0;line-height:1.3;text-align:center;justify-content:center}
+.sendrow{display:flex;margin:6px 0 4px}.sendrow .btn{flex:1 1 auto;white-space:normal;word-break:keep-all;line-height:1.3}.sendrow small{display:block;font-size:.78em;opacity:.85;font-weight:600}
+</style>
+<script>
+(function () {
+  var QRMAX = 15;   /* QR이 이보다 많으면 파일 보내기를 권하고, 어떤 기록이 큰지 보여 줘요 */
+  function fileName() { return KID.name + '-공부방-기록-' + dkey(new Date()) + '.txt'; }
+  function say(t) { var m = document.getElementById('codemsg'); if (m) m.textContent = t; }
+  async function sendFile() {
+    var txt; try { txt = String(makeCode({ pics: true })); } catch (e) { say('기록을 만들지 못했어요. 코드 복사를 써 주세요.'); return; }
+    var f = null; try { f = new File([txt], fileName(), { type: 'text/plain' }); } catch (e) {}
+    if (f && navigator.canShare && navigator.canShare({ files: [f] })) {
+      try { await navigator.share({ files: [f], title: KID.name + '의 공부방 기록' });
+        say('기록 파일을 보냈어요. 받은 폰에서 같은 공부방을 열고 “📂 기록 파일 불러오기”로 그 파일을 고르면 돼요.'); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    /* 보내기 창을 못 여는 기기(컴퓨터 등)는 파일로 저장해요 */
+    var b = document.getElementById('savefile'); if (b) b.click();
+  }
+  function addSend() {
+    var my = document.getElementById('mycode'); if (!my) return; var d = my.closest('details'); if (!d || d.querySelector('.sendrow')) return;
+    var row = document.createElement('div'); row.className = 'sendrow';
+    row.innerHTML = '<button type="button" class="btn main" data-send>📨 기록 파일 보내기<small>카톡 · Quick Share · 블루투스</small></button>';
+    var q = d.querySelector('.qrrow'), p = d.querySelector(':scope > p');
+    if (q) q.before(row); else if (p) p.after(row); else d.querySelector('summary').after(row);
+    row.insertAdjacentHTML('afterend', '<p class="lead" style="margin:0 0 10px;font-size:.88rem">아이 기기에서 <b>기록 파일 보내기</b> → 카톡(보호자에게)이나 Quick Share로 보내고, 보호자 폰에서 같은 공부방을 열어 <b>📂 기록 파일 불러오기</b>로 받은 파일을 고르면 끝이에요. 한 번에 다 옮겨져요.</p>');
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('[data-send],[data-qr="show"]'); if (!t) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (t.hasAttribute('data-send')) { sendFile(); return; }
+    /* QR 보여 주기: 장 수를 먼저 세어 보고, 많으면 파일 보내기를 권해요 */
+    (async function () {
+      var n = 0; try { n = (await window.__qrx.pack(false)).length; } catch (er) { n = 0; }
+      if (n && n <= QRMAX) { window.__qrx.showQR(); return; }
+      var big = ''; try { big = (await window.__qrx.sizes()).slice(0, 4).map(function (x) { return x[0] + ' ' + (x[1] / 1024).toFixed(1) + 'KB'; }).join(', '); } catch (er) {}
+      say((n ? '기록이 많아서 QR로는 ' + n + '장이나 돼요. ' : '') + '위의 “📨 기록 파일 보내기”로 보내면 한 번에 옮겨져요.' + (big ? ' (큰 기록: ' + big + ')' : ''));
+      var r = document.querySelector('.sendrow'); if (r) { r.scrollIntoView({ block: 'center', behavior: 'smooth' }); var bb = r.querySelector('.btn'); bb.animate && bb.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 500, iterations: 2 }); }
+      var m = document.getElementById('codemsg'); if (m) m.scrollIntoView({ block: 'nearest' });
+    })();
+  }, true);
+  { var _st = start; start = function () { var r = _st.apply(this, arguments); try { addSend(); } catch (e) {} return r; }; }
+  try { addSend(); } catch (e) {}
+})();
+</script>
+<!-- ===== 기록 파일 보내기 (2026-10-24) 끝 ===== -->
 </body>
 </html>
