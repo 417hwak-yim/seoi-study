@@ -8367,7 +8367,14 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
 .trslot[title="거미"]::before{display:none!important}
 @keyframes adg2{0%,100%{transform:translateY(-.5em)}50%{transform:translateY(1.3em)}}
 @keyframes adg2t{0%,100%{height:.9em}50%{height:2.7em}}
-@media (prefers-reduced-motion:reduce){.a-dangle,.a-dangle::before,.trscene.trtree .trslot > .tra.a-dangle,.trscene.trtree .trslot > .tra.a-dangle::before{animation:none!important}}
+/* 거미와 거미줄을 둘 다 모으면: 거미가 거미줄 바로 아래로 와서, 거미줄 가운데에서 실을 뽑아 오르내려요 (--ext: 거미줄 가운데까지의 실 길이) */
+.trscene .trslot.splink > .tra.a-dangle,.trscene.trtree .trslot.splink > .tra.a-dangle{animation:adg3 5.5s ease-in-out infinite!important}
+.trscene .trslot.splink > .tra.a-dangle::before,.trscene.trtree .trslot.splink > .tra.a-dangle::before{animation:adg3t 5.5s ease-in-out infinite!important}
+.trscene .trslot.webhost > .tra,.trscene.trtree .trslot.webhost > .tra{animation:none!important}
+.trscene .trslot.splink{z-index:2}
+@keyframes adg3{0%,100%{transform:translateY(-.35em)}50%{transform:translateY(.6em)}}
+@keyframes adg3t{0%,100%{height:calc(var(--ext,1em) - .35em)}50%{height:calc(var(--ext,1em) + .6em)}}
+@media (prefers-reduced-motion:reduce){.trslot.splink > .tra.a-dangle::before{height:var(--ext,1em)}.a-dangle,.a-dangle::before,.trscene.trtree .trslot > .tra.a-dangle,.trscene.trtree .trslot > .tra.a-dangle::before{animation:none!important}}
 </style>
 <script>
 (function () {
@@ -8389,6 +8396,40 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
   window.addEventListener('resize', req);
   new MutationObserver(req).observe(document.getElementById('app') || document.body, { childList: true });
   check();
+})();
+/* 이달의 나무: 처음부터 거미 자리를 거미줄 바로 아래 칸으로 정해 둬요(그 칸의 소품은 거미의 원래 자리로). 모았는지와 상관없이 늘 같은 자리라서,
+   거미를 모으면 거미줄 아래에 생기고 거미줄 가운데에서 내려온 실을 타고 오르내려요. 거미줄이 맨 아래 줄이면 거미줄을 거미 바로 위 칸으로 옮겨요 */
+(function () {
+  function pos(s) { return { l: parseFloat(s.style.left), t: parseFloat(s.style.top) }; }
+  function move(el, l, t) { el.style.left = l + '%'; el.style.top = t + '%'; }
+  function link(sc) {
+    var sp = sc.querySelector('.trslot[title="거미"]'), wb = sc.querySelector('.trslot[title="거미줄"]');
+    if (!sp || !wb) return;
+    if (!sp.dataset.linked) {
+      var all = [].slice.call(sc.querySelectorAll('.trslot'));
+      var tops = all.map(function (s) { return Math.round(pos(s).t * 100) / 100; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(function (a, b) { return a - b; });
+      if (tops.length < 2) return;
+      var row = Infinity; for (var i = 1; i < tops.length; i++) row = Math.min(row, tops[i] - tops[i - 1]);
+      var at = function (l, t) { return all.filter(function (s) { var p = pos(s); return Math.abs(p.l - l) < .5 && Math.abs(p.t - t) < .5; })[0]; };
+      var w = pos(wb), s0 = pos(sp), occ;
+      if (w.t + row <= tops[tops.length - 1] + .5) { occ = at(w.l, w.t + row); if (occ && occ !== sp) move(occ, s0.l, s0.t); move(sp, w.l, w.t + row); }
+      else if (s0.t - row >= tops[0] - .5) { occ = at(s0.l, s0.t - row); if (occ && occ !== wb) move(occ, w.l, w.t); move(wb, s0.l, s0.t - row); }
+      else return;
+      sp.dataset.linked = '1'; sp.classList.add('splink'); wb.classList.add('webhost');
+    }
+    /* 실 길이: 움직임을 뺀 거미 자리에서 거미줄 가운데까지 (거미를 아직 안 모았으면 실도 없어요) */
+    if (sp.classList.contains('no')) return;
+    var el = sp.querySelector('.a-dangle'); if (!el) return;
+    var r = el.getBoundingClientRect(), wr = wb.getBoundingClientRect(); if (!r.height || !wr.height) return;
+    var ty = 0; try { ty = new DOMMatrix(getComputedStyle(el).transform).m42; } catch (e) {}
+    var anchor = r.top - ty + r.height * (1 - .62), webC = wr.top + wr.height * .5;
+    el.style.setProperty('--ext', Math.max(6, Math.round(anchor - webC)) + 'px');
+  }
+  var tm = 0;
+  function run() { clearTimeout(tm); tm = setTimeout(function () { [].forEach.call(document.querySelectorAll('.trscene'), link); }, 120); }
+  new MutationObserver(run).observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
+  window.addEventListener('resize', function () { [].forEach.call(document.querySelectorAll('.trslot.splink .a-dangle'), function (e) { e.style.removeProperty('--ext'); }); run(); });
+  run();
 })();
 </script>
 <!-- ===== 글자 채우기·위로 가기 (2026-10-24) 끝 ===== -->
