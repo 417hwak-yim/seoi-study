@@ -8433,5 +8433,308 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
 })();
 </script>
 <!-- ===== 글자 채우기·위로 가기 (2026-10-24) 끝 ===== -->
+<!-- ===== 받침 소리 놀이 (2026-10-25) 시작 ===== -->
+<!-- 받아쓰기에서 받침이 무엇인지 헷갈릴 때: 낱말을 듣고, 받침 자리(네모)에 ㄱ ㄴ ㄷ ㄹ ㅁ ㅂ ㅇ을 하나씩 넣어 봐요.
+     넣을 때마다 그 받침을 넣은 글자(예: 가+ㄱ=각)와 낱말 전체(각장)를 소리 내어 읽어 줘서, 들은 소리와 비교하며 스스로 찾아요. 틀렸다고 하지 않아요.
+     10단계(낱말 8개씩): ㄴ → ㅁ → ㅇ → 섞기 → ㄱ → ㄹ → ㅂ → 섞기 → 모두 섞기 → 소리가 같은 받침(ㅅ ㅈ ㅊ ㅌ).
+     한 단계를 끝내면 다른 공부처럼 달력에 어휘 점이 찍히고 게임 시간도 쌓여요. 기록은 STATE.bat에 저장돼서 기록 옮기기에도 함께 옮겨져요. -->
+<style>
+.bat-wrap{display:grid;gap:14px}
+.bat-lvls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.bat-lv{display:grid;gap:4px;text-align:left;padding:12px 14px;border:2px solid var(--ink,#2B2520);border-radius:16px;background:var(--card,#fff);box-shadow:0 4px 0 var(--ink,#2B2520);font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+.bat-lv b{font-family:'Jua',sans-serif;font-weight:400;font-size:1.08rem}
+.bat-lv small{color:#6b6460;font-size:.82rem;line-height:1.4}
+.bat-lv .st{font-size:.9rem;letter-spacing:1px}
+.bat-lv.done{background:#FFF6DE}
+.bat-card{background:var(--card,#fff);border:2px solid var(--ink,#2B2520);border-radius:20px;padding:16px 14px;text-align:center;box-shadow:0 5px 0 var(--ink,#2B2520)}
+.bat-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem;color:#6b6460;margin-bottom:6px}
+.bat-dots{display:flex;gap:4px}.bat-dots i{width:10px;height:10px;border-radius:50%;background:#E8DFD2}.bat-dots i.on{background:var(--u,#D9682A)}.bat-dots i.now{outline:2px solid var(--u,#D9682A);outline-offset:1px}
+.bat-word{display:flex;justify-content:center;align-items:flex-end;gap:4px;margin:10px 0 4px;font-family:'Jua',sans-serif;font-size:clamp(2.6rem,15vw,4rem);line-height:1}
+.bat-syl{display:inline-flex;flex-direction:column;align-items:center}
+.bat-tile{display:inline-flex;flex-direction:column;align-items:center;padding:4px 6px 6px;border-radius:14px;background:#FFF3D6;border:3px solid var(--u,#D9682A)}
+.bat-tile .box{width:.62em;height:.5em;margin-top:4px;border:3px dashed var(--u,#D9682A);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.42em;color:var(--u,#D9682A)}
+.bat-tile.full .box{display:none}
+.bat-tile.ok{background:#E3F6E8;border-color:#2E9B57}
+.bat-say{margin:6px auto 0;border:2px solid var(--ink,#2B2520);background:#FFF;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;cursor:pointer}
+.bat-ch{display:grid;grid-template-columns:repeat(auto-fit,minmax(54px,1fr));gap:8px;margin-top:14px}
+.bat-ch button{min-height:58px;border:2px solid var(--ink,#2B2520);border-radius:14px;background:#fff;font-family:'Jua',sans-serif;font-size:1.7rem;box-shadow:0 3px 0 var(--ink,#2B2520);cursor:pointer;touch-action:manipulation;color:inherit}
+.bat-ch button.tried{background:#F1ECE6;color:#8a817a}
+.bat-ch button.right{background:#2E9B57;color:#fff;border-color:#2E9B57}
+.bat-ch button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink,#2B2520)}
+.bat-msg{min-height:3.2em;margin:12px 0 0;font-size:1.05rem;line-height:1.6;word-break:keep-all}
+.bat-msg b{color:var(--u,#D9682A)}
+.bat-msg.good b{color:#2E9B57}
+.bat-next{margin-top:10px}
+.bat-res{font-size:2.4rem;margin:6px 0}
+</style>
+<script>
+(function () {
+  if (typeof route !== 'function' || typeof show !== 'function') return;
+  const COLOR = '#D9682A';
+  const FIN = { 'ㄱ': 1, 'ㄴ': 4, 'ㄷ': 7, 'ㄹ': 8, 'ㅁ': 16, 'ㅂ': 17, 'ㅅ': 19, 'ㅇ': 21, 'ㅈ': 22, 'ㅊ': 23, 'ㅌ': 25 };
+  const REP = { 'ㅅ': 'ㄷ', 'ㅈ': 'ㄷ', 'ㅊ': 'ㄷ', 'ㅌ': 'ㄷ' };   /* 받침 자리에서는 ㄷ 소리가 나요 */
+  const SEVEN = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅇ'];
+  const finOf = c => { const x = c.charCodeAt(0) - 0xAC00; return x >= 0 && x < 11172 ? x % 28 : -1; };
+  const bare = c => String.fromCharCode(c.charCodeAt(0) - finOf(c));
+  const withFin = (c, j) => String.fromCharCode(bare(c).charCodeAt(0) + FIN[j]);
+  const jamoOf = c => Object.keys(FIN).find(k => FIN[k] === finOf(c));
+  /* 안내 글의 조사도 받침에 맞게: ~이라고/라고, ~과/와, ~으로/로(ㄹ 받침은 로) */
+  const lastF = w => finOf(w[w.length - 1]);
+  const iRago = w => w + '’' + (lastF(w) > 0 ? '이라고' : '라고');
+  const gwa = w => w + '’' + (lastF(w) > 0 ? '과' : '와');
+  const euro = w => w + ']' + (lastF(w) > 0 && lastF(w) !== 8 ? '으로' : '로');
+  /* [낱말, 받침을 찾을 글자 자리(0부터), (소리가 같은 받침 단계의 도움말)] */
+  const LV = [
+    { t: 'ㄴ 받침', d: '간장, 산, 눈처럼 ‘ㄴ’ 소리로 끝나요', w: [['간장', 0], ['산', 0], ['눈', 0], ['손', 0], ['안경', 0], ['친구', 0], ['우산', 1], ['신발', 0]] },
+    { t: 'ㅁ 받침', d: '엄마, 감자처럼 입술을 닫아요', w: [['엄마', 0], ['감자', 0], ['사람', 1], ['김치', 0], ['바람', 1], ['곰', 0], ['그림', 1], ['봄', 0]] },
+    { t: 'ㅇ 받침', d: '가방, 공처럼 코로 울려요', w: [['가방', 1], ['공', 0], ['사랑', 1], ['동생', 0], ['강아지', 0], ['창문', 0], ['빵', 0], ['풍선', 0]] },
+    { t: 'ㄴ · ㅁ · ㅇ 섞어서', d: '세 받침의 소리를 잘 들어 봐요', w: [['반지', 0], ['밤', 0], ['방', 0], ['문', 0], ['섬', 0], ['종이', 0], ['연못', 0], ['장난감', 2]] },
+    { t: 'ㄱ 받침', d: '국수, 수박처럼 목에서 멈춰요', w: [['국수', 0], ['수박', 1], ['학교', 0], ['책', 0], ['약', 0], ['떡', 0], ['목도리', 0], ['축구', 0]] },
+    { t: 'ㄹ 받침', d: '달, 물처럼 혀끝을 위에 붙여요', w: [['달', 0], ['물', 0], ['발', 0], ['별', 0], ['할머니', 0], ['연필', 1], ['오늘', 1], ['마을', 1]] },
+    { t: 'ㅂ 받침', d: '밥, 집처럼 입술을 꼭 닫아요', w: [['밥', 0], ['집', 0], ['입', 0], ['컵', 0], ['수업', 1], ['김밥', 1], ['접시', 0], ['십', 0]] },
+    { t: 'ㄱ · ㄹ · ㅂ 섞어서', d: '세 받침의 소리를 잘 들어 봐요', w: [['거북', 1], ['길', 0], ['밥상', 0], ['칼', 0], ['숙제', 0], ['일기', 0], ['집게', 0], ['바늘', 1]] },
+    { t: '모두 섞어서', d: 'ㄱ ㄴ ㄹ ㅁ ㅂ ㅇ 받침이 다 나와요', w: [['간식', 0], ['공책', 1], ['냄비', 0], ['달걀', 1], ['입술', 1], ['운동장', 2], ['떡볶이', 0], ['엄지', 0]] },
+    { t: '소리가 같은 받침', d: 'ㅅ ㅈ ㅊ ㅌ은 받침에서 모두 ㄷ 소리가 나요. 뒤에 ‘이·에’를 붙여 보면 알 수 있어요', ch: ['ㄷ', 'ㅅ', 'ㅈ', 'ㅊ', 'ㅌ'],
+      w: [['옷', 0, '‘옷이’를 소리 내면 [오시]'], ['낮', 0, '‘낮에’를 소리 내면 [나제]'], ['꽃', 0, '‘꽃이’를 소리 내면 [꼬치]'], ['밭', 0, '‘밭에’를 소리 내면 [바테]'],
+          ['빗', 0, '‘빗으로’를 소리 내면 [비스로]'], ['맛', 0, '‘맛이’를 소리 내면 [마시]'], ['솥', 0, '‘솥에’를 소리 내면 [소테]'], ['빛', 0, '‘빛이’를 소리 내면 [비치]']] }
+  ];
+  const B = () => { STATE.bat = STATE.bat || {}; STATE.bat.lv = STATE.bat.lv || {}; return STATE.bat; };
+  const stars = i => (B().lv[i] || {}).s || 0;
+  const totalStars = () => LV.reduce((n, x, i) => n + stars(i), 0);
+  const speak = t => { try { if (typeof say === 'function') say(t); } catch (e) {} };
+
+  function menu() {
+    const h = '<button class="back" data-go="start">← 처음 화면</button><section class="bat-wrap">'
+      + '<div class="panel"><h2 style="margin:0 0 6px">🔤 받침 소리 놀이</h2><p class="lead" style="margin:0">낱말을 듣고, 네모 칸에 받침을 하나씩 넣어 봐요. 받침을 넣을 때마다 소리로 읽어 줘요. 들은 소리와 같아지는 받침을 찾아요!</p>'
+      + '<p class="js-rule">⏱ 오늘의 학습에서 ‘낱말 탐험’과 하루씩 번갈아 한 판(8문제, 3~4분)씩 나와요. 받침 날과 조사 날도 번갈아요. 더 하고 싶으면 여기에서 골라요.</p></div>'
+      + '<div class="bat-lvls">' + LV.map((x, i) => { const s = stars(i), d = !!B().lv[i];
+        return '<button type="button" class="bat-lv' + (d ? ' done' : '') + '" data-bat="' + i + '"><b>' + (i + 1) + '단계 · ' + x.t + '</b><small>' + x.d + '</small><span class="st">' + (d ? '⭐'.repeat(Math.max(1, Math.round(s / 2))) + ' ' + s + '/8' : '아직 안 했어요') + '</span></button>'; }).join('') + '</div>'
+      + (window.__josa ? window.__josa.menuHTML() : '') + '</section>';
+    show(h, COLOR);
+    document.querySelectorAll('[data-bat]').forEach(b => b.onclick = () => play(+b.dataset.bat));
+    if (window.__josa) window.__josa.bind();
+  }
+
+  function play(li) {
+    const L = LV[li], ch = L.ch || SEVEN; let k = 0, got = 0, first = true, solved = false;
+    function draw() {
+      const [word, at, hint] = L.w[k], c = word[at]; first = true; solved = false;
+      const syl = [...word].map((s, i) => i === at ? '<span class="bat-tile" id="bat-tile"><span id="bat-t">' + bare(s) + '</span><span class="box">?</span></span>' : '<span class="bat-syl">' + s + '</span>').join('');
+      const h = '<button class="back" data-go="bat">← 받침·조사 놀이 목록</button><section class="bat-card">'
+        + '<div class="bat-top"><span>' + (li + 1) + '단계 · ' + L.t + '</span><span class="bat-dots">' + L.w.map((_, i) => '<i class="' + (i < k ? 'on' : i === k ? 'now' : '') + '"></i>').join('') + '</span></div>'
+        + '<p style="margin:2px 0 0;color:#6b6460">낱말을 듣고, 네모 칸에 알맞은 받침을 넣어 봐요.</p>'
+        + '<div class="bat-word">' + syl + '</div>'
+        + '<button type="button" class="bat-say" id="bat-say">🔊 낱말 다시 듣기</button>'
+        + '<div class="bat-ch">' + ch.map(j => '<button type="button" data-j="' + j + '">' + j + '</button>').join('') + '</div>'
+        + '<p class="bat-msg" id="bat-msg">' + (hint ? '💡 ' + hint : '받침을 하나 눌러 봐요. 눌러 보고 소리를 들어 봐요!') + '</p>'
+        + '<div id="bat-next"></div></section>';
+      show(h, COLOR);
+      setTimeout(() => speak(word), 250);
+      document.getElementById('bat-say').onclick = () => speak(word);
+      document.querySelectorAll('.bat-ch [data-j]').forEach(b => b.onclick = () => pick(b, word, at, c, hint));
+    }
+    function pick(btn, word, at, c, hint) {
+      if (solved) return;
+      const j = btn.dataset.j, nc = withFin(c, j), nw = [...word].map((s, i) => i === at ? nc : s).join('');
+      const tile = document.getElementById('bat-tile'), msg = document.getElementById('bat-msg');
+      document.getElementById('bat-t').textContent = nc; tile.classList.add('full');
+      const want = jamoOf(c);
+      if (j === want) {
+        solved = true; if (first) got++;
+        btn.classList.add('right'); tile.classList.add('ok'); msg.className = 'bat-msg good';
+        msg.innerHTML = '<b>' + bare(c) + ' + ' + j + ' = ' + nc + '</b><br>‘' + word + '’, 맞았어요! ' + (first ? '한 번에 찾았어요 ⭐' : '끝까지 찾아냈어요!');
+        speak(nc + '. ' + word + '. 맞았어요!'); try { if (typeof sfx === 'function') sfx('ok'); } catch (e) {}
+        document.getElementById('bat-next').innerHTML = '<button type="button" class="btn main bat-next" id="bat-go">' + (k < L.w.length - 1 ? '다음 낱말 ▶' : '다 했어요! 🎉') + '</button>';
+        document.getElementById('bat-go').onclick = () => { k++; if (k < L.w.length) draw(); else finish(); };
+      } else {
+        first = false; btn.classList.add('tried'); msg.className = 'bat-msg';
+        if (REP[j] === REP[want] && REP[j] || (REP[want] && j === REP[want]) || (REP[j] && REP[j] === want))
+          msg.innerHTML = '<b>' + bare(c) + ' + ' + j + ' = ' + nc + '</b><br>소리는 똑같이 [' + euro(withFin(c, 'ㄷ')) + ' 나요! 그런데 이 낱말은 다른 받침을 써요.' + (hint ? '<br>💡 ' + hint : '');
+        else
+          msg.innerHTML = '<b>' + bare(c) + ' + ' + j + ' = ' + nc + '</b><br>‘' + iRago(nw) + ' 읽혀요. 들은 소리 ‘' + gwa(word) + ' 같은지 비교해 봐요. 다른 받침도 넣어 볼까요?';
+        speak(nc + '. ' + nw);
+      }
+    }
+    function finish() {
+      const b = B(), old = (b.lv[li] || {}).s || 0;
+      b.lv[li] = { s: Math.max(old, got), d: dkey(new Date()) };
+      try { markToday({ kind: 'ko' }); } catch (e) {}
+      try { window.__batDone('bat'); } catch (e) {}
+      try { persist(); } catch (e) {}
+      try { grantGame(); } catch (e) {}
+      try { if (typeof sfx === 'function') sfx('done'); } catch (e) {}
+      const h = '<button class="back" data-go="bat">← 받침·조사 놀이 목록</button><section class="bat-card"><div class="bat-res">🎉</div><h2 style="margin:0">' + (li + 1) + '단계 · ' + L.t + ' 끝!</h2>'
+        + '<p class="bat-msg good">낱말 8개 가운데 <b>' + got + '개</b>를 한 번에 찾았어요.<br>' + (got >= 7 ? '받침 소리를 아주 잘 들어요!' : got >= 4 ? '잘했어요! 한 번 더 하면 더 잘할 수 있어요.' : '받침 소리를 하나씩 넣어 보면서 익숙해지고 있어요!') + '</p>'
+        + '<div class="row center" style="gap:8px;flex-wrap:wrap">' + (li < LV.length - 1 ? '<button type="button" class="btn main" id="bat-n">' + (li + 2) + '단계 하기 ▶</button>' : '') + '<button type="button" class="btn" id="bat-a">이 단계 다시 하기</button><button type="button" class="btn" data-go="bat">목록으로</button><button type="button" class="btn" data-go="start">🏠 처음 화면</button></div></section>';
+      show(h, COLOR); speak('다 했어요! 잘했어요!');
+      const n = document.getElementById('bat-n'); if (n) n.onclick = () => play(li + 1);
+      document.getElementById('bat-a').onclick = () => play(li);
+    }
+    draw();
+  }
+
+  /* ===== 오늘의 학습: 낱말 탐험과 하루씩 번갈아 =====
+     짝수 날에는 오늘의 학습의 ‘낱말 탐험’ 칸이 ‘받침·조사 놀이’ 한 판(8문제)으로 바뀌어요(하루 개수는 그대로).
+     받침 날과 조사 날도 번갈아요. 낱말 탐험은 하던 단계가 다음 날로 그대로 넘어가요. */
+  const dayNo = () => { const n = new Date(); return Math.round(new Date(n.getFullYear(), n.getMonth(), n.getDate()) / 864e5); };
+  const isBatDay = () => dayNo() % 2 === 0;
+  function todayTask() {
+    const tk = dkey(new Date()); let T = STATE.batToday;
+    if (!T || T.d !== tk) {
+      const kind = Math.floor(dayNo() / 2) % 2 === 0 ? 'bat' : 'josa';
+      const list = kind === 'bat' ? LV : (window.__josa ? window.__josa.LV : LV), rec = kind === 'bat' ? B().lv : ((STATE.josa || {}).lv || {});
+      let lv = list.findIndex((x, i) => !rec[i]);
+      if (lv < 0) { lv = 0; list.forEach((x, i) => { if (((rec[i] || {}).s || 0) < ((rec[lv] || {}).s || 0)) lv = i; }); }
+      T = STATE.batToday = { d: tk, kind, lv, done: false };
+    }
+    return T;
+  }
+  window.__batDone = kind => { try { const T = todayTask(); if (T.kind === kind && !T.done) { T.done = true; persist(); } } catch (e) {} };
+  function todayCard() {
+    const T = todayTask(), list = T.kind === 'bat' ? LV : (window.__josa ? window.__josa.LV : LV), x = list[T.lv] || list[0];
+    let mas = ''; try { mas = mascot('pencil', 40, T.done); } catch (e) {}
+    return '<button class="todaycard' + (T.done ? ' did' : '') + '" style="--u:' + COLOR + '" data-go="battoday">' + mas + '<span class="tt"><b>받침·조사 놀이</b><span class="tw">' + (T.kind === 'bat' ? '받침 소리' : '조사 넣기') + ' ' + (T.lv + 1) + '단계 · ' + x.t + '</span><span class="tl">8문제 · 3~4분</span></span>' + (T.done ? '<span class="tdone" role="img" aria-label="오늘 완료">완료</span>' : '<span class="tgo" aria-hidden="true">▶</span>') + '</button>';
+  }
+  { const _show = show; show = function (html) {
+      try { if (typeof html === 'string' && !CURSUBJ && html.indexOf('aria-label="오늘의 학습"') >= 0 && isBatDay() && SUBJ.wd) {
+        const re = new RegExp('<button class="todaycard[^"]*"(?:(?!</button>)[\\s\\S])*?<b>' + SUBJ.wd.name + '</b>(?:(?!</button>)[\\s\\S])*?</button>');
+        if (re.test(html)) html = html.replace(re, todayCard()); } } catch (e) {}
+      return _show.apply(this, [html].concat([].slice.call(arguments, 1))); }; }
+
+  /* 화면 이동: data-go="bat" */
+  { const _r = route; route = function (v, a, b) {
+      if (v === 'battoday') { const T = todayTask(); try { if (window.SFX && SFX.play) SFX.play('start'); } catch (e) {} BACK = 'start'; return T.kind === 'josa' && window.__josa ? window.__josa.play(T.lv) : play(T.lv); }
+      if (v === 'bat') { try { if (window.SFX && SFX.play) SFX.play('nav'); } catch (e) {} BACK = 'start'; return menu(); } return _r.apply(this, arguments); }; }
+  /* 메인 화면: 과목 칸 아래에 받침 소리 놀이 칸 */
+  function card() {
+    if (CURSUBJ || !document.getElementById('hero') || document.querySelector('[data-go="bat"].lesson')) return;
+    const g = document.querySelector('#app section.grades'); if (!g) return;
+    const js = window.__josa ? window.__josa.totalStars() : 0;
+    g.insertAdjacentHTML('afterend', '<button class="lesson" style="--u:' + COLOR + ';width:100%;margin-top:18px" data-go="bat"><span class="n">받침·조사 놀이</span><span><b>🔤 간장의 ‘가’에 무슨 받침? 호랑이( ) 먹이( )?</b><span>받침 넣어 소리 듣기 · 은는이가을를 넣기. 오늘의 학습에 이틀에 한 번 나와요. 지금까지 ⭐ ' + (totalStars() + js) + '개</span></span><span class="go pic" style="font-size:1.6rem">🔤</span></button>');
+  }
+  { const _st = start; start = function () { const r = _st.apply(this, arguments); try { card(); } catch (e) {} return r; }; }
+  try { card(); } catch (e) {}
+  window.__bat = { LV, withFin, bare, jamoOf, play, menu };
+})();
+</script>
+<!-- ===== 받침 소리 놀이 (2026-10-25) 끝 ===== -->
+<!-- ===== 조사 넣기 놀이 (2026-10-25) 시작 ===== -->
+<!-- 호랑이( ) 먹이( ) 먹습니다. 처럼 빈칸에 은·는·이·가·을·를을 넣어 봐요.
+     넣을 때마다 그 말을 읽어 줘요. 안 맞으면 틀렸다고 하지 않고, 왜 어색한지 알려 줘요:
+       · 받침 규칙: 앞 글자에 받침이 있으면 이·을·은, 없으면 가·를·는
+       · 자리 규칙: ‘누가/무엇이’ 자리는 이·가(은·는), ‘무엇을’ 자리는 을·를
+     5단계(문장 8개씩): 이/가 → 을/를 → 은/는 → 이·가와 을·를 → 모두 섞어서. 끝내면 달력에 어휘 점, 게임 시간도 쌓여요(STATE.josa). -->
+<style>
+.js-sent{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 4px;margin:14px 0 6px;font-family:'Jua',sans-serif;font-size:clamp(1.6rem,8vw,2.3rem);line-height:1.5;word-break:keep-all}
+.js-blank{display:inline-flex;align-items:center;justify-content:center;min-width:1.6em;height:1.35em;padding:0 6px;border:3px dashed #B9A99A;border-radius:10px;color:#B9A99A;background:#fff}
+.js-blank.now{border-color:var(--u,#2C6E8C);color:var(--u,#2C6E8C);background:#EAF4FA}
+.js-blank.ok{border-style:solid;border-color:#2E9B57;background:#E3F6E8;color:#2E9B57}
+.js-noun{white-space:nowrap}
+.js-rule{display:inline-block;margin-top:4px;font-size:.88rem;color:#6b6460;background:#F7F2EA;border-radius:10px;padding:6px 10px;line-height:1.5;word-break:keep-all}
+</style>
+<script>
+(function () {
+  if (typeof route !== 'function' || typeof show !== 'function' || !window.__bat) return;
+  const COLOR = '#2C6E8C';
+  const finOf = c => { const x = c.charCodeAt(0) - 0xAC00; return x >= 0 && x < 11172 ? x % 28 : -1; };
+  const hasF = w => finOf(w[w.length - 1]) > 0;
+  const PAIR = { '이': '가', '가': '이', '을': '를', '를': '을', '은': '는', '는': '은' };
+  const KIND = { '이': 'S', '가': 'S', '을': 'O', '를': 'O', '은': 'T', '는': 'T' };
+  /* {S}: 누가/무엇이 자리, {O}: 무엇을 자리, {T}: ~은/는 자리 */
+  const LV = [
+    { t: '이 / 가', d: '누가, 무엇이 — 받침이 있으면 ‘이’, 없으면 ‘가’', op: ['이', '가'],
+      s: ['사과{S} 빨개요.', '곰{S} 잠을 자요.', '강아지{S} 멍멍 짖어요.', '꽃{S} 예쁘게 피었어요.', '비{S} 주룩주룩 와요.', '달{S} 밝아요.', '아기{S} 방긋 웃어요.', '동생{S} 엉엉 울어요.'] },
+    { t: '을 / 를', d: '무엇을 — 받침이 있으면 ‘을’, 없으면 ‘를’', op: ['을', '를'],
+      s: ['우유{O} 마셔요.', '밥{O} 먹어요.', '책{O} 읽어요.', '공{O} 차요.', '그림{O} 그려요.', '노래{O} 불러요.', '손{O} 씻어요.', '사과{O} 먹어요.'] },
+    { t: '은 / 는', d: '무엇은, 누구는 — 받침이 있으면 ‘은’, 없으면 ‘는’', op: ['은', '는'],
+      s: ['나{T} 일곱 살이에요.', '아기{T} 두 살이에요.', '하늘{T} 파래요.', '코끼리{T} 코가 길어요.', '기린{T} 목이 길어요.', '토끼{T} 귀가 길어요.', '여름{T} 더워요.', '겨울{T} 추워요.'] },
+    { t: '이·가 와 을·를', d: '누가 + 무엇을 — 두 칸을 차례로 채워요', op: ['이', '가', '을', '를'],
+      s: ['호랑이{S} 먹이{O} 먹습니다.', '엄마{S} 밥{O} 지어요.', '아빠{S} 신문{O} 읽어요.', '고양이{S} 생선{O} 먹어요.', '친구{S} 공{O} 던져요.', '선생님{S} 동화책{O} 읽어 주세요.', '형{S} 자전거{O} 타요.', '다람쥐{S} 도토리{O} 모아요.'] },
+    /* ‘호랑이가 먹이를’과 ‘호랑이는 먹이를’은 둘 다 맞아서, 이·가와 은·는을 한 문장의 보기에 같이 두지 않아요.
+       문장마다 은·는 + 을·를 또는 이·가 + 을·를 네 개만 보기로 나와요 */
+    { t: '모두 섞어서', d: '은·는 문장과 이·가 문장이 섞여 나와요. 을·를도 함께', op: null,
+      s: ['토끼{T} 당근{O} 좋아해요.', '나{T} 동생{O} 사랑해요.', '곰{S} 꿀{O} 먹어요.', '새{S} 하늘{O} 날아요.', '언니{T} 피아노{O} 쳐요.', '물고기{S} 물에서 헤엄쳐요.', '할머니{T} 떡{O} 만드셨어요.', '개구리{S} 폴짝 뛰어요.'] }
+  ];
+  /* 문장 → [{noun, role}] 와 조각 */
+  function parse(s) { const parts = [], re = /([가-힣]+)\{([SOT])\}/g; let m, last = 0;
+    while ((m = re.exec(s))) { if (m.index > last) parts.push({ txt: s.slice(last, m.index) }); parts.push({ noun: m[1], role: m[2] }); last = re.lastIndex; }
+    if (last < s.length) parts.push({ txt: s.slice(last) }); return parts; }
+  function okSet(noun, role, mix) { const f = hasF(noun), S = f ? '이' : '가', O = f ? '을' : '를', T = f ? '은' : '는';
+    if (role === 'O') return [O]; if (role === 'T') return mix ? [T, S] : [T]; return mix ? [S, T] : [S]; }
+  const J = () => { STATE.josa = STATE.josa || {}; STATE.josa.lv = STATE.josa.lv || {}; return STATE.josa; };
+  const stars = i => (J().lv[i] || {}).s || 0;
+  const totalStars = () => LV.reduce((n, x, i) => n + stars(i), 0);
+  const speak = t => { try { if (typeof say === 'function') say(t); } catch (e) {} };
+
+  /* 받침 소리 놀이 목록 아래에 함께 보여요 (메인 화면 칸은 ‘받침·조사 놀이’ 하나) */
+  function menuHTML() {
+    return '<div class="panel" id="js-sec" style="margin-top:6px"><h2 style="margin:0 0 6px">🧩 조사 넣기 놀이</h2><p class="lead" style="margin:0">문장의 빈칸에 은·는·이·가·을·를 가운데 알맞은 말을 넣어 봐요. 넣을 때마다 읽어 줘요. 어색하게 들리면 다른 말을 넣어 봐요!</p>'
+      + '<p class="js-rule">📌 받침이 <b>있으면</b> 이 · 을 · 은 &nbsp;/&nbsp; 받침이 <b>없으면</b> 가 · 를 · 는<br>📌 <b>누가·무엇이</b> 자리는 이·가(은·는), <b>무엇을</b> 자리는 을·를</p></div>'
+      + '<div class="bat-lvls">' + LV.map((x, i) => { const s = stars(i), d = !!J().lv[i];
+        return '<button type="button" class="bat-lv' + (d ? ' done' : '') + '" data-js="' + i + '"><b>' + (i + 1) + '단계 · ' + x.t + '</b><small>' + x.d + '</small><span class="st">' + (d ? '⭐'.repeat(Math.max(1, Math.round(s / 2))) + ' ' + s + '/8' : '아직 안 했어요') + '</span></button>'; }).join('') + '</div>';
+  }
+  function bind() { document.querySelectorAll('[data-js]').forEach(b => b.onclick = () => play(+b.dataset.js)); }
+  function menu() { window.__bat.menu(); setTimeout(() => { const s = document.getElementById('js-sec'); if (s) try { s.scrollIntoView({ block: 'start' }); } catch (e) {} }, 60); }
+
+  function play(li) {
+    const L = LV[li]; let k = 0, got = 0;
+    function draw() {
+      const parts = parse(L.s[k]), blanks = parts.filter(p => p.noun); let bi = 0, first = true;
+      const fill = parts.map(p => p.noun ? Object.assign(p, { val: '' }) : p);
+      const sentence = useVal => fill.map(p => p.noun ? p.noun + (useVal ? (p.val || '') : okSet(p.noun, p.role, L.mix)[0]) : p.txt).join('');
+      const render = () => fill.map((p, i) => p.noun ? '<span class="js-noun">' + p.noun + '<span class="js-blank' + (p.val ? ' ok' : blanks[bi] === p ? ' now' : '') + '">' + (p.val || '?') + '</span></span>' : '<span>' + p.txt.trim() + '</span>').join(' ');
+      const h = '<button class="back" data-go="josa">← 받침·조사 놀이 목록</button><section class="bat-card">'
+        + '<div class="bat-top"><span>' + (li + 1) + '단계 · ' + L.t + '</span><span class="bat-dots">' + L.s.map((_, i) => '<i class="' + (i < k ? 'on' : i === k ? 'now' : '') + '"></i>').join('') + '</span></div>'
+        + '<p style="margin:2px 0 0;color:#6b6460">파란 네모 칸에 알맞은 말을 골라요.</p>'
+        + '<div class="js-sent" id="js-sent">' + render() + '</div>'
+        + '<button type="button" class="bat-say" id="js-say">🔊 문장 듣기</button>'
+        + '<div class="bat-ch">' + (L.op || (parts.some(p => p.role === 'T') ? ['은', '는', '을', '를'] : ['이', '가', '을', '를'])).map(j => '<button type="button" data-j="' + j + '">' + j + '</button>').join('') + '</div>'
+        + '<p class="bat-msg" id="js-msg">빈칸에 말을 하나 넣어 봐요. 넣으면 소리로 읽어 줘요!</p><div id="js-next"></div></section>';
+      show(h, COLOR);
+      const msg = document.getElementById('js-msg');
+      setTimeout(() => speak(sentence(false)), 250);
+      document.getElementById('js-say').onclick = () => speak(sentence(false));
+      document.querySelectorAll('.bat-ch [data-j]').forEach(b => b.onclick = () => {
+        const p = blanks[bi]; if (!p) return; const j = b.dataset.j, ok = okSet(p.noun, p.role, L.mix);
+        if (ok.indexOf(j) >= 0) {
+          p.val = j; bi++; document.getElementById('js-sent').innerHTML = render(); document.querySelectorAll('.bat-ch button').forEach(x => x.classList.remove('tried'));
+          msg.className = 'bat-msg good';
+          if (bi < blanks.length) { msg.innerHTML = '<b>' + p.noun + j + '</b> — 좋아요! 다음 칸도 채워 봐요.'; speak(p.noun + j); }
+          else { if (first) got++; msg.innerHTML = '<b>' + sentence(true) + '</b><br>맞았어요! ' + (first ? '한 번에 다 맞혔어요 ⭐' : '끝까지 찾아냈어요!'); speak(sentence(true) + ' 맞았어요!'); try { if (typeof sfx === 'function') sfx('ok'); } catch (e) {}
+            document.getElementById('js-next').innerHTML = '<button type="button" class="btn main bat-next" id="js-go">' + (k < L.s.length - 1 ? '다음 문장 ▶' : '다 했어요! 🎉') + '</button>';
+            document.getElementById('js-go').onclick = () => { k++; if (k < L.s.length) draw(); else finish(); }; }
+        } else {
+          first = false; b.classList.add('tried'); msg.className = 'bat-msg';
+          const f = hasF(p.noun), last = p.noun[p.noun.length - 1], sameKind = (KIND[j] === p.role) || (L.mix && p.role !== 'O' && KIND[j] !== 'O');
+          let why;
+          if (sameKind) why = '‘' + p.noun + j + '’' + (hasF(j) ? '은' : '는') + ' 소리가 어색하죠? ‘' + last + '’에는 받침이 ' + (f ? '<b>있어요</b>. 받침이 있으면 이 · 을 · 은을 써요.' : '<b>없어요</b>. 받침이 없으면 가 · 를 · 는을 써요.');
+          else if (p.role === 'O') why = '‘' + p.noun + j + '’' + (hasF(j) ? '이라고' : '라고') + ' 하면 뜻이 달라져요. 이 자리는 <b>무엇을</b> 하는지 말하는 자리라서 을 · 를을 써요.';
+          else why = '‘' + p.noun + j + '’' + (hasF(j) ? '이라고' : '라고') + ' 하면 뜻이 달라져요. 이 자리는 <b>누가 · 무엇이</b> 하는지 말하는 자리예요. 이 · 가' + (L.mix || p.role === 'T' ? '(은 · 는)' : '') + '를 써 봐요.';
+          msg.innerHTML = '<b>' + p.noun + j + '</b><br>' + why; speak(p.noun + j);
+        }
+      });
+    }
+    function finish() {
+      const b = J(), old = (b.lv[li] || {}).s || 0; b.lv[li] = { s: Math.max(old, got), d: dkey(new Date()) };
+      try { markToday({ kind: 'ko' }); } catch (e) {}
+      try { if (window.__batDone) window.__batDone('josa'); } catch (e) {}
+      try { persist(); } catch (e) {}
+      try { grantGame(); } catch (e) {}
+      try { if (typeof sfx === 'function') sfx('done'); } catch (e) {}
+      const h = '<button class="back" data-go="josa">← 받침·조사 놀이 목록</button><section class="bat-card"><div class="bat-res">🎉</div><h2 style="margin:0">' + (li + 1) + '단계 · ' + L.t + ' 끝!</h2>'
+        + '<p class="bat-msg good">문장 8개 가운데 <b>' + got + '개</b>를 한 번에 맞혔어요.<br>' + (got >= 7 ? '조사를 아주 잘 골라요!' : got >= 4 ? '잘했어요! 한 번 더 하면 더 잘할 수 있어요.' : '하나씩 넣어 보면서 소리를 익히고 있어요!') + '</p>'
+        + '<div class="row center" style="gap:8px;flex-wrap:wrap">' + (li < LV.length - 1 ? '<button type="button" class="btn main" id="js-n">' + (li + 2) + '단계 하기 ▶</button>' : '') + '<button type="button" class="btn" id="js-a">이 단계 다시 하기</button><button type="button" class="btn" data-go="josa">목록으로</button><button type="button" class="btn" data-go="start">🏠 처음 화면</button></div></section>';
+      show(h, COLOR); speak('다 했어요! 잘했어요!');
+      const n = document.getElementById('js-n'); if (n) n.onclick = () => play(li + 1);
+      document.getElementById('js-a').onclick = () => play(li);
+    }
+    draw();
+  }
+
+  { const _r = route; route = function (v, a, b) { if (v === 'josa') { try { if (window.SFX && SFX.play) SFX.play('nav'); } catch (e) {} BACK = 'start'; return menu(); } return _r.apply(this, arguments); }; }
+  window.__josa = { LV, okSet, parse, play, menu, menuHTML, bind, totalStars };
+})();
+</script>
+<!-- ===== 조사 넣기 놀이 (2026-10-25) 끝 ===== -->
 </body>
 </html>
