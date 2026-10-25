@@ -8355,6 +8355,11 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
 .kpas,.kpas p,.sit p,.rdtext p,.rdpara,.wtext,.nwbody p,.tqtext,.thint,.tsol li,.tback li,.hjsen,.glbox,.mtxt,.fb p,.rdnote,.cbsum,.rdsum,
 .wtx p,.wbub p,.wsum p,.wfun p,.xpmodel p,.stp-q,.whyp p,.newsp .nwbody p{text-align:left!important;text-align-last:auto!important}
 #app .ln1{display:inline!important}#app .ln1+.ln1::before{content:" "}
+/* 2026-10-25: 'pretty'·'balance' 줄바꿈은 마지막 줄을 길게 하려고 앞줄을 일찍 끊어서 오른쪽에 여백이 남아요. 모든 글이 줄 끝까지 채우게 해요 */
+#app p,#app small,#app span,#app b,#app li,#app dd,#app h2,#app h3,#app label{text-wrap:wrap!important}
+#app .stkline > span:not(.stk){word-break:break-all!important}
+/* 과목 화면 아래 '도장 n / m · 지도 보기' 칸은 빼요 (도장 지도는 쓰지 않아요. 차시 도장 기록·단원 카드의 도장 표시는 그대로) */
+#app .smapmini{display:none!important}
 #totop{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;width:50px;height:50px;padding:0;border:0;border-radius:50%;
   background:rgba(30,42,74,.42);color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;
   transform:translate(-50%,14px);transition:opacity .25s,transform .25s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer}
