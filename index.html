@@ -1935,7 +1935,79 @@ MA[205]={name:'규칙 찾기',han:'5',step:'5단원',sub:'반복되는 규칙, �
   fact:()=>{ const n=R(12,88); return RP([{q:n+' 바로 아래 칸의 수',a:n+10},{q:n+' 바로 위 칸의 수',a:n-10},{q:n+' 바로 오른쪽 칸의 수',a:n+1},{q:n+' 바로 왼쪽 칸의 수',a:n-1}]); },
   word:()=>{ const n=R(12,78); return RP([()=>WORD('🎬 영화관 자리 번호는 수 배열표처럼 한 줄에 10개씩 있습니다. '+n+'번 자리 바로 뒷줄 같은 자리의 번호는 몇 번인가요?',null,n+10,'번'),()=>WORD('📅 수 배열표에서 '+n+'에서 아래쪽으로 두 칸 내려간 수는 얼마인가요?',null,n+20,'')])(); }}
  ]};
-const MAORDER=[201,202,203,204,205,206];
+{
+/* ===== 수학 확장 (2026-10-27): 입체 모양 · 비교하기 · 짝수와 홀수 =====
+   · 6단원 뒤에 이어서 나와요. 수학은 하루 한 차시라 하루 학습량은 그대로예요.
+   · 보기는 3개 이상, 같은 답이 연달아 덜 나오게 섞어서 찍어 맞히기 어렵게 했어요. */
+const SH3={box:{n:'상자 모양',ic:'📦',it:['📦','🎁','🧱','📚','🧊']},cyl:{n:'둥근 기둥 모양',ic:'🥫',it:['🥫','🔋','🧻','🪵','🥁']},ball:{n:'공 모양',ic:'⚽',it:['⚽','🏀','🍊','🌍','🎱']}};
+const SHK=['box','cyl','ball'], SHOPT=ans=>shuffle(SHK).map(k=>({h:SH3[k].ic+' '+SH3[k].n,ok:k===ans}));
+const shRow=n=>{ const a=[]; for(let i=0;i<n;i++){ const k=RP(SHK); a.push({k,e:RP(SH3[k].it)}); } return a; };
+const SHFEAT=[{q:'평평한 부분과 뾰족한 부분이 모두 있는 모양은?',a:'box',ex:'상자 모양은 평평한 부분과 뾰족한 부분이 있어요.'},
+  {q:'어느 쪽으로 굴려도 잘 굴러가는 모양은?',a:'ball',ex:'공 모양은 둥글어서 어느 쪽으로도 잘 굴러가요.'},
+  {q:'눕히면 잘 굴러가고, 세우면 쌓을 수 있는 모양은?',a:'cyl',ex:'둥근 기둥 모양은 눕히면 굴러가고, 평평한 부분으로 세우면 쌓을 수 있어요.'},
+  {q:'평평한 부분이 없어서 쌓을 수 없는 모양은?',a:'ball',ex:'공 모양은 평평한 부분이 없어서 쌓을 수 없어요.'},
+  {q:'잘 굴러가지 않고, 잘 쌓을 수 있는 모양은?',a:'box',ex:'상자 모양은 평평해서 잘 쌓을 수 있지만 굴러가지 않아요.'},
+  {q:'둥근 부분과 평평한 부분이 모두 있는 모양은?',a:'cyl',ex:'둥근 기둥 모양은 옆은 둥글고 위아래는 평평해요.'}];
+/* 길이: 막대 3개 (가·나·다) */
+const BARS=(L,emo)=>'<div style="display:grid;gap:8px;margin:6px auto;max-width:280px">'+L.map((w,k)=>'<div style="display:flex;align-items:center;gap:8px"><b style="width:1.4em">'+'가나다'[k]+'</b><span style="display:inline-block;height:18px;width:'+w*22+'px;border-radius:9px;background:'+['#F2A65A','#6CC3B6','#9C8BE0'][k]+'"></span>'+(emo?'<span>'+emo+'</span>':'')+'</div>').join('')+'</div>';
+const len3=()=>{ const a=shuffle([3,4,5,6,7,8,9,10,11]).slice(0,3); return a; };
+const W3=[['🐘','코끼리'],['🐕','강아지'],['🐁','생쥐'],['🍉','수박'],['🍎','사과'],['🍇','포도 한 알'],['🚗','자동차'],['🚲','자전거'],['🪶','깃털']];
+const WORDER={'🐘':9,'🚗':9,'🍉':6,'🐕':5,'🚲':5,'🍎':3,'🐁':2,'🍇':1,'🪶':1};
+const w3=()=>{ for(;;){ const t=shuffle(W3).slice(0,3); const v=t.map(x=>WORDER[x[0]]); if(new Set(v).size===3) return t; } };
+const GRID=(n,c)=>'<span style="display:inline-grid;grid-template-columns:repeat('+Math.min(n,4)+',16px);gap:2px;margin:0 10px;vertical-align:middle">'+Array(n).fill('<i style="width:16px;height:16px;background:'+c+';border-radius:3px;display:block"></i>').join('')+'</span>';
+const EVEN=n=>n%2===0, PAIRS=n=>'<div class="emrow" style="letter-spacing:2px">'+Array(Math.floor(n/2)).fill('🍪🍪').join(' ')+(n%2?' <span style="opacity:.6">🍪</span>':'')+'</div>';
+const oneOdd=(even)=>{ const pool=shuffle([...Array(40)].map((x,i)=>i+1)), ans=pool.find(x=>EVEN(x)===even), rest=pool.filter(x=>EVEN(x)!==even).slice(0,3); return {ans,nums:shuffle([ans,...rest])}; };
+
+MA[207]={name:'여러 가지 모양',han:'7',step:'더 배우기',sub:'상자 · 둥근 기둥 · 공 모양과 특징',color:'#7A3E6A',units:[
+ {id:'m7-find',title:'모양 찾기',ko:'상자, 둥근 기둥, 공 모양 찾기',kshow:'📦 🥫 ⚽',seals:['📦','🥫','⚽','🎁','🏀','★'],
+  learn:'<p class="lead">물건을 보고 어떤 모양인지 찾아요.</p><div class="mexpr sm">📦 🎁 🧱 상자 모양<br>🥫 🔋 🧻 둥근 기둥 모양<br>⚽ 🏀 🍊 공 모양</div>',
+  vis:()=>{ const k=RP(SHK), e=RP(SH3[k].it); return CH('어떤 모양일까요?','<div style="font-size:64px;text-align:center">'+e+'</div>',SHOPT(k),e+' 는 <b>'+SH3[k].n+'</b>이에요.'); },
+  drill:()=>{ const row=shRow(R(6,8)), k=RP(SHK), c=row.filter(x=>x.k===k).length; return KP(SH3[k].n+'은 몇 개일까요?','<div class="emrow" style="font-size:34px">'+row.map(x=>x.e).join(' ')+'</div>',c,SH3[k].n+'은 <b>'+c+'개</b>예요.'); },
+  fact:()=>{ const row=shRow(6), k=RP(SHK); return {q:row.map(x=>x.e).join('')+' 중 '+SH3[k].n,a:row.filter(x=>x.k===k).length}; },
+  word:()=>{ const a=R(2,5), b=R(2,5), c=R(1,4); return WORD('🧸 장난감 상자에 상자 모양 블록이 '+a+'개, 둥근 기둥 모양 블록이 '+b+'개, 공 모양 블록이 '+c+'개 있습니다. 블록은 모두 몇 개인가요?',a+' + '+b+' + '+c,a+b+c,'개'); }},
+ {id:'m7-feat',title:'모양의 특징',ko:'굴러가는지, 쌓을 수 있는지 알아보기',kshow:'굴러가요? 쌓여요?',seals:['🛞','🧱','📦','🥫','⚽','★'],
+  learn:'<p class="lead">모양마다 특징이 달라요.</p><div class="tip">📦 상자 모양: 평평해서 <b>잘 쌓여요</b>, 굴러가지 않아요.<br>🥫 둥근 기둥 모양: <b>눕히면 굴러가고</b>, 세우면 쌓여요.<br>⚽ 공 모양: <b>어느 쪽으로도 잘 굴러가요</b>, 쌓을 수 없어요.</div>',
+  vis:()=>{ const f=RP(SHFEAT); return CH(f.q,'',SHOPT(f.a),f.ex); },
+  drill:()=>{ const f=RP(SHFEAT); return CH(f.q,'<div class="emrow" style="font-size:40px">📦 🥫 ⚽</div>',SHOPT(f.a),f.ex); },
+  fact:()=>{ const row=shRow(6); return RP([{q:row.map(x=>x.e).join('')+' 중 쌓을 수 있는 것',a:row.filter(x=>x.k!=='ball').length},{q:row.map(x=>x.e).join('')+' 중 잘 굴러가는 것',a:row.filter(x=>x.k!=='box').length}]); },
+  word:()=>{ const f=RP(SHFEAT); return WCH('🏗️ 블록 놀이를 합니다. '+f.q,SHOPT(f.a),f.ex); }}
+]};
+MA[208]={name:'비교하기',han:'8',step:'더 배우기',sub:'길이 · 무게 · 넓이 · 담을 수 있는 양',color:'#B7791F',units:[
+ {id:'m8-len',title:'길이 비교',ko:'더 길다, 더 짧다',kshow:'가 ━━━ 나 ━',seals:['📏','길','짧','가','나','★'],
+  learn:'<p class="lead">한쪽 끝을 맞추고 다른 쪽 끝을 보면 어느 것이 더 긴지 알 수 있어요.</p>'+BARS([7,4,9])+'<div class="tip">가장 긴 것은 <b>다</b>, 가장 짧은 것은 <b>나</b>예요.</div>',
+  vis:()=>{ const L=len3(), lg=Math.random()<.5, v=lg?Math.max(...L):Math.min(...L), k=L.indexOf(v); return CH('가장 '+(lg?'긴':'짧은')+' 것을 골라요',BARS(L),['가','나','다'].map((x,i)=>({h:x,ok:i===k})),'가장 '+(lg?'긴':'짧은')+' 것은 <b>'+'가나다'[k]+'</b>예요.'); },
+  drill:()=>{ const L=len3(), lg=Math.random()<.5, v=lg?Math.max(...L):Math.min(...L), k=L.indexOf(v); return CH('가장 '+(lg?'긴':'짧은')+' 것을 골라요',BARS(L,'✏️'),['가','나','다'].map((x,i)=>({h:x,ok:i===k})),'끝을 맞추어 보면 <b>'+'가나다'[k]+'</b>가 가장 '+(lg?'길어요':'짧아요')+'.'); },
+  fact:()=>{ const a=R(3,9), b=R(10,15); return {q:'클립 '+a+'개 길이와 '+b+'개 길이 중 더 긴 것',a:b}; },
+  word:()=>{ const N=shuffle(['민수','지아','현우']), L=len3(), k=L.indexOf(Math.max(...L)); return WCH('✏️ '+N[0]+'의 연필은 클립 '+L[0]+'개, '+N[1]+'의 연필은 클립 '+L[1]+'개, '+N[2]+'의 연필은 클립 '+L[2]+'개 길이입니다. 연필이 가장 긴 사람은 누구인가요?',N.map((x,i)=>({h:x,ok:i===k})),'클립 수가 가장 많은 <b>'+N[k]+'</b>의 연필이 가장 길어요.'); }},
+ {id:'m8-wt',title:'무게 비교',ko:'더 무겁다, 더 가볍다',kshow:'🐘 > 🐁',seals:['⚖️','무','가','🐘','🪶','★'],
+  learn:'<p class="lead">손으로 들어 보거나 시소에 올려 보면 무게를 비교할 수 있어요. 시소는 <b>무거운 쪽이 아래로</b> 내려가요.</p><div class="mexpr">🐘 &gt; 🐕 &gt; 🐁</div>',
+  vis:()=>{ const t=w3(), hv=Math.random()<.5, v=t.map(x=>WORDER[x[0]]), k=v.indexOf(hv?Math.max(...v):Math.min(...v)); return CH('가장 '+(hv?'무거운':'가벼운')+' 것을 골라요','',t.map((x,i)=>({h:x[0]+' '+x[1],ok:i===k})),'가장 '+(hv?'무거운':'가벼운')+' 것은 <b>'+t[k][1]+'</b>예요.'); },
+  drill:()=>{ const t=w3().slice(0,2), d=WORDER[t[0][0]]>WORDER[t[1][0]]?0:1, hv=Math.random()<.5, k=hv?d:1-d; return CH('시소에 '+t[0][1]+'와(과) '+t[1][1]+'를 올렸어요. '+(hv?'아래로 내려가는':'위로 올라가는')+' 쪽은?','<div class="emrow" style="font-size:44px">'+t[0][0]+' ⚖️ '+t[1][0]+'</div>',[{h:t[0][0]+' '+t[0][1],ok:k===0},{h:t[1][0]+' '+t[1][1],ok:k===1},{h:'똑같아요',ok:false}],'더 무거운 '+t[d][1]+' 쪽이 내려가요.'); },
+  fact:()=>{ const a=R(2,6), b=a+R(1,4); return {q:'구슬 '+a+'개와 구슬 '+b+'개 중 더 무거운 쪽',a:b}; },
+  word:()=>{ const a=R(3,8), b=a+R(1,4); return WORD('🍎 사과 바구니를 저울에 달았더니 추 '+b+'개, 🍊 귤 바구니는 추 '+a+'개와 무게가 같았습니다. 사과 바구니는 귤 바구니보다 추 몇 개만큼 더 무거운가요?',b+' − '+a,b-a,'개'); }},
+ {id:'m8-area',title:'넓이와 담는 양',ko:'더 넓다, 더 많이 담긴다',kshow:'▦ > ▤',seals:['▦','🥛','넓','많','컵','★'],
+  learn:'<p class="lead">칸 수를 세면 어느 쪽이 더 넓은지 알 수 있어요. 컵으로 몇 번 부을 수 있는지 세면 어느 그릇에 더 많이 담기는지 알 수 있어요.</p>',
+  vis:()=>{ const s=shuffle([4,5,6,7,8,9,10,12]).slice(0,3), k=s.indexOf(Math.max(...s)); return CH('가장 넓은 것을 골라요 (칸이 같은 크기예요)','<div style="text-align:center">'+s.map((n,i)=>'<b>'+'가나다'[i]+'</b>'+GRID(n,['#F2A65A','#6CC3B6','#9C8BE0'][i])).join('')+'</div>',['가','나','다'].map((x,i)=>({h:x,ok:i===k})),'칸이 가장 많은 <b>'+'가나다'[k]+'</b>가 가장 넓어요.'); },
+  drill:()=>{ const a=R(3,9), b=R(3,9)===a?a+2:R(3,9), c=[a,b===a?a+1:b]; return KP('물을 가 그릇은 컵으로 '+c[0]+'번, 나 그릇은 '+c[1]+'번 부었더니 가득 찼어요. 더 많이 담기는 그릇은 몇 번 더 부었나요?','<div class="emrow" style="font-size:36px">🥣 🫖 🥛</div>',Math.abs(c[0]-c[1]),Math.max(...c)+' − '+Math.min(...c)+' = <b>'+Math.abs(c[0]-c[1])+'</b>'); },
+  fact:()=>{ const a=R(4,8), b=a+R(1,4); return {q:'컵 '+a+'번과 컵 '+b+'번 중 더 많이 담기는 쪽',a:b}; },
+  word:()=>{ const a=R(4,9), b=R(4,9); const x=a===b?a+1:b; return WORD('🧃 주스병은 컵으로 '+a+'번, 우유병은 컵으로 '+x+'번 따를 수 있습니다. 두 병에 담긴 것을 모두 따르면 컵 몇 번인가요?',a+' + '+x,a+x,'번'); }}
+]};
+MA[209]={name:'짝수와 홀수',han:'9',step:'더 배우기',sub:'둘씩 짝 짓기, 짝수와 홀수의 규칙',color:'#2C6E8C',units:[
+ {id:'m9-eo',title:'짝수와 홀수',ko:'둘씩 짝 지어 남는 것이 없으면 짝수',kshow:'2 4 6 · 1 3 5',seals:['2','4','1','3','짝','★'],
+  learn:'<p class="lead">둘씩 짝을 지었을 때 남는 것이 없으면 <b>짝수</b>, 하나가 남으면 <b>홀수</b>예요.</p>'+PAIRS(6)+'<div class="tip">6은 짝수</div>'+PAIRS(7)+'<div class="tip">7은 홀수 (하나 남아요)</div>',
+  vis:()=>{ const ev=Math.random()<.5, o=oneOdd(ev); return PICKN((ev?'짝수':'홀수')+'를 골라요',o.nums,o.ans,o.ans+'는 '+(ev?'둘씩 짝 지으면 남는 것이 없어요':'둘씩 짝 지으면 하나가 남아요')+'.'); },
+  drill:()=>{ const n=R(5,19), ev=Math.random()<.5; return KP(n+'보다 큰 수 중에서 가장 작은 '+(ev?'짝수':'홀수')+'는?',PAIRS(n),n+((n%2===0)===ev?2:1),'<b>'+(n+((n%2===0)===ev?2:1))+'</b>'); },
+  fact:()=>{ const n=R(5,30); return RP([{q:n+'보다 큰 가장 작은 짝수',a:n+(n%2?1:2)},{q:n+'보다 큰 가장 작은 홀수',a:n+(n%2?2:1)}]); },
+  word:()=>{ const n=R(3,9)*2; return WORD('🍪 쿠키 '+n+'개를 두 사람이 남김없이 똑같이 나누어 먹으려고 합니다. 한 사람은 몇 개씩 먹을 수 있나요?',n+' 을 둘로 나누기',n/2,'개'); }},
+ {id:'m9-seq',title:'짝수·홀수의 차례',ko:'짝수는 2씩, 홀수도 2씩 커져요',kshow:'2 4 6 ? · 1 3 5 ?',seals:['+2','2','4','1','3','★'],
+  learn:'<p class="lead">짝수만 차례로 쓰면 2, 4, 6, 8 … 처럼 <b>2씩 커져요</b>. 홀수도 1, 3, 5, 7 … 처럼 2씩 커져요.</p>'+STRIP([2,4,6,8,10],4),
+  vis:()=>{ const s=R(1,15), a=[0,1,2,3,4].map(k=>s+k*2), bi=R(1,4); return NUMS('빈칸에 알맞은 수를 골라요',STRIP(a,bi),a[bi],(s%2?'홀수':'짝수')+'는 2씩 커져요.',1,30); },
+  drill:()=>{ const s=R(1,20), a=[0,1,2,3,4].map(k=>s+k*2), bi=R(1,4); return KP('빈칸에 알맞은 수를 눌러요',STRIP(a,bi),a[bi],(s%2?'홀수':'짝수')+'는 2씩 커져요.'); },
+  fact:()=>{ const s=R(1,20); return {q:[0,1,2,3].map(k=>s+k*2).join(', ')+' 다음 수',a:s+8}; },
+  word:()=>{ const s=R(1,11), ev=s%2===0; return WORD('🏠 길 한쪽에 집 번호가 '+[0,1,2,3].map(k=>s+k*2).join(', ')+' 처럼 '+(ev?'짝수':'홀수')+'만 붙어 있습니다. 그다음 집 번호는 몇 번인가요?',null,s+8,'번'); }}
+]};
+}
+const MAORDER=[201,202,203,204,205,206,207,208,209];
 MAORDER.forEach(g=>{ GRADES[g]=MA[g]; MA[g].subj='math'; MA[g].units.forEach((u,k)=>{ u.kind='ma'; u.g=g; u.sem=2; u.num=k+1; u.chars=[]; u.games=u.games||['mem','maze','mole','ox']; }); });
 SUBJ.math={name:'수학',sub:'1학년 2학기',mark:'123',order:MAORDER,color:'#3E7F6F'};
 MAORDER.forEach(g=>ALLG.push(g));
@@ -2576,6 +2648,7 @@ const MUORDER=[], ARORDER=[];
 SUBJ.mu={name:'음악',sub:'피아노 건반, 도 자리, 손가락 번호, 악보와 박자',mark:'음악',order:MUORDER,color:'#8E5BB5'};
 SUBJ.ar={name:'미술',sub:'색 섞기, 따뜻한 색, 선과 모양, 명화',mark:'미술',order:ARORDER,color:'#E0723C'};
 MUORDER.concat(ARORDER).forEach(g=>{ ALLG.push(g); REVGROUP[g]=[2,2,2]; });
+REVGROUP[207]=[2]; REVGROUP[208]=[3]; REVGROUP[209]=[2];   // 수학 확장 단원 (2026-10-27)
 /* ===== 음악·미술 데이터 끝 ===== */
 ALLG.forEach(g=>{
   const G=GRADES[g], UW=G.subj==='math'?'차시':G.subj==='story'?'권':'단원', src=G.units, out=[], PAL=['#2C4A7C','#B8402A','#3E7F6F','#7A3E6A','#B7791F','#2C6E8C']; let p=0, n=0;
@@ -2999,6 +3072,12 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
       if(TD.a[k]){ const p=at(TD.a[k].uid,TD.a[k].l); if(p>=0) nx=seq[p]; }
       if(!nx){ /* 오늘 처음 볼 때: 풀다 만 문제가 있으면 그것부터, 아니면 지난번에 한 곳 바로 다음부터 */
         if(rmid>=0&&open(seq[rmid])) nx=seq[rmid];
+        /* 수학 섞기 (2026-10-27): 사흘에 한 번은 새 주제(모양·비교·짝홀), 나머지 날은 계산 단원을 하던 곳 다음부터 */
+        if(!nx&&k==='math'){ const NEWG=[207,208,209], isN=x=>NEWG.includes(x.g), cs=seq.filter(x=>!isN(x)), ns=seq.filter(isN);
+          const lp=(STATE.last||{})[k], li=lp?at(lp.uid,lp.l):-1; if(li>=0&&!isN(seq[li])) STATE.mlc={uid:lp.uid,l:lp.l};
+          STATE.mmix=(STATE.mmix||0)+1; const wantNew=STATE.mmix%3===0;
+          const c0=STATE.mlc?cs.findIndex(x=>x.u.id===STATE.mlc.uid&&String(x.l)===String(STATE.mlc.l)):-1, calc=cs.slice(c0+1).find(open)||cs.find(open), nw=ns.find(open);
+          nx=(wantNew?(nw||calc):(calc||nw))||null; }
         if(!nx){ const lp=(STATE.last||{})[k]; let p=lp?at(lp.uid,lp.l):-1;
           if(p<0) for(let n=seq.length-1;n>=0;n--) if(!open(seq[n])){ p=n; break; }
           nx=seq.slice(p+1).find(open)||seq.find(open)||null; }
