@@ -3718,7 +3718,8 @@ function phSound(u,l){
         try{ if(rec) rec.abort(); rec=new SRX(); rec.lang='en-US'; rec.maxAlternatives=5; rec.interimResults=false;
           b.textContent='듣는 중...'; b.disabled=true; msg.textContent='“'+w.en+'” 하고 말해 보세요.';
           rec.onresult=ev=>{ const alts=[...ev.results[0]].map(a=>a.transcript.toLowerCase().replace(/[^a-z ]/g,'')); const ok=alts.some(t=>t.split(' ').includes(w.en.toLowerCase())||t.replace(/ /g,'')===w.en.toLowerCase());
-            if(ok){ mark(k,'mic'); ready(); } else msg.innerHTML='“'+esc(alts[0]||'')+'”처럼 들렸어요. 듣기를 누르고 한 번 더 말해 볼까요? 말했으면 “말했어요”를 눌러도 돼요.'; };
+            if(ok){ mark(k,'mic'); ready(); } else msg.innerHTML='“'+esc(alts[0]||'')+'”처럼 들렸어요. 듣기를 누르고 한 번 더 말해 볼까요? 말했으면 “말했어요”를 눌러도 돼요.';
+            setTimeout(()=>SFX.play(ok?'spkok':'spkno'),250); };   /* 말하기: 맞으면 딩동댕, 틀리면 뿌웅 (폰 마이크 소리와 겹치지 않게 조금 뒤에) */
           rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'||ev.error==='audio-capture'){ micOk=false; $app.querySelectorAll('.mic').forEach(x=>x.remove()); msg.textContent='마이크를 쓸 수 없어요. 따라 말한 뒤 “말했어요”를 눌러요.'; } else msg.textContent='잘 안 들렸어요. 한 번 더 말해 볼까요?'; };
           rec.onend=()=>{ if(b.isConnected){ b.textContent='🎤 말하기'; b.disabled=false; } };
           rec.start();
@@ -4364,6 +4365,8 @@ const SFX={ctx:null, on:true, armed:false, last:{}, lastAny:0,
       else if(name==='done'){ [523,659,784,1047].forEach((f,k)=>this.tone(f,k*.11,.22,'triangle',.12)); this.tone(1319,.46,.5,'sine',.1); if(extra>=3){ this.tone(1568,.6,.5,'sine',.09); this.tone(2093,.74,.6,'sine',.07); } }  /* 끝났을 때: 팡파르 */
       else if(name==='ok'){ this.tone(988,0,.1,'sine',.1); this.tone(1319,.09,.2,'sine',.1); }             /* 맞혔을 때: 딩동 */
       else if(name==='no'){ this.tone(300,0,.16,'sine',.09,220); }                                         /* 틀렸을 때: 낮고 부드럽게 */
+      else if(name==='spkok'){ [784,988,1319].forEach((f,k)=>this.tone(f,k*.11,k===2?.4:.15,'triangle',.12)); }   /* 말하기 맞음: 딩동댕 */
+      else if(name==='spkno'){ this.tone(330,0,.2,'triangle',.12,300); this.tone(247,.17,.34,'triangle',.12,200); }   /* 말하기 틀림: 뿌웅 */
       else if(name==='stamp'){ this.tone(140,0,.12,'triangle',.16,70); }
     }catch(e){} },
   toggle(){ this.on=!this.on; try{ localStorage.setItem('seoi-sfx',this.on?'1':'0'); }catch(e){} const b=document.getElementById('sfxbtn'); if(b){ b.textContent=this.on?'🔊':'🔇'; b.setAttribute('aria-pressed',this.on?'true':'false'); b.title=this.on?'효과음 끄기':'효과음 켜기'; } if(this.on) this.play('ok'); }
@@ -9163,5 +9166,13 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
 })();
 </script>
 <!-- ===== 일요일 보따리 (2026-10-28) 끝 ===== -->
+<!-- ===== 마이크 듣는 중 표시 (2026-10-28) 시작 ===== -->
+<style>
+/* 마이크가 듣는 동안에는 단추가 빨갛게 깜빡여요. 다 들으면 원래 색으로 돌아와서, 소리 없이 눈으로 마이크가 꺼진 걸 알 수 있어요 */
+.spkrow .spk.on,#mic:disabled,.say.mic:disabled{background:#E53935!important;color:#fff!important;border-color:#B71C1C!important;opacity:1!important;animation:micpulse 1s ease-in-out infinite}
+@keyframes micpulse{50%{box-shadow:0 0 0 7px rgba(229,57,53,.28)}}
+@media (prefers-reduced-motion:reduce){.spkrow .spk.on,#mic:disabled,.say.mic:disabled{animation:none}}
+</style>
+<!-- ===== 마이크 듣는 중 표시 (2026-10-28) 끝 ===== -->
 </body>
 </html>
