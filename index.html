@@ -7505,7 +7505,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   function deco() {
     const v = read(); if (v === null) return; set(v);
     document.querySelectorAll('#app .rvhome, #app .rvs-home, #app .todaycard.rvcard').forEach(x => x.classList.toggle('rvlock', !v));
-    document.querySelectorAll('.trrv').forEach(b => {
+    document.querySelectorAll('.trrv:not([data-fd]):not([data-bk])').forEach(b => {   /* 🍕 분수 식당·빵집 작은 단추는 복습이 아니에요 */
       b.classList.toggle('rvlock', !v);
       const ic = b.querySelector('.ic'); if (ic && !v) ic.textContent = '복습';
       if (!v) b.setAttribute('aria-label', '복습 (오늘의 학습을 다 끝내면 열려요)');
