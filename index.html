@@ -7918,12 +7918,14 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 
     /* 2) 지금 할 공부: 원래 카드를 복사해 보여 주고, 누르면 원래 카드를 눌러요 (원래 규칙 그대로) */
     const left=cards.filter(c=>!c.classList.contains('did'));
-    const cur=cards.find(c=>c.classList.contains('now')&&!c.classList.contains('did'))||left[0];
+    const rz=cards.find(c=>/\bresume\b/.test(c.className));
+    const cur=rz||cards.find(c=>c.classList.contains('now')&&!c.classList.contains('did'))||left[0];
+    if(rz) rz.classList.add('tdhid');
     const nw=document.createElement('section'); nw.className='tdnow';
     if(cur){
       const cp=cur.cloneNode(true); cp.removeAttribute('data-go'); cp.removeAttribute('id'); cp.querySelectorAll('[id],[data-go]').forEach(x=>{ x.removeAttribute('id'); x.removeAttribute('data-go'); });
       cp.classList.add('tdnowcard'); cp.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); cur.click(); });
-      const rest=left.filter(c=>c!==cur).slice(0,3).map(nameOf);
+      const rest=left.filter(c=>c!==cur&&!/\bresume\b/.test(c.className)).slice(0,3).map(nameOf);
       nw.innerHTML='<p class="tnk">▶ 지금 할 공부</p>'; nw.appendChild(cp);
       if(rest.length) nw.insertAdjacentHTML('beforeend','<p class="tnnext">다음: '+rest[0]+'</p>');
     } else {
@@ -9344,5 +9346,5 @@ setTimeout(function(){ try{ const M=mgState(); if(!M||!M.pend) return; let mx=GS
 @keyframes trgflap{from{transform:translateY(-4%) scaleY(1)}to{transform:translateY(4%) scaleY(.9)}}
 @media (prefers-reduced-motion:reduce){.trscene.bgfa .trslot[title="기러기"]:not(.no)>.tra,.trscene.bgfa .trslot[title="기러기"]:not(.no) img.nvi{animation:none!important}}
 </style>
-<style id="tpbar-fix">/* 진행 막대: 다른 막대의 안쪽 여백(6px) 규칙이 겹쳐 색이 안 채워지던 것 (2026-10-31) */span.tpbar{padding:0!important;display:block!important}span.tpbar i{min-height:100%}</style></body>
+<style id="tpbar-fix">/* 진행 막대: 다른 막대의 안쪽 여백(6px) 규칙이 겹쳐 색이 안 채워지던 것 (2026-10-31) */span.tpbar{padding:0!important;display:block!important}span.tpbar i{min-height:100%}</style><style id="tddup-fix">/* 위 진행 막대와 겹치는 아래 개수·막대 숨기기 */.todaybox h2 .tcount,.todaybox .tbar,.todaycard.tdhid{display:none!important}</style></body>
 </html>
