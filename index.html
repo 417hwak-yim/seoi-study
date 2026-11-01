@@ -9276,9 +9276,12 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
       const now = done.indexOf(false), html = '<section class="bdlbox" id="bdlbox"><h2>🎒 일요일 보따리</h2><p class="lead">' + (all ? '🎉 <b>보따리를 다 풀었어요!</b> 오늘의 소품을 모았어요. 이번 주 활약 리포트를 부모님께 보여 드려요!' : '오늘은 새 진도 없이, 이번 주(월~토)에 배운 것을 과목마다 복습해요. 약했던 곳이 먼저 나와요. 다 풀면 오늘의 소품을 모아요. 게임은 내가 골라요! 🎮') + '</p>'
         + '<div class="bdlbar"><i style="width:' + (P.length ? Math.round(nDone / P.length * 100) : 100) + '%"></i></div>'
         + '<div class="bdlgrid">' + P.map((p, i) => '<button type="button" class="bdlcard' + (done[i] ? ' did' : i === now ? ' now' : '') + '" data-go="' + goOf(p) + '"><span class="ic">' + p.ic + '</span><span><b>' + (i + 1) + '. ' + p.t + '</b><small>' + subOf(p) + (p.min ? ' · ⏱ 약 ' + p.min + '분' : '') + '</small></span>' + (done[i] ? '<span class="ck">완료</span>' : '') + '</button>').join('') + '</div></section>';
-      const old = document.getElementById('bdlbox'); if (old) old.outerHTML = html; else (app.querySelector('.tdprog') || home).insertAdjacentHTML('afterend', html);
+      const old = document.getElementById('bdlbox'); if (old && old.dataset.src === html) return;   /* 내용이 같으면 다시 그리지 않아요 (떨림 방지) */
+      window.__bdlSrc = html;
+      if (old) old.outerHTML = html; else (app.querySelector('.tdprog') || home).insertAdjacentHTML('afterend', html);
+      { const nb = document.getElementById('bdlbox'); if (nb) nb.dataset.src = html; }
     } catch (e) {} }
-  { let qd = 0; const go = () => { const a = document.getElementById('app'); if (!a) return setTimeout(go, 300); new MutationObserver(m => { if (m.every(x => x.target.closest && x.target.closest('#bdlbox'))) return; if (!qd) { qd = 1; setTimeout(() => { qd = 0; paint(); }, 70); } }).observe(a, { childList: true, subtree: true }); paint(); }; go(); }
+  { let qd = 0; const go = () => { const a = document.getElementById('app'); if (!a) return setTimeout(go, 300); new MutationObserver(m => { if (m.every(x => (x.target.closest && x.target.closest('#bdlbox')) || [...x.addedNodes, ...x.removedNodes].some(n => n.id === 'bdlbox'))) return; if (!qd) { qd = 1; setTimeout(() => { qd = 0; paint(); }, 70); } }).observe(a, { childList: true, subtree: true }); paint(); }; go(); }
 
   /* 일요일 게임: 무작위 대신 내가 골라요 */
   try { const _of = mgOffer; mgOffer = function () { if (!isSun()) return _of.apply(this, arguments);
