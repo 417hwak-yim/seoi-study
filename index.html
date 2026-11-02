@@ -2707,6 +2707,15 @@ function noEnTip(){ try{ if(sessionStorage.getItem('noEnTip')) return; sessionSt
   d.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;background:#1B2750;color:#fff;border-radius:14px;padding:12px 14px;font-size:.92rem;line-height:1.55;box-shadow:0 6px 18px rgba(0,0,0,.25)';
   d.innerHTML='<b>🔈 이 기기에는 영어 목소리가 없어요.</b><br>'+(ISAND?'설정 → 일반 → 텍스트 음성 변환(TTS) → Google 음성 인식 및 합성 → 음성 데이터 설치에서 <b>영어(미국)</b>를 받으면 자연스럽게 읽어 줘요.':'기기 설정의 음성(텍스트 음성 변환)에서 <b>영어(미국)</b> 목소리를 설치하면 자연스럽게 읽어 줘요.')+' <button type="button" style="margin-left:6px;border:0;border-radius:8px;padding:4px 10px;font-weight:700">닫기</button>';
   d.querySelector('button').onclick=()=>d.remove(); document.body.appendChild(d); setTimeout(()=>d.remove(),15000); }
+
+/* 소리가 끝내 안 나는 폰: 한 번만 안내해요 */
+let SAYHELP=false;
+function sayHelp(){ if(SAYHELP) return; SAYHELP=true; try{ const d=document.createElement('div'); d.setAttribute('role','status');
+  d.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;background:#1B2750;color:#fff;border-radius:14px;padding:12px 14px;font-size:.92rem;line-height:1.55;box-shadow:0 6px 18px rgba(0,0,0,.25)';
+  d.innerHTML='<b>🔈 소리가 나지 않나요?</b><br>폰 소리(미디어 음량)를 켜 주세요. 그래도 안 나면 설정 → 일반 → 텍스트 음성 변환(TTS)에서 <b>Google 음성 엔진</b>을 고르고 <b>영어(미국) 음성</b>을 받아 주세요. <button type="button" style="margin-left:6px;border:0;border-radius:8px;padding:4px 10px;font-weight:700">닫기</button>';
+  d.querySelector('button').onclick=()=>d.remove(); document.body.appendChild(d); setTimeout(()=>d.remove(),15000); }catch(e){} }
+/* 소리 단추를 누르면 눌린 티가 나요 */
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-say]'); if(!b) return; b.classList.add('saying'); setTimeout(()=>b.classList.remove('saying'),900); },true);
 function say(t){
   if(!canSpeak||!t) return;
   try{
@@ -2715,10 +2724,17 @@ function say(t){
     /* 영어 낱말은 너무 느리면 소리가 뭉개져요. 낱말은 또렷한 보통 빠르기(.82), 문장은 천천히(.72) */
     const rate=en?(txt.split(' ').length<=2?.82:.72):.95;
     if(en&&!voice&&VOICES.length) noEnTip();
-    speechSynthesis.cancel();
-    const go=()=>{ if(n!==SAYN) return; parts.forEach(s=>{ const u=new SpeechSynthesisUtterance(en&&!/[.!?]$/.test(s)?s+'.':s); u.lang=lang; u.rate=rate; u.pitch=1; if(voice) u.voice=voice; speechSynthesis.speak(u); }); };
-    /* 안드로이드 크롬은 cancel 바로 뒤에 말하면 첫소리가 끊겨서 아주 잠깐 기다려요 */
-    if(ISAND) setTimeout(go,120); else go();
+    const busy=speechSynthesis.speaking||speechSynthesis.pending; if(busy) speechSynthesis.cancel();
+    try{ if(speechSynthesis.paused) speechSynthesis.resume(); }catch(e){}
+    let started=false;
+    const go=plain=>{ if(n!==SAYN) return; parts.forEach((s,k)=>{ const u=new SpeechSynthesisUtterance(en&&!/[.!?]$/.test(s)?s+'.':s); u.rate=rate; u.pitch=1;
+        if(!plain){ u.lang=lang; if(voice) u.voice=voice; } else if(!en) u.lang=lang;
+        if(k===0) u.onstart=()=>{ started=true; }; speechSynthesis.speak(u); }); };
+    /* 안드로이드 크롬: 말하던 것을 끊었을 때만 아주 잠깐 기다려요. 아니면 누른 그 순간 바로 말해야 막히지 않아요 */
+    if(ISAND&&busy) setTimeout(()=>go(false),150); else go(false);
+    /* 안드로이드에서 1.3초 안에 소리가 시작되지 않으면: 기본 목소리로 한 번 더, 그래도 안 되면 목소리 설치 안내 */
+    if(ISAND) setTimeout(()=>{ if(n!==SAYN||started||speechSynthesis.speaking) return; try{ speechSynthesis.cancel(); speechSynthesis.resume(); }catch(e){} go(true);
+      setTimeout(()=>{ if(n===SAYN&&!started&&!speechSynthesis.speaking) sayHelp(); },1800); },1300);
   }catch(e){}
 }
 /* 파닉스 소리 칸: 누르면 그 소리와, 그 소리가 든 낱말을 들려줘요 */
@@ -9391,5 +9407,5 @@ window.srJoin = function (rs) { const out = [];
   const _st = start; start = function (subj) { const r = _st.apply(this, arguments);
     try { if (on && typeof VIEW !== 'undefined' && VIEW === 'start') sessionStorage.setItem('seoi-hanja-view', JSON.stringify(subj ? { v: 'subj', a: subj } : { v: 'start' })); } catch (e) {} return r; }; })();
 </script>
-<style id="bdlfold-css">.whythumb img{max-width:100%}.bdlfold .bdlgrid{grid-template-columns:minmax(0,1fr)}.bdlcard{min-width:0;box-sizing:border-box;max-width:100%}.bdlcard>span{min-width:0}.bdlcard b,.bdlcard small{overflow-wrap:anywhere;word-break:keep-all}.bdlnowt{margin:4px 0 6px;font-weight:800}.bdlcard.bdlnowc{border-width:2.5px;margin-bottom:10px}.bdlfold{border:2px dashed #CDBDF5;border-radius:14px;padding:8px 10px;background:#fff}.bdlfold>summary{cursor:pointer;font-weight:700;list-style:none}.bdlfold>summary::-webkit-details-marker{display:none}.bdlfold>summary::after{content:" ▼";float:right;opacity:.6}.bdlfold[open]>summary::after{content:" ▲"}.bdlfold .bdlgrid{margin-top:8px}</style></body>
+<style id="bdlfold-css">.whythumb img{max-width:100%}.bdlfold .bdlgrid{grid-template-columns:minmax(0,1fr)}.bdlcard{min-width:0;box-sizing:border-box;max-width:100%}.bdlcard>span{min-width:0}.bdlcard b,.bdlcard small{overflow-wrap:anywhere;word-break:keep-all}.bdlnowt{margin:4px 0 6px;font-weight:800}.bdlcard.bdlnowc{border-width:2.5px;margin-bottom:10px}.bdlfold{border:2px dashed #CDBDF5;border-radius:14px;padding:8px 10px;background:#fff}.bdlfold>summary{cursor:pointer;font-weight:700;list-style:none}.bdlfold>summary::-webkit-details-marker{display:none}.bdlfold>summary::after{content:" ▼";float:right;opacity:.6}.bdlfold[open]>summary::after{content:" ▲"}.bdlfold .bdlgrid{margin-top:8px}</style><style id="say-press">button.say:active,[data-say]:active{transform:scale(.94)}[data-say].saying{box-shadow:0 0 0 3px rgba(61,123,242,.45)!important;filter:brightness(1.05)}</style></body>
 </html>
