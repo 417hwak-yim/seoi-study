@@ -4876,6 +4876,10 @@ function mgFit(M){ const c=M.c||0, R=M.R; if(typeof R!=='number'){ mgGoal(M); re
   if(!ok(L)){ const good=cand.filter(ok); if(good.length) L=good[Math.floor(Math.random()*good.length)]; else { L=0; for(let x=1;x<=R;x++) if(ok(x)){ L=x; break; } if(!L) L=R; } }
   M.goal=c+L; }
 /* 2026-10-24: 게임 하나의 시간 — 평일 50초, 일요일 60초 (한 달 내내 공부한 말일은 아래 꾸준함 보너스에서 90초) */
+/* 2026-11-04: 게임 한 바퀴 — 게임 수보다 하루 학습 수가 적어서 하루에 다 못 열어요. 그래서 이번 바퀴에 아직 안 한 게임 가운데서만 무작위로 골라요.
+   오늘 못 연 게임은 다음 날로 넘어가고, 모든 게임을 한 번씩 다 하면 새 바퀴를 시작해요. (실제로 한 게임만 STATE.mgCyc에 적어요. ‘안 할래요’ 한 게임은 다시 나와요) */
+function mgCycle(){ const C=STATE.mgCyc=(STATE.mgCyc||[]).filter(k=>MGAMES[k]); if(Object.keys(MGAMES).every(k=>C.indexOf(k)>=0)) C.length=0; return C; }
+function mgPick(pool){ const C=mgCycle(), nw=pool.filter(k=>C.indexOf(k)<0), P=nw.length?nw:pool; return P[Math.floor(Math.random()*P.length)]; }
 function GSEC(){ return new Date().getDay()===0?60:50; }
 function grantGame(){
   const M=mgState(); mgGoal(M); M.n++; (STATE.bp=STATE.bp||{}).tix=0;
@@ -4884,7 +4888,7 @@ function grantGame(){
   if(M.c>=M.goal||was===1){ M.c=0; M.goal=0;
     if(M.pend) M.pend.sec=GSEC();   /* 아직 안 한 게임이 있어도 게임 시간은 쌓이지 않고 한 판(평일 50초·일요일 60초)만큼만 (생일·말일 보너스는 아래에서 따로) */
     else { let pool=Object.keys(MGAMES).filter(k=>M.open.indexOf(k)<0); if(!pool.length) pool=Object.keys(MGAMES);
-      const k=pool[Math.floor(Math.random()*pool.length)]; if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:GSEC()}; }
+      const k=mgPick(pool); if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:GSEC()}; }
     setTimeout(mgOffer,1100); }
   mgFit(M);
 }
@@ -4904,6 +4908,7 @@ const MGGUARD="\u003cscript\u003e/* 게임 부드럽게: 휴대폰에서는 흐�
 const MGEXT={};   /* 따로 뺀 큰 게임 파일 (index.html 옆에 함께 올려요) */
 const MGSD=k=>{ const s=MGSRCGET()[k], m=/<head[^>]*>/i.exec(s); return m?s.slice(0,m.index+m[0].length)+MGGUARD+s.slice(m.index+m[0].length):MGGUARD+s; };
 function mgPlay(k,sec){
+  try{ const C=mgCycle(); if(C.indexOf(k)<0) C.push(k); persist(); }catch(e){}
   if(k==='bubble'){ const B=STATE.bp=STATE.bp||{}; B.tix=0; B.left=sec; persist(); return bubbleGame(); }
   const G=MGAMES[k], modal=document.createElement('div'); modal.id='mg-modal'; modal.className='modal mgfull';
   modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); modal.setAttribute('aria-label',G[1]);
@@ -6201,7 +6206,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     document.getElementById('bdsong').onclick=()=>{ song(); };
     const gb=document.getElementById('bdgift'); if(gb) gb.onclick=()=>{ ac(); S.gift=today(); try{ persist(); }catch(e){} close(); giftGame(); }; }
   /* 생일 선물: 게임을 바로 열어요 (다른 게임으로 바꿀 수도 있어요) */
-  function giftGame(){ try{ const M=mgState(); const all=Object.keys(MGAMES), left=all.filter(x=>M.open.indexOf(x)<0), ks=left.length?left:all; const k=ks[Math.floor(Math.random()*ks.length)]; if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:SEC}; persist(); mgOffer(); }catch(e){} }
+  function giftGame(){ try{ const M=mgState(); const all=Object.keys(MGAMES), left=all.filter(x=>M.open.indexOf(x)<0), ks=left.length?left:all; const k=mgPick(ks); if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:SEC}; persist(); mgOffer(); }catch(e){} }
 
   /* 생일에는 게임 시간이 100초 */
   { const _mp=mgPlay; mgPlay=function(k,sec){ return _mp.call(this,k,isBday()?Math.max(sec||0,SEC):sec); }; }
@@ -6921,7 +6926,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 <script>
 /* ===== 🧰 보물 상자: 매일 오늘의 학습을 다 하면 계절 소품을 하나씩 모아요 (두 공부방) =====
    · 10월 18~31일 🎃 할로윈 14개 · 11월 🍁 가을 숲 30개 · 12월 🎄 크리스마스 31개 (하루에 하나)
-   · 채이와 서이는 모을 소품은 똑같지만 나오는 차례가 달라요 → 서로 폰을 보여 주며 비교해요
+   · 채이와 서이는 모을 소품은 똑같고, 날마다 무작위로 하나씩 나와요 (같은 게 나와도, 다른 게 나와도 괜찮아요)
    · 게임 시간: 평일 50초, 일요일 60초 (2026-10-24 줄였어요)
    · 그달 첫날(10월은 시작한 날)부터 말일까지 하루도 빠지지 않으면 말일 게임이 90초 */
 (function () {
@@ -6983,9 +6988,15 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   const done = d => { const k = dk(d); return !!(S().days[k] || (k !== dk(new Date()) && STATE.full && STATE.full[k])); };
   /* 아이마다 차례가 다르게 섞어요 */
   const order = (n, seed) => { const a = Array.from({ length: n }, (_, i) => i); let s = seed * 9973 + n; for (let i = n - 1; i > 0; i--) { s = (s * 9301 + 49297) % 233280; const j = Math.floor(s / 233280 * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  /* 2026-11-04: 보물은 무작위로 나와요 (두 아이가 같은 걸 받아도, 다른 걸 받아도 괜찮아요). 이미 모은 보물은 그대로 두고 남은 것만 섞어서, 한 번 정한 차례는 저장해 둬요 */
+  function rord(k, n, g) { const R = S().ord = S().ord || {}; let a = R[k];
+    if (!Array.isArray(a) || a.length !== n) { const old = order(n, SEED), keep = old.slice(0, g), rest = old.slice(g);
+      for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+      a = R[k] = keep.concat(rest); save(); }
+    return a; }
   function setOf(d) { const k = ym(d), st = SETS[k]; if (!st) return null; const m0 = new Date(d.getFullYear(), d.getMonth(), st.from), last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
     const days = []; for (let x = m0; x <= last; x = dayAdd(x, 1)) days.push(x);
-    const got = days.filter(done), ord = order(st.items.length, SEED);
+    const got = days.filter(done), ord = rord(k, st.items.length, got.length);
     return { k, st, days, got, own: got.map((x, i) => ({ it: st.items[ord[i]], d: x })).slice(0, st.items.length), ord }; }
   /* 꾸준함 보너스 */
   function streakBefore(t) { let n = 0; for (let x = dayAdd(t, -1); done(x) && n < 400; x = dayAdd(x, -1)) n++; return n; }
@@ -7206,7 +7217,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     if (full) { const ld = info.own[N - 1].d; h += '<div class="trdone">🏆 ' + (ld.getMonth() + 1) + '월 ' + ld.getDate() + '일에 모두 모았어요! 장식이 더 화려해졌어요 ✨</div>'; }
     h += '<div class="trsndrow"><button class="trsnd" type="button"></button></div>';
     if (isCur) { const sb = streakBefore(t) + (done(t) ? 1 : 0), b = bonusSec(t);
-      if (!full) h += '<p style="margin:0 0 10px;font-size:.9rem;color:#5b6378">오늘의 학습을 다 하면 하루에 하나씩 생겨요. 언니·동생과 모을 소품은 같지만 나오는 차례가 달라요! 다 모은 달은 나중에도 여기서 다시 볼 수 있어요.</p>';
+      if (!full) h += '<p style="margin:0 0 10px;font-size:.9rem;color:#5b6378">오늘의 학습을 다 하면 하루에 하나씩 생겨요. 언니·동생과 모을 소품은 같고, 날마다 무엇이 나올지 몰라요! 다 모은 달은 나중에도 여기서 다시 볼 수 있어요.</p>';
       h += scene(info) + '<p style="margin:10px 0 4px">🔥 연속 <b>' + sb + '일</b>째 · ' + (function () { const n = new Date(), e = new Date(n.getFullYear(), n.getMonth() + 1, 0); return e.getDay() === 0 ? (e.getMonth() + 1) + '월 ' + e.getDate() + '일은 일요일이면서 이달 마지막 날이에요. 한 달 내내 하면 그날 게임 90초!' : '평일 게임 50초, 일요일 60초, 한 달 내내 하면 말일 90초'; })() + (b ? '<br><span class="trbonus">오늘은 ' + b[1] + '! 게임 ' + b[0] + '초 ⏱</span>' : '') + '</p>'; }
     else h += (full ? '' : '<p style="margin:0 0 10px;font-size:.9rem;color:#5b6378">' + (+k.split('-')[1]) + '월에 모은 보물이에요.</p>') + scene(info);
     h += '<div class="trlist">' + info.st.items.map(it => { const o = info.own.find(x => x.it[1] === it[1]); return '<div class="trit' + (o ? '' : ' no') + '"><b>' + icon(it) + '</b>' + (o ? it[1] + '<br><small>' + (o.d.getMonth() + 1) + '/' + o.d.getDate() + '</small>' : '???') + '</div>'; }).join('') + '</div></section>';
