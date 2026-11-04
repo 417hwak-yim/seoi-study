@@ -5640,6 +5640,11 @@ const WHYCR={'sky1':['File:Krasnoyarsk under blue sky and white clouds, Krasnoya
 /* 오늘의 왜? (서이, 일곱 살 눈높이) — 한 쪽에 한두 문장, 큰 그림과 함께 넘겨 봐요
    p: [글, 삽화(이모지 장면), 삽화 설명] · q: [질문, 정답, 오답, 오답, 풀이] */
 const WHY=[
+ {id:'ani6',k:'ani',i:'🦩',pin:'2026-11-5',t:'홍학은 왜 한 다리로 설까요?',hook:'홍학이 다리 하나를 쏙 접고 한 다리로 서 있어요. 넘어지지 않을까요?',hi:'🦩 ❓',
+  p:[['홍학은 물속에 오래오래 서 있어요. 물이 차가우면 다리로 몸의 따뜻함이 빠져나가요.','🦩 💧 🥶','차가운 물'],
+     ['다리 하나를 깃털 속에 쏙 넣으면 따뜻함을 덜 잃어요. 우리가 추울 때 손을 주머니에 넣는 것과 비슷해요.','🦩 🪶 ➜ 🙂','깃털 속에 쏙'],
+     ['홍학은 한 다리로 서면 뼈가 딱 받쳐 줘서 힘이 거의 안 들어요. 그래서 한 다리로 서서 잠도 자요!','🦩 💤','한 다리로 쿨쿨']],
+  q:['홍학이 다리 하나를 접는 까닭은 무엇일까요?','몸을 따뜻하게 하려고','다리가 하나뿐이라서','춤을 추려고','다리를 깃털 속에 넣으면 따뜻함을 덜 잃어요.']},
  {id:'sky1',k:'sky',i:'🌤️',t:'하늘은 왜 파랄까요?',hook:'하늘이 새파래요. 누가 파란 물감을 칠했을까요?',hi:'🎨❓ ☁️',
   p:[['햇빛 속에는 여러 가지 색깔이 숨어 있어요.','☀️ ➜ 🔴🟡🔵','햇빛 속 숨은 색깔'],
      ['햇빛이 하늘의 공기를 만나면 파란색이 여기저기 퍼져요.','💨 🔵🔵🔵','파란색이 퍼져요'],
@@ -5794,7 +5799,8 @@ const WHYCFG={big:true,after:'today',sk:'seoi-hanja-view'};
   const W=WHY, CFG=WHYCFG, BIG=!!CFG.big, KN=(typeof KID!=='undefined'&&KID.name)||'나';
   const KIND={sky:['하늘과 우주','🌌','#5B5BD6'],body:['우리 몸','🫀','#D9466F'],ani:['동물','🐾','#D9741A'],nat:['자연','🌿','#2E9D5B'],life:['생활 과학','💡','#1C8DB3']};
   const day0=Date.UTC(2026,9,16);
-  const todayW=()=>{ const n=new Date(), d=Math.floor((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-day0)/864e5); return W[((d%W.length)+W.length)%W.length]; };
+  const todayW=()=>{ const n=new Date(), pk=n.getFullYear()+'-'+(n.getMonth()+1)+'-'+n.getDate(), pin=W.find(x=>x.pin===pk); if(pin) return pin;   /* 2026-11-04: pin 날짜가 정해진 글은 그날 나오고, 돌아가는 차례에는 끼지 않아요 */
+    const RW=W.filter(x=>!x.pin), d=Math.floor((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-day0)/864e5); return RW[((d%RW.length)+RW.length)%RW.length]; };
   const dk=()=>{ const n=new Date(); return n.getFullYear()+'-'+(n.getMonth()+1)+'-'+n.getDate(); };
   const fmt=d=>{ const a=String(d).split('-'); return (+a[1])+'월 '+(+a[2])+'일'; };
   const RS=()=>(STATE.why=STATE.why||{});
