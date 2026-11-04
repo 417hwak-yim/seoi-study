@@ -4887,8 +4887,8 @@ function grantGame(){
   /* 2~3개를 채웠거나, 방금 오늘의 마지막 학습을 끝냈으면 게임을 열어요 */
   if(M.c>=M.goal||was===1){ M.c=0; M.goal=0;
     if(M.pend) M.pend.sec=GSEC();   /* 아직 안 한 게임이 있어도 게임 시간은 쌓이지 않고 한 판(평일 50초·일요일 60초)만큼만 (생일·말일 보너스는 아래에서 따로) */
-    else { let pool=Object.keys(MGAMES).filter(k=>M.open.indexOf(k)<0); if(!pool.length) pool=Object.keys(MGAMES);
-      const k=mgPick(pool); if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:GSEC()}; }
+    else { const pool=Object.keys(MGAMES).filter(k=>M.open.indexOf(k)<0);   /* 2026-11-04: 오늘 모든 게임이 한 번씩 열렸으면 학습을 더 해도 게임은 더 나오지 않아요 (같은 학습을 되풀이해서 게임만 받는 일을 막아요) */
+      if(pool.length){ const k=mgPick(pool); M.open.push(k); M.pend={k,sec:GSEC()}; } }
     setTimeout(mgOffer,1100); }
   mgFit(M);
 }
@@ -6206,7 +6206,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     document.getElementById('bdsong').onclick=()=>{ song(); };
     const gb=document.getElementById('bdgift'); if(gb) gb.onclick=()=>{ ac(); S.gift=today(); try{ persist(); }catch(e){} close(); giftGame(); }; }
   /* 생일 선물: 게임을 바로 열어요 (다른 게임으로 바꿀 수도 있어요) */
-  function giftGame(){ try{ const M=mgState(); const all=Object.keys(MGAMES), left=all.filter(x=>M.open.indexOf(x)<0), ks=left.length?left:all; const k=mgPick(ks); if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:SEC}; persist(); mgOffer(); }catch(e){} }
+  function giftGame(){ try{ const M=mgState(); const all=Object.keys(MGAMES), left=all.filter(x=>M.open.indexOf(x)<0), ks=left; if(!ks.length) return; const k=mgPick(ks); if(M.open.indexOf(k)<0) M.open.push(k); M.pend={k,sec:SEC}; persist(); mgOffer(); }catch(e){} }
 
   /* 생일에는 게임 시간이 100초 */
   { const _mp=mgPlay; mgPlay=function(k,sec){ return _mp.call(this,k,isBday()?Math.max(sec||0,SEC):sec); }; }
