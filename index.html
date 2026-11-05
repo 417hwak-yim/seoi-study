@@ -1480,6 +1480,8 @@ GORDER.forEach(g=>{ GRADES[g].units.forEach((u,k)=>{ u.g=g; u.sem=2; u.num=k+1;
 let GRADE=8, UNITS=GRADES[8].units;
 function setGrade(g){ if(GRADES[g]&&GRADES[g].units.length){ GRADE=+g; UNITS=GRADES[g].units; } }
 const GN=g=>GRADES[g].name;
+/* 2026-11-05: 숫자·낱말 뒤의 조사를 받침에 맞춰요 (3과 8, 52를, 6은) */
+const JO=(v,a,b)=>{ const c=String(v).replace(/<[^>]+>/g,'').trim().slice(-1); if(/\d/.test(c)) return '013678'.includes(c)?a:b; const k=c.charCodeAt(0)-44032; return k>=0&&k<11172&&k%28?a:b; };
 const LESSONS=[['새 한자 익히기 ①','앞의 세 글자를 한 글자씩 익혀요'],['새 한자 익히기 ②','나머지 글자를 한 글자씩 익혀요'],['뜻과 소리 잇기','줄 잇기와 카드 뒤집기로 짝을 맞춰요'],['한자어 읽기','한자로 된 낱말을 읽어요'],['놀이 한마당','게임으로 한 번 더 다져요']];
 GRADES[8].han='八'; GRADES[72].han='七<small>Ⅱ</small>'; GRADES[7].han='七';
 GRADES[8].color='#2C4A7C'; GRADES[72].color='#3E7F6F'; GRADES[7].color='#B7791F';
@@ -1753,8 +1755,8 @@ const three=()=>{ const s=new Set(); const base=R(5,9); while(s.size<3) s.add(Ma
 const PICKN=(inst,nums,ans,ex,stim)=>CH(inst,stim||'',nums.map(x=>({h:String(x),ok:x===ans})),ex);
 const STEP3=(a,b,c,op)=>(el,done)=>{ const f=op==='+'?a+b:a-b, ans=op==='+'?f+c:f-c, o=op==='+'?'+':MN, opts=near(f,3,0,18); let ok1=true;
   el.innerHTML='<p class="inst">앞에서부터 차례로 계산해요!</p>'+EX(a+' '+o+' '+b+' '+o+' '+c)+'<div id="s3"></div>'; const s3=el.querySelector('#s3');
-  s3.innerHTML='<p class="lead" style="text-align:center;margin:8px 0">① 먼저 <b>'+a+' '+o+' '+b+'</b> 는 얼마일까요?</p><div class="picrow">'+opts.map((x,k)=>'<button class="letbtn" data-k="'+k+'">'+x.h+'</button>').join('')+'</div>';
-  pickUntil(s3,'.letbtn',b2=>!!opts[+b2.dataset.k].ok,ok=>{ ok1=ok; setTimeout(()=>{ s3.innerHTML='<p class="lead" style="text-align:center;margin:8px 0">② 이제 <b>'+f+' '+o+' '+c+'</b> 는 얼마일까요?</p><div class="npbox"></div>'; numpad(s3.querySelector('.npbox'),ans,ok2=>done(ok1&&ok2,a+' '+o+' '+b+' '+o+' '+c+' = <b>'+ans+'</b>')); },350); }); };
+  s3.innerHTML='<p class="lead" style="text-align:center;margin:8px 0">① 먼저 <b>'+a+' '+o+' '+b+'</b>'+JO(b,'은','는')+' 얼마일까요?</p><div class="picrow">'+opts.map((x,k)=>'<button class="letbtn" data-k="'+k+'">'+x.h+'</button>').join('')+'</div>';
+  pickUntil(s3,'.letbtn',b2=>!!opts[+b2.dataset.k].ok,ok=>{ ok1=ok; setTimeout(()=>{ s3.innerHTML='<p class="lead" style="text-align:center;margin:8px 0">② 이제 <b>'+f+' '+o+' '+c+'</b>'+JO(b,'은','는')+' 얼마일까요?</p><div class="npbox"></div>'; numpad(s3.querySelector('.npbox'),ans,ok2=>done(ok1&&ok2,a+' '+o+' '+b+' '+o+' '+c+' = <b>'+ans+'</b>')); },350); }); };
 const CHAIN=(a,b,c,op)=>{ const o=op==='+'?'+':MN; return KP('화살표를 따라 계산해요','<div class="chain"><span class="cb">'+a+'</span><i>→</i><span class="co">'+o+b+'</span><i>→</i><span class="co">'+o+c+'</span><i>→</i><span class="cb q">?</span></div>',op==='+'?a+b+c:a-b-c,a+' '+o+' '+b+' '+o+' '+c+' = <b>'+(op==='+'?a+b+c:a-b-c)+'</b>'); };
 const g3a=()=>{ let a,b,c; do{ a=R(1,6); b=R(1,4); c=R(1,4); }while(a+b+c>9); return [a,b,c]; };
 const g3s=()=>{ const a=R(4,9), b=R(1,a-2), c=R(1,a-b); return [a,b,c]; };
@@ -1764,7 +1766,7 @@ const TEN3=(a,b,c)=>(el,done)=>{ const ns=[a,b,c], s=a+b+c; let sel=[], wrong=fa
   el.querySelector('#t3').onclick=e=>{ const bt=e.target.closest('.letbtn'); if(!bt||bt.classList.contains('ok')) return; const k=+bt.dataset.k; if(sel.includes(k)){ sel=sel.filter(x=>x!==k); bt.classList.remove('sel'); return; } sel.push(k); bt.classList.add('sel');
     if(sel.length===2){ const bs=sel.map(x=>el.querySelector('#t3 .letbtn[data-k="'+x+'"]'));
       if(ns[sel[0]]+ns[sel[1]]===10){ bs.forEach(x=>{ x.classList.remove('sel'); x.classList.add('ok'); }); el.querySelector('#t3').onclick=null; const rest=ns[[0,1,2].find(x=>!sel.includes(x))];
-        el.querySelector('#t3b').innerHTML='<p class="lead" style="text-align:center;margin:10px 0 4px">10을 만들었어요! 이제 <b>10 + '+rest+'</b> 는 얼마일까요?</p><div class="npbox"></div>'; numpad(el.querySelector('.npbox'),s,ok=>done(ok&&!wrong,a+' + '+b+' + '+c+' = <b>'+s+'</b>')); }
+        el.querySelector('#t3b').innerHTML='<p class="lead" style="text-align:center;margin:10px 0 4px">10을 만들었어요! 이제 <b>10 + '+rest+'</b>'+JO(b,'은','는')+' 얼마일까요?</p><div class="npbox"></div>'; numpad(el.querySelector('.npbox'),s,ok=>done(ok&&!wrong,a+' + '+b+' + '+c+' = <b>'+s+'</b>')); }
       else{ wrong=true; bs.forEach(x=>{ x.classList.remove('sel'); x.classList.add('shake'); setTimeout(()=>x.classList.remove('shake'),400); }); sel=[]; } } }; };
 const SHK=['sq','tr','ci'], SHOPT=k=>SHK.map(x=>({h:shape(x,54)+'<small>'+SHAPES[x][0]+'</small>',ok:x===k}));
 const shpCounts=()=>{ let c; do c=[R(1,5),R(1,5),R(1,5)]; while(new Set(c).size<3); return c; };
@@ -1772,7 +1774,7 @@ const SHFIELD=c=>'<div class="shpfield">'+shuffle(SHK.flatMap((k,i)=>Array.from(
 const gTime=()=>[R(1,12),RP([0,30])];
 const TOPT=(h,m)=>{ const s=new Set([timeText(h,m)]); [[h,m?0:30],[h%12+1,m],[(h+10)%12+1,m],[h%12+1,m?0:30]].forEach(t=>{ if(s.size<4) s.add(timeText(t[0],t[1])); }); return shuffle([...s]).map(x=>({h:x,ok:x===timeText(h,m)})); };
 const CLKOPT=(h,m)=>shuffle([[h,m,1],[h%12+1,m],[h,m?0:30]]).map(t=>({h:clock(t[0],t[1],96),ok:!!t[2]}));
-const handsText=(h,m)=>'짧은바늘이 '+(m?h+'와 '+(h%12+1)+' 사이':h)+'를 가리키고, 긴바늘이 '+(m?6:12)+'를 가리켜요.';
+const handsText=(h,m)=>'짧은바늘이 '+(m?h+JO(h,'과','와')+' '+(h%12+1)+' 사이':h)+JO(m?'사이':h,'을','를')+' 가리키고, 긴바늘이 '+(m?6:12)+JO(m?6:12,'을','를')+' 가리켜요.';
 const ARI=(gen,op,what)=>{ const o=op==='+'?'+':MN, f=(a,b)=>op==='+'?a+b:a-b; return {
   vis:()=>{ const [a,b]=gen(); return VERT(a,b,op,'<div class="cmpb">'+blocks(a)+'<b class="plus">'+o+'</b>'+blocks(b)+'</div>'); },
   drill:()=>{ const [a,b]=gen(); return Math.random()<.5?VERT(a,b,op):KP('계산해 보세요',EX(a+' '+o+' '+b+' ='),f(a,b),a+' '+o+' '+b+' = <b>'+f(a,b)+'</b>'); },
@@ -1789,27 +1791,27 @@ const MA={
 201:{name:'100까지의 수',han:'1',step:'1단원',sub:'몇십, 99까지의 수, 수의 순서, 크기 비교',color:'#2C4A7C',units:[
  {id:'m1-tens',title:'몇십',ko:'60, 70, 80, 90 알아보기',kshow:'60 70 80 90',seals:['60','70','80','90','10','★'],
   learn:'<p class="lead">10개씩 묶음이 6개이면 60, 7개이면 70, 8개이면 80, 9개이면 90이에요.</p><div class="mtable"><span>'+blocks(60)+'<b>60</b><small>육십, 예순</small></span><span>'+blocks(70)+'<b>70</b><small>칠십, 일흔</small></span><span>'+blocks(80)+'<b>80</b><small>팔십, 여든</small></span><span>'+blocks(90)+'<b>90</b><small>구십, 아흔</small></span></div>',
-  vis:()=>{ const n=R(6,9)*10; return RP([()=>CH('수 모형은 모두 몇 개일까요?',blocks(n),TENOPT(n),'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>CH('10개씩 묶음 '+n/10+'개는 얼마일까요?',blocks(n),TENOPT(n),'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>CH(n+' 을 바르게 읽은 것을 골라요',EX(n),shuffle([{h:RP([sino,native])(n),ok:1},...shuffle([50,60,70,80,90].filter(x=>x!==n)).slice(0,3).map(x=>({h:RP([sino,native])(x)}))]),n+' : '+sino(n)+', '+native(n),'wordbtn'),()=>CH('‘'+native(n)+'’은 어떤 수일까요?',EX(native(n)),TENOPT(n),native(n)+' : <b>'+n+'</b>')])(); },
-  drill:()=>{ const n=R(6,9)*10; return RP([()=>KP('10개씩 묶음 '+n/10+'개는 얼마일까요?',blocks(n),n,'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>KP(n+'은 10개씩 묶음 몇 개일까요?',EX(n),n/10,n+'은 10개씩 묶음 <b>'+n/10+'</b>개','개'),()=>KP('수로 써 보세요',EX(RP([sino,native])(n)),n,sino(n)+', '+native(n)+' : <b>'+n+'</b>')])(); },
+  vis:()=>{ const n=R(6,9)*10; return RP([()=>CH('수 모형은 모두 몇 개일까요?',blocks(n),TENOPT(n),'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>CH('10개씩 묶음 '+n/10+'개는 얼마일까요?',blocks(n),TENOPT(n),'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>CH(n+JO(n,'을','를')+' 바르게 읽은 것을 골라요',EX(n),shuffle([{h:RP([sino,native])(n),ok:1},...shuffle([50,60,70,80,90].filter(x=>x!==n)).slice(0,3).map(x=>({h:RP([sino,native])(x)}))]),n+' : '+sino(n)+', '+native(n),'wordbtn'),()=>CH('‘'+native(n)+'’은 어떤 수일까요?',EX(native(n)),TENOPT(n),native(n)+' : <b>'+n+'</b>')])(); },
+  drill:()=>{ const n=R(6,9)*10; return RP([()=>KP('10개씩 묶음 '+n/10+'개는 얼마일까요?',blocks(n),n,'10개씩 묶음 '+n/10+'개는 <b>'+n+'</b>'),()=>KP(n+JO(n,'은','는')+' 10개씩 묶음 몇 개일까요?',EX(n),n/10,n+JO(n,'은','는')+' 10개씩 묶음 <b>'+n/10+'</b>개','개'),()=>KP('수로 써 보세요',EX(RP([sino,native])(n)),n,sino(n)+', '+native(n)+' : <b>'+n+'</b>')])(); },
   fact:()=>{ const t=R(1,9)*10; return RP([{q:'10개씩 묶음 '+t/10+'개',a:t},{q:native(t),a:t},{q:sino(t),a:t}]); },
   word:()=>{ const k=R(6,9); return WORD(RP(['🍬 사탕이','🖍️ 크레파스가','🥚 달걀이'])+' 10개씩 묶음 '+k+'개 있습니다. 모두 몇 개인가요?',null,k*10,'개'); }},
  {id:'m1-99',title:'99까지의 수',ko:'10개씩 묶음과 낱개로 수 알아보기',kshow:'51 ~ 99',seals:['62','75','84','93','99','★'],
   learn:'<p class="lead">10개씩 묶음 6개와 낱개 2개는 62예요. 62는 “육십이” 또는 “예순둘”이라고 읽어요.</p><div class="mtable"><span>'+blocks(62)+'<b>62</b><small>육십이, 예순둘</small></span></div>',
-  vis:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>NUMS('수 모형이 나타내는 수를 골라요',blocks(n),n,'10개씩 묶음 '+t+'개와 낱개 '+o+'개는 <b>'+n+'</b>',51,99),()=>SEQ('수 모형을 보고 답해요',blocks(n),[['10개씩 묶음은 몇 개일까요?',t,'개'],['낱개는 몇 개일까요?',o,'개']],n+'은 10개씩 묶음 '+t+'개와 낱개 '+o+'개'),()=>CH(n+' 을 바르게 읽은 것을 골라요',EX(n),READOPT(n),n+' : '+sino(n)+', '+native(n),'wordbtn'),()=>{ let m; do m=n99(); while(m===n); const items=shuffle([{h:sino(n)},{h:String(n)},{h:native(m),ok:1}]); return CH('수가 다른 하나를 찾아요','',items,sino(n)+'와 '+n+'은 같은 수, '+native(m)+'은 '+m,'wordbtn'); }])(); },
-  drill:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>KP('어떤 수일까요?','<div class="mtab2"><span>10개씩 묶음</span><span>낱개</span><b>'+t+'</b><b>'+o+'</b></div>',n,'10개씩 묶음 '+t+'개와 낱개 '+o+'개는 <b>'+n+'</b>'),()=>KP('수로 써 보세요',EX(RP([sino,native])(n)),n,sino(n)+', '+native(n)+' : <b>'+n+'</b>'),()=>SEQ('수를 보고 답해요',EX(n),[['10개씩 묶음은 몇 개일까요?',t,'개'],['낱개는 몇 개일까요?',o,'개']],n+'은 10개씩 묶음 '+t+'개와 낱개 '+o+'개')])(); },
+  vis:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>NUMS('수 모형이 나타내는 수를 골라요',blocks(n),n,'10개씩 묶음 '+t+'개와 낱개 '+o+'개는 <b>'+n+'</b>',51,99),()=>SEQ('수 모형을 보고 답해요',blocks(n),[['10개씩 묶음은 몇 개일까요?',t,'개'],['낱개는 몇 개일까요?',o,'개']],n+JO(n,'은','는')+' 10개씩 묶음 '+t+'개와 낱개 '+o+'개'),()=>CH(n+JO(n,'을','를')+' 바르게 읽은 것을 골라요',EX(n),READOPT(n),n+' : '+sino(n)+', '+native(n),'wordbtn'),()=>{ let m; do m=n99(); while(m===n); const items=shuffle([{h:sino(n)},{h:String(n)},{h:native(m),ok:1}]); return CH('수가 다른 하나를 찾아요','',items,sino(n)+'와 '+n+JO(n,'은','는')+' 같은 수, '+native(m)+'은 '+m,'wordbtn'); }])(); },
+  drill:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>KP('어떤 수일까요?','<div class="mtab2"><span>10개씩 묶음</span><span>낱개</span><b>'+t+'</b><b>'+o+'</b></div>',n,'10개씩 묶음 '+t+'개와 낱개 '+o+'개는 <b>'+n+'</b>'),()=>KP('수로 써 보세요',EX(RP([sino,native])(n)),n,sino(n)+', '+native(n)+' : <b>'+n+'</b>'),()=>SEQ('수를 보고 답해요',EX(n),[['10개씩 묶음은 몇 개일까요?',t,'개'],['낱개는 몇 개일까요?',o,'개']],n+JO(n,'은','는')+' 10개씩 묶음 '+t+'개와 낱개 '+o+'개')])(); },
   fact:()=>{ const n=n99(); return RP([{q:'10개씩 묶음 '+Math.floor(n/10)+'개와 낱개 '+n%10+'개',a:n},{q:native(n),a:n},{q:sino(n),a:n}]); },
-  word:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>WORD('🫛 완두콩이 10개씩 묶음 '+t+'개와 낱개 '+o+'개 있습니다. 완두콩은 모두 몇 개인가요?',null,n,'개'),()=>SEQ('문제를 잘 읽고 풀어요!','<div class="wtext">🍡 꿀떡 '+n+'개를 한 접시에 10개씩 담으려고 합니다.</div>',[['몇 접시에 담을 수 있을까요?',t,'접시'],['몇 개가 남을까요?',o,'개']],n+'은 10개씩 묶음 '+t+'개와 낱개 '+o+'개')])(); }},
+  word:()=>{ const n=n99(), t=Math.floor(n/10), o=n%10; return RP([()=>WORD('🫛 완두콩이 10개씩 묶음 '+t+'개와 낱개 '+o+'개 있습니다. 완두콩은 모두 몇 개인가요?',null,n,'개'),()=>SEQ('문제를 잘 읽고 풀어요!','<div class="wtext">🍡 꿀떡 '+n+'개를 한 접시에 10개씩 담으려고 합니다.</div>',[['몇 접시에 담을 수 있을까요?',t,'접시'],['몇 개가 남을까요?',o,'개']],n+JO(n,'은','는')+' 10개씩 묶음 '+t+'개와 낱개 '+o+'개')])(); }},
  {id:'m1-order',title:'수의 순서',ko:'1만큼 더 큰 수와 더 작은 수',kshow:'… 78 79 80 …',seals:['+1','−1','99','100','↔','★'],
   learn:'<p class="lead">수를 순서대로 쓰면 1씩 커져요. 99보다 1만큼 더 큰 수는 100이고, “백”이라고 읽어요.</p>'+STRIP([96,97,98,99,100],-1)+'<div class="tip"><b>바로 뒤의 수</b>는 1만큼 더 큰 수, <b>바로 앞의 수</b>는 1만큼 더 작은 수예요.</div>',
   vis:()=>{ const s=R(51,96), bi=R(0,4), arr=[0,1,2,3,4].map(k=>s+k), n=R(52,98); return RP([()=>NUMS('빈칸에 알맞은 수를 골라요',STRIP(arr,bi),arr[bi],arr.join(', '),51,100),()=>NUMS(n+'보다 1만큼 더 큰 수는?',STRIP([n-1,n,n+1],2),n+1,n+' 바로 뒤의 수는 <b>'+(n+1)+'</b>',51,100),()=>NUMS(n+'보다 1만큼 더 작은 수는?',STRIP([n-1,n,n+1],0),n-1,n+' 바로 앞의 수는 <b>'+(n-1)+'</b>',50,100)])(); },
-  drill:()=>{ const n=R(52,99), s=R(51,96), bi=R(0,4), arr=[0,1,2,3,4].map(k=>s+k); return RP([()=>KP(n+'보다 1만큼 더 큰 수',EX(n+' → ?'),n+1,n+' 바로 뒤의 수는 <b>'+(n+1)+'</b>'),()=>KP(n+'보다 1만큼 더 작은 수',EX('? ← '+n),n-1,n+' 바로 앞의 수는 <b>'+(n-1)+'</b>'),()=>KP('빈칸에 알맞은 수',STRIP(arr,bi),arr[bi],arr.join(', ')),()=>KP((n-1)+'와 '+(n+1)+' 사이의 수',STRIP([n-1,n,n+1],1),n,(n-1)+', <b>'+n+'</b>, '+(n+1))])(); },
-  fact:()=>{ const n=R(52,98); return RP([{q:n+'보다 1만큼 더 큰 수',a:n+1},{q:n+'보다 1만큼 더 작은 수',a:n-1},{q:(n-1)+'와 '+(n+1)+' 사이의 수',a:n}]); },
+  drill:()=>{ const n=R(52,99), s=R(51,96), bi=R(0,4), arr=[0,1,2,3,4].map(k=>s+k); return RP([()=>KP(n+'보다 1만큼 더 큰 수',EX(n+' → ?'),n+1,n+' 바로 뒤의 수는 <b>'+(n+1)+'</b>'),()=>KP(n+'보다 1만큼 더 작은 수',EX('? ← '+n),n-1,n+' 바로 앞의 수는 <b>'+(n-1)+'</b>'),()=>KP('빈칸에 알맞은 수',STRIP(arr,bi),arr[bi],arr.join(', ')),()=>KP((n-1)+JO((n-1),'과','와')+' '+(n+1)+' 사이의 수',STRIP([n-1,n,n+1],1),n,(n-1)+', <b>'+n+'</b>, '+(n+1))])(); },
+  fact:()=>{ const n=R(52,98); return RP([{q:n+'보다 1만큼 더 큰 수',a:n+1},{q:n+'보다 1만큼 더 작은 수',a:n-1},{q:(n-1)+JO((n-1),'과','와')+' '+(n+1)+' 사이의 수',a:n}]); },
   word:()=>{ const n=R(52,96); return RP([()=>WORD('🍊 귤을 지호는 '+n+'개 땄고, 현우는 지호보다 한 개 더 많이 땄습니다. 현우가 딴 귤은 몇 개인가요?',null,n+1,'개'),()=>WORD('📚 도서관에 동화책은 '+n+'권 있고, 위인전은 동화책보다 한 권 더 적게 있습니다. 위인전은 몇 권인가요?',null,n-1,'권'),()=>SEQ('문제를 잘 읽고 풀어요!','<div class="wtext">🎫 연아의 번호표는 '+n+'번이고, 희주의 번호표는 '+(n+3)+'번입니다. 두 사람 사이에 있는 번호를 작은 수부터 차례로 눌러요.</div>',[['첫 번째 번호',n+1,'번'],['두 번째 번호',n+2,'번']],n+', <b>'+(n+1)+', '+(n+2)+'</b>, '+(n+3))])(); }},
  {id:'m1-cmp2',title:'두 수의 크기 비교',ko:'>, < 로 나타내기',kshow:'54 < 62',seals:['>','<','큰','작','=?','★'],
   learn:'<p class="lead">10개씩 묶음의 수가 다르면 10개씩 묶음의 수가 큰 쪽이 더 커요. 10개씩 묶음의 수가 같으면 낱개의 수가 큰 쪽이 더 커요.</p><div class="mexpr">54 &lt; 62 &nbsp; 74 &gt; 72</div><div class="tip"><b>기억하기</b> 벌어진 쪽이 큰 수를 향해요.</div>',
-  vis:()=>{ const [a,b]=two(); return RP([()=>CMP(a,b,true),()=>PICKN('더 큰 수를 골라요',[a,b],Math.max(a,b),a+' 와 '+b+' 중 더 큰 수는 <b>'+Math.max(a,b)+'</b>','<div class="cmpb">'+blocks(a)+blocks(b)+'</div>')])(); },
+  vis:()=>{ const [a,b]=two(); return RP([()=>CMP(a,b,true),()=>PICKN('더 큰 수를 골라요',[a,b],Math.max(a,b),a+JO(a,'과','와')+' '+b+' 중 더 큰 수는 <b>'+Math.max(a,b)+'</b>','<div class="cmpb">'+blocks(a)+blocks(b)+'</div>')])(); },
   drill:()=>{ const [a,b]=two(); return RP([()=>CMP(a,b),()=>CMP(a,b),()=>PICKN('더 작은 수를 골라요',[a,b],Math.min(a,b),'더 작은 수는 <b>'+Math.min(a,b)+'</b>'),()=>PICKN('더 큰 수를 골라요',[a,b],Math.max(a,b),'더 큰 수는 <b>'+Math.max(a,b)+'</b>')])(); },
-  fact:()=>{ const [a,b]=two(); return RP([{q:a+'와 '+b+' 중 더 큰 수',a:Math.max(a,b)},{q:a+'와 '+b+' 중 더 작은 수',a:Math.min(a,b)}]); },
+  fact:()=>{ const [a,b]=two(); return RP([{q:a+JO(a,'과','와')+' '+b+' 중 더 큰 수',a:Math.max(a,b)},{q:a+JO(a,'과','와')+' '+b+' 중 더 작은 수',a:Math.min(a,b)}]); },
   word:()=>{ const [a,b]=two(), P=RP([['🎨 미술실에 노란색 물감이 ','개, 파란색 물감이 ','개 있습니다.','노란색 물감','파란색 물감'],['🌳 뒷산에 밤나무가 ','그루, 잣나무가 ','그루 있습니다.','밤나무','잣나무'],['🍬 젤리는 ','개, 초콜릿은 ','개 있습니다.','젤리','초콜릿']]), more=Math.random()<.5;
    return WCH(P[0]+a+P[1]+b+P[2]+' 더 '+(more?'많은':'적은')+' 것은 무엇인가요?',[{h:P[3],ok:more?a>b:a<b},{h:P[4],ok:more?b>a:b<a}],a+' '+(a>b?'&gt;':'&lt;')+' '+b); }},
  {id:'m1-cmp3',title:'세 수의 크기 비교',ko:'가장 큰 수와 가장 작은 수',kshow:'63 72 68',seals:['大','小','1등','3등','△','★'],
@@ -1837,19 +1839,19 @@ const MA={
   fact:()=>{ const [a,b]=pairAdd(); return {q:a+'+'+b,a:a+b}; }, word:()=>{ const [a,b]=pairAdd(); return ADDW(a,b); }},
  {id:'m2-swap',title:'바꾸어 더하기',ko:'두 수를 바꾸어 더해도 합이 같아요',kshow:'8 + 3 = 3 + 8',seals:['⇄','=','+','11','14','★'],
   learn:'<p class="lead">두 수를 바꾸어 더해도 합은 같아요.</p><div class="mexpr">8 + 3 = 11 &nbsp; 3 + 8 = 11</div>',
-  vis:()=>{ let [a,b]=pairAdd(); if(a===b) b=b>2?b-1:b+1; if(a+b<11) a=11-b; return SEQ('두 수를 바꾸어 더해요','<div class="emrow">'+'🐬'.repeat(a)+'🐡'.repeat(b)+'</div><div class="emrow">'+'🐡'.repeat(b)+'🐬'.repeat(a)+'</div>',[[a+' + '+b+' = ?',a+b],[b+' + '+a+' = ?',a+b]],a+' + '+b+' 와 '+b+' + '+a+' 는 모두 <b>'+(a+b)+'</b>'); },
+  vis:()=>{ let [a,b]=pairAdd(); if(a===b) b=b>2?b-1:b+1; if(a+b<11) a=11-b; return SEQ('두 수를 바꾸어 더해요','<div class="emrow">'+'🐬'.repeat(a)+'🐡'.repeat(b)+'</div><div class="emrow">'+'🐡'.repeat(b)+'🐬'.repeat(a)+'</div>',[[a+' + '+b+' = ?',a+b],[b+' + '+a+' = ?',a+b]],a+' + '+b+JO(b,'과','와')+' '+b+' + '+a+JO(a,'은','는')+' 모두 <b>'+(a+b)+'</b>'); },
   drill:()=>{ let [a,b]=pairAdd(); if(a===b) a=a>2?a-1:a+1; return RP([()=>KP('□ 안에 알맞은 수를 눌러요',EX(a+' + '+b+' = '+b+' + □'),a,a+' + '+b+' = '+b+' + <b>'+a+'</b>'),()=>KP('덧셈을 해 보세요',EX(b+' + '+a+' ='),a+b,b+' + '+a+' = <b>'+(a+b)+'</b>')])(); },
   fact:()=>{ let a=R(2,9), b=R(2,9); if(a===b) b=b>2?b-1:b+1; return {q:a+'+'+b+'='+b+'+□',a:a}; },
-  word:()=>{ let [a,b]=pairAdd(); if(a===b) a=a-1; return WCH('🍬 민지는 사탕을 '+a+'개 받고 '+b+'개를 더 받았습니다. 준호는 '+b+'개 받고 '+a+'개를 더 받았습니다. 누가 더 많이 받았나요?',shuffle([{h:'민지'},{h:'준호'}]).concat([{h:'둘이 같아요',ok:1}]),a+' + '+b+' 와 '+b+' + '+a+' 는 같아요.'); }},
+  word:()=>{ let [a,b]=pairAdd(); if(a===b) a=a-1; return WCH('🍬 민지는 사탕을 '+a+'개 받고 '+b+'개를 더 받았습니다. 준호는 '+b+'개 받고 '+a+'개를 더 받았습니다. 누가 더 많이 받았나요?',shuffle([{h:'민지'},{h:'준호'}]).concat([{h:'둘이 같아요',ok:1}]),a+' + '+b+JO(b,'과','와')+' '+b+' + '+a+JO(a,'은','는')+' 같아요.'); }},
  {id:'m2-make10',title:'10이 되는 더하기',ko:'더해서 10 만들기',kshow:'3 + 7 = 10',seals:['1·9','2·8','3·7','4·6','5·5','★'],
   learn:'<p class="lead">더해서 10이 되는 두 수를 알아 두면 계산이 쉬워요.</p><div class="mexpr sm">1+9 &nbsp; 2+8 &nbsp; 3+7 &nbsp; 4+6 &nbsp; 5+5</div>'+frame(3,7),
   vis:()=>{ const a=R(1,9); return NUMS('몇 개를 더 놓으면 10이 될까요?',frame(a)+EX(a+' + □ = 10'),10-a,a+' + <b>'+(10-a)+'</b> = 10',1,9); },
-  drill:()=>{ const a=R(1,9); return KP('□ 안에 알맞은 수를 눌러요',EX(Math.random()<.5?a+' + □ = 10':'□ + '+a+' = 10'),10-a,a+' 와 <b>'+(10-a)+'</b> 를 더하면 10'); },
+  drill:()=>{ const a=R(1,9); return KP('□ 안에 알맞은 수를 눌러요',EX(Math.random()<.5?a+' + □ = 10':'□ + '+a+' = 10'),10-a,a+JO(a,'과','와')+' <b>'+(10-a)+'</b>'+JO(10-a,'을','를')+' 더하면 10'); },
   fact:()=>{ const a=R(1,9); return {q:a+'+□=10',a:10-a}; },
   word:()=>{ const a=R(2,9); return WORD('🥚 달걀 10개가 들어가는 판에 달걀이 '+a+'개 있습니다. 몇 개를 더 넣으면 판이 가득 찰까요?',null,10-a,'개'); }},
  {id:'m2-from10',title:'10에서 빼기',ko:'10에서 몇을 빼기',kshow:'10 − 4 = 6',seals:['10','−1','−4','−7','−9','★'],
   learn:'<p class="lead">10에서 4를 빼면 6이 남아요. 4와 6을 더하면 10이 되기 때문이에요.</p>'+frame(10,0,4)+'<div class="mexpr">10 '+MN+' 4 = 6</div>',
-  vis:()=>{ const b=R(1,9); return NUMS('10에서 '+b+'을 빼면 얼마가 남을까요?',frame(10,0,b)+EX('10 '+MN+' '+b+' ='),10-b,'10 '+MN+' '+b+' = <b>'+(10-b)+'</b>',1,9); },
+  vis:()=>{ const b=R(1,9); return NUMS('10에서 '+b+JO(b,'을','를')+' 빼면 얼마가 남을까요?',frame(10,0,b)+EX('10 '+MN+' '+b+' ='),10-b,'10 '+MN+' '+b+' = <b>'+(10-b)+'</b>',1,9); },
   drill:()=>{ const b=R(1,9); return Math.random()<.5?KP('뺄셈을 해 보세요',EX('10 '+MN+' '+b+' ='),10-b,'10 '+MN+' '+b+' = <b>'+(10-b)+'</b>'):KP('□ 안에 알맞은 수를 눌러요',EX('10 '+MN+' □ = '+(10-b)),b,'10 '+MN+' <b>'+b+'</b> = '+(10-b)); },
   fact:()=>{ const b=R(1,9); return {q:'10'+MN+b,a:10-b}; }, word:()=>SUBW(10,R(1,9))},
  {id:'m2-ten3',title:'10을 만들어 더하기',ko:'10을 만들어 세 수 더하기',kshow:'6 + 4 + 2',seals:['10','+','12','15','19','★'],
@@ -1875,13 +1877,13 @@ const MA={
 204:{name:'덧셈과 뺄셈(2)',han:'4',step:'4단원',sub:'받아올림과 받아내림이 있는 계산',color:'#7A3E6A',units:[
  {id:'m4-ten',title:'모으기와 가르기',ko:'10을 이용하여 모으고 가르기',kshow:'7 · 6 → 13',seals:['10','11','13','15','18','★'],
   learn:'<p class="lead">7과 6을 모으면 13이에요. 13은 10과 3으로 가를 수 있어요.</p>'+frame(7,6)+'<div class="mexpr sm">7 과 6 → 13 → 10 과 3</div>',
-  vis:()=>{ const [a,b]=pairAdd(), s=a+b; return SEQ('10을 이용하여 모으고 갈라요',frame(a,b)+EX(a+' 와 '+b),[[a+'와 '+b+'를 모으면 얼마일까요?',s],[s+'은 10과 몇으로 가를 수 있을까요?',s-10]],a+'와 '+b+'를 모으면 '+s+', '+s+'은 10과 <b>'+(s-10)+'</b>'); },
-  drill:()=>{ const [a,b]=pairAdd(), s=a+b; return RP([()=>KP(a+'와 '+b+'를 모으면 얼마일까요?',EX(a+' 와 '+b),s,a+'와 '+b+'를 모으면 <b>'+s+'</b>'),()=>KP(s+'은 10과 몇으로 가를 수 있을까요?',EX(s+' → 10 과 □'),s-10,s+'은 10과 <b>'+(s-10)+'</b>')])(); },
-  fact:()=>{ const [a,b]=pairAdd(); return {q:a+'와 '+b+'를 모으면',a:a+b}; },
+  vis:()=>{ const [a,b]=pairAdd(), s=a+b; return SEQ('10을 이용하여 모으고 갈라요',frame(a,b)+EX(a+JO(a,'과','와')+' '+b),[[a+JO(a,'과','와')+' '+b+JO(b,'을','를')+' 모으면 얼마일까요?',s],[s+JO(s,'은','는')+' 10과 몇으로 가를 수 있을까요?',s-10]],a+JO(a,'과','와')+' '+b+JO(b,'을','를')+' 모으면 '+s+', '+s+JO(s,'은','는')+' 10과 <b>'+(s-10)+'</b>'); },
+  drill:()=>{ const [a,b]=pairAdd(), s=a+b; return RP([()=>KP(a+JO(a,'과','와')+' '+b+JO(b,'을','를')+' 모으면 얼마일까요?',EX(a+JO(a,'과','와')+' '+b),s,a+JO(a,'과','와')+' '+b+JO(b,'을','를')+' 모으면 <b>'+s+'</b>'),()=>KP(s+JO(s,'은','는')+' 10과 몇으로 가를 수 있을까요?',EX(s+' → 10 과 □'),s-10,s+JO(s,'은','는')+' 10과 <b>'+(s-10)+'</b>')])(); },
+  fact:()=>{ const [a,b]=pairAdd(); return {q:a+JO(a,'과','와')+' '+b+JO(b,'을','를')+' 모으면',a:a+b}; },
   word:()=>{ const [a,b]=pairAdd(); return WORD('🔮 구슬 '+a+'개와 '+b+'개를 한 상자에 모았습니다. 10개씩 한 묶음을 만들면 낱개는 몇 개 남을까요?',null,a+b-10,'개'); }},
  {id:'m4-add',title:'받아올림이 있는 덧셈',ko:'(몇) + (몇)',kshow:'8 + 5 = 13',seals:['8+5','7+6','9+4','6+6','9+9','★'],
   learn:'<p class="lead">8 + 5 는 8이 10이 되도록 5를 2와 3으로 갈라서 계산해요.</p>'+frame(8,5)+'<div class="tip">8 + 2 = 10, 10 + 3 = <b>13</b></div>',
-  vis:()=>{ const [a,b]=pairAdd(); return SEQ('10을 만들어 더해요',frame(a,b)+EX(a+' + '+b),[[a+'이 10이 되려면 몇이 더 필요할까요?',10-a],[a+' + '+b+' 는 얼마일까요?',a+b]],a+' + '+(10-a)+' = 10, 10 + '+(b-(10-a))+' = <b>'+(a+b)+'</b>'); },
+  vis:()=>{ const [a,b]=pairAdd(); return SEQ('10을 만들어 더해요',frame(a,b)+EX(a+' + '+b),[[a+'이 10이 되려면 몇이 더 필요할까요?',10-a],[a+' + '+b+JO(b,'은','는')+' 얼마일까요?',a+b]],a+' + '+(10-a)+' = 10, 10 + '+(b-(10-a))+' = <b>'+(a+b)+'</b>'); },
   drill:()=>{ const [a,b]=pairAdd(); return KP('덧셈을 해 보세요',EX(a+' + '+b+' ='),a+b,a+' + '+b+' = <b>'+(a+b)+'</b>'); },
   fact:()=>{ const [a,b]=pairAdd(); return {q:a+'+'+b,a:a+b}; }, word:()=>{ const [a,b]=pairAdd(); return ADDW(a,b); }},
  {id:'m4-sub',title:'받아내림이 있는 뺄셈',ko:'(십몇) − (몇)',kshow:'14 − 6 = 8',seals:['14−6','13−9','15−7','12−5','17−8','★'],
@@ -2000,7 +2002,7 @@ MA[209]={name:'짝수와 홀수',han:'9',step:'더 배우기',sub:'둘씩 짝 �
   vis:()=>{ const ev=Math.random()<.5, o=oneOdd(ev); return PICKN((ev?'짝수':'홀수')+'를 골라요',o.nums,o.ans,o.ans+'는 '+(ev?'둘씩 짝 지으면 남는 것이 없어요':'둘씩 짝 지으면 하나가 남아요')+'.'); },
   drill:()=>{ const n=R(5,19), ev=Math.random()<.5; return KP(n+'보다 큰 수 중에서 가장 작은 '+(ev?'짝수':'홀수')+'는?',PAIRS(n),n+((n%2===0)===ev?2:1),'<b>'+(n+((n%2===0)===ev?2:1))+'</b>'); },
   fact:()=>{ const n=R(5,30); return RP([{q:n+'보다 큰 가장 작은 짝수',a:n+(n%2?1:2)},{q:n+'보다 큰 가장 작은 홀수',a:n+(n%2?2:1)}]); },
-  word:()=>{ const n=R(3,9)*2; return WORD('🍪 쿠키 '+n+'개를 두 사람이 남김없이 똑같이 나누어 먹으려고 합니다. 한 사람은 몇 개씩 먹을 수 있나요?',n+' 을 둘로 나누기',n/2,'개'); }},
+  word:()=>{ const n=R(3,9)*2; return WORD('🍪 쿠키 '+n+'개를 두 사람이 남김없이 똑같이 나누어 먹으려고 합니다. 한 사람은 몇 개씩 먹을 수 있나요?',n+JO(n,'을','를')+' 둘로 나누기',n/2,'개'); }},
  {id:'m9-seq',title:'짝수·홀수의 차례',ko:'짝수는 2씩, 홀수도 2씩 커져요',kshow:'2 4 6 ? · 1 3 5 ?',seals:['+2','2','4','1','3','★'],
   learn:'<p class="lead">짝수만 차례로 쓰면 2, 4, 6, 8 … 처럼 <b>2씩 커져요</b>. 홀수도 1, 3, 5, 7 … 처럼 2씩 커져요.</p>'+STRIP([2,4,6,8,10],4),
   vis:()=>{ const s=R(1,15), a=[0,1,2,3,4].map(k=>s+k*2), bi=R(1,4); return NUMS('빈칸에 알맞은 수를 골라요',STRIP(a,bi),a[bi],(s%2?'홀수':'짝수')+'는 2씩 커져요.',1,30); },
