@@ -9650,11 +9650,11 @@ window.srJoin = function (rs) { const out = [];
   const HOW = {
     feat: ['연필과 종이를 준비해요.', '아래에서 분홍색 <b>오늘 추천</b> 수업을 눌러요.', '사진을 보고 특징을 찾는 문제를 풀어요.', '폰에 나오는 순서대로 <b>종이에</b> 그려요.', '특징이 있을 때와 없을 때를 견주어 봐요.', '종이 그림을 📷 사진으로 올리거나, 사진 없이 스스로 확인하면 끝!'],
     trace: ['연필과 종이를 준비해요.', '아래에서 분홍색 <b>오늘 추천</b> 그림을 눌러요. 다른 그림을 골라도 돼요.', '<b>📄 종이에 따라 그리기</b>를 눌러요.', '폰에 분홍색 새 선이 나오면 종이에 똑같이 그리고 <b>다음 ▶</b>을 눌러요. 놓쳤으면 <b>🔁 다시 보기</b>!', '다 그렸으면 📷 사진을 올리고 ⭐를 붙여요. 사진을 못 찍으면 <b>사진 없이 끝내기</b>를 눌러도 돼요.'],
-    hand: ['한 손을 책상 위에 올려놓아요.', '그 손을 보면서, 다른 손으로 아래 흰 판에 그려요. 손가락도 터치펜도 좋아요.', '종이에 그려도 좋아요. 그때는 <b>📷 종이 그림 사진</b>을 눌러 올려요.', FIN],
-    blind: ['적혀 있는 물건을 앞에 가져다 놓아요.', '화면 맨 아래 <b>🙈 가리고 시작!</b>을 누르면 판이 분홍색으로 가려지고 1분 시계가 움직여요. 선은 안 보여도 그려지고 있어요. 이 안내는 접혀요.', '화면은 보지 말고 물건만 보면서, 손가락이나 터치펜을 판 위에서 움직여 선을 그려요.', '1분이 지나거나 <b>그림 보기</b>를 누르면 내 그림이 짠! 나타나요. ' + FIN],
-    speed: ['화면 맨 아래 <b>시작! ⏱️</b>을 눌러야 판에 그릴 수 있어요. 누르면 이 안내는 접혀요.', '위에 나온 것을 30초 동안 손가락이나 터치펜으로 빠르게 그려요.', '시간이 끝나면 <b>다음 그림 ▶</b>을 눌러요. 모두 3장을 그려요.', '3장을 다 그리면 첫 번째 그림에 ⭐를 붙이고 <b>공방에 걸기 🖼️</b>를 눌러요.'],
-    doodle: ['흰 판에 꼬불꼬불 선이 미리 나와 있어요.', '폰을 돌려 보면서 이 선이 무엇으로 보이는지 생각해요.', '손가락이나 터치펜으로 눈, 다리, 무늬를 더해서 그림을 완성해요.', FIN],
-    idea: ['위에 적힌 주제를 읽어요. 주제는 주마다 바뀌어요.', '아래 흰 판에 손가락이나 터치펜으로 그려요. 글자나 화살표를 써도 돼요.', FIN],
+    hand: ['한 손을 책상 위에 올려놓아요.', '그 손을 보면서, 다른 손으로 아래 흰 판에 그려요. 손가락으로 그려요.', '종이에 그려도 좋아요. 그때는 <b>📷 종이 그림 사진</b>을 눌러 올려요.', FIN],
+    blind: ['적혀 있는 물건을 앞에 가져다 놓아요.', '화면 맨 아래 <b>🙈 가리고 시작!</b>을 누르면 판이 분홍색으로 가려지고 1분 시계가 움직여요. 선은 안 보여도 그려지고 있어요. 이 안내는 접혀요.', '화면은 보지 말고 물건만 보면서, 손가락을 판 위에서 움직여 선을 그려요.', '1분이 지나거나 <b>그림 보기</b>를 누르면 내 그림이 짠! 나타나요. ' + FIN],
+    speed: ['화면 맨 아래 <b>시작! ⏱️</b>을 눌러야 판에 그릴 수 있어요. 누르면 이 안내는 접혀요.', '위에 나온 것을 30초 동안 손가락으로 빠르게 그려요.', '시간이 끝나면 <b>다음 그림 ▶</b>을 눌러요. 모두 3장을 그려요.', '3장을 다 그리면 첫 번째 그림에 ⭐를 붙이고 <b>공방에 걸기 🖼️</b>를 눌러요.'],
+    doodle: ['흰 판에 꼬불꼬불 선이 미리 나와 있어요.', '폰을 돌려 보면서 이 선이 무엇으로 보이는지 생각해요.', '손가락으로 눈, 다리, 무늬를 더해서 그림을 완성해요.', FIN],
+    idea: ['위에 적힌 주제를 읽어요. 주제는 주마다 바뀌어요.', '아래 흰 판에 손가락으로 그려요. 글자나 화살표를 써도 돼요.', FIN],
     pixel: ['아래에서 색 동그라미를 하나 골라요.', '네모 칸을 누르거나 쓱 문지르면 색이 채워져요.', '따라 만들고 싶으면 위쪽 그림을 골라요. 본보기가 작게 나와요.', '<b>다 만들었어요 ✔</b>를 누르고, ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.'] };
   const howOff = () => { const h = $w && $w.querySelector('details.how'); if (h) h.open = false; if ($w) { const p = $w.querySelector('#dtm'); if (p) p.scrollIntoView({ block: 'start' }); } };
   const how = t => { const D = DS(), seen = D.seen = D.seen || {}, first = !seen[t]; if (first) { seen[t] = 1; save(); }
@@ -9663,9 +9663,9 @@ window.srJoin = function (rs) { const out = [];
     const play = [['🔍', '특징 잡기 수업', '사진에서 특징을 찾고, 종이에 연필로 그리는 법을 배워요.'], ['✏️', '따라 그리기', '폰을 보면서 종이에 연필로 한 단계씩 따라 그려요.'], ['✋', '내 손', '한 달에 한 번, 내 손을 보고 그려요.'], ['💡', '생각 그림', '주제를 보고 만화나 지도처럼 생각을 그려요.'], ['〰️', '낙서 이어 그리기', '꼬불꼬불 선에 더 그려서 무언가를 만들어요.'], ['🙈', '안 보고 그리기', '화면을 안 보고 1분 동안 그려요. 웃기게 나오면 성공!'], ['⏱️', '30초 그리기', '30초씩 3장을 빠르게 그려요.'], ['🟦', '픽셀 그리기', '칸을 채워 그림을 만들어요. 그림 시간 횟수에는 안 들어가요.']];
     play.push(play.shift(), play.shift()); /* 놀이를 먼저 보여 줘요 */
     page('❓ 그림 공방 사용법', '<div class="dcard"><h3>그림 공방은 이런 곳이에요</h3><p>시험도 점수도 없어요. <b>일주일에 그림 2번</b>만 그리면 돼요. 잘 그리지 않아도 괜찮아요!</p></div>'
-      + '<div class="dcard"><h3>이렇게 해요</h3><ol class="gsteps"><li>공방 첫 화면에서 <b>이번 주 그림</b> 두 가지 가운데 하나를 눌러요.</li><li>화면에 나오는 순서대로 그려요. 종이에 그리는 것도 있고, 손가락이나 터치펜으로 흰 판에 그리는 것도 있어요.</li><li>다 그렸으면 마음에 드는 곳을 눌러 ⭐를 붙여요. 선 하나, 색 하나도 좋아요.</li><li><b>공방에 걸기 🖼️</b>를 누르면 끝! 그림 시간이 1번 채워져요.</li><li>같은 방법으로 한 번 더 하면 이번 주 그림 시간이 끝나요. ✅</li></ol></div>'
+      + '<div class="dcard"><h3>이렇게 해요</h3><ol class="gsteps"><li>공방 첫 화면에서 <b>이번 주 그림</b> 두 가지 가운데 하나를 눌러요.</li><li>화면에 나오는 순서대로 그려요. 종이에 그리는 것도 있고, 손가락으로 흰 판에 그리는 것도 있어요.</li><li>다 그렸으면 마음에 드는 곳을 눌러 ⭐를 붙여요. 선 하나, 색 하나도 좋아요.</li><li><b>공방에 걸기 🖼️</b>를 누르면 끝! 그림 시간이 1번 채워져요.</li><li>같은 방법으로 한 번 더 하면 이번 주 그림 시간이 끝나요. ✅</li></ol></div>'
       + '<div class="dcard"><h3>어떤 놀이가 있나요?</h3><div class="gplay">' + play.map(x => '<div><span>' + x[0] + '</span><p><b>' + x[1] + '</b><small>' + x[2] + '</small></p></div>').join('') + '</div></div>'
-      + '<div class="dcard"><h3>흰 판에 그릴 때 쓰는 버튼</h3><ul class="tip"><li>맨 위 색 동그라미로 색을 골라요.</li><li>✏️ 가는 선, 🖊️ 굵은 선, 🖍️ 색연필로 그려요.</li><li>🪣 색 채우기: 선으로 둘러싼 곳을 누르면 한 번에 칠해져요.</li><li>🧽 지우개로 문질러 지우고, ↩️ 되돌리기로 방금 그린 것을 없애요.</li><li>🖊️ 손가락 대신 터치펜으로 그려도 돼요. 폰 화면에서 써지는 펜이면 바로 그려져요.</li></ul></div>'
+      + '<div class="dcard"><h3>흰 판에 그릴 때 쓰는 버튼</h3><ul class="tip"><li>맨 위 색 동그라미로 색을 골라요.</li><li>✏️ 가는 선, 🖊️ 굵은 선, 🖍️ 색연필로 그려요.</li><li>🪣 색 채우기: 선으로 둘러싼 곳을 누르면 한 번에 칠해져요.</li><li>🧽 지우개로 문질러 지우고, ↩️ 되돌리기로 방금 그린 것을 없애요.</li></ul></div>'
       + '<div class="dcard"><p>🖼️ 공방에 건 그림은 <b>📈 그림 앨범</b>에 모여요. 예전 그림과 견주어 보면 늘어난 곳이 보여요!</p></div>'
       + '<button class="db p gbtn" data-dx="home">알겠어요! 그리러 가기 ▶</button>', true); }
   function home() { const pair = weekPair(), wl = wkLog(), n = DS().log.length;
@@ -9691,8 +9691,10 @@ window.srJoin = function (rs) { const out = [];
     /* 터치펜 (2026-11-07): 펜을 쓰고 8초 동안은 손이 닿아도 선이 그어지지 않아요. 고무 끝 펜은 넓게 닿기도 해서 닿는 넓이로는 막지 않아요 */
     let penT = -1e9; const palm = e => e.pointerType === 'touch' && performance.now() - penT < 8000;
     const thick = (L, e, prev) => { const w = L.w * (.4 + 1.2 * Math.min(1, e.pressure || .5)); return prev ? prev * .6 + w * .4 : w; };
+    /* 2026-11-08: 지우개는 내가 그린 것만 지워요. 흰색으로 덮으면 바탕 그림까지 지워져서, 바탕을 따로 그려 두고 그 무늬로 칠해요 */
+    const bgc = document.createElement('canvas'); bgc.width = bgc.height = W; { const b = bgc.getContext('2d'); b.fillStyle = '#fff'; b.fillRect(0, 0, W, W); if (guide) guide(b, W); } const erS = () => x.createPattern(bgc, 'no-repeat');
     const redraw = () => { x.fillStyle = '#fff'; x.fillRect(0, 0, W, W); if (guide) guide(x, W); st.lines.forEach(L => L.k === 'fill' ? flood(L) : seg(L)); };
-    const seg = L => { if (L.cr) return crayon(L, 0); if (L.pr) { x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.c; L.p.forEach((q, i) => { const a = L.p[Math.max(0, i - 1)]; x.lineWidth = (a[2] + q[2]) / 2; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0] + (i ? 0 : .1), q[1]); x.stroke(); }); return; } x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.er ? '#fff' : L.c; x.lineWidth = L.w; x.beginPath(); L.p.forEach((q, i) => i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1])); if (L.p.length === 1) x.lineTo(L.p[0][0] + .1, L.p[0][1]); x.stroke(); };
+    const seg = L => { if (L.cr) return crayon(L, 0); if (L.pr) { x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.c; L.p.forEach((q, i) => { const a = L.p[Math.max(0, i - 1)]; x.lineWidth = (a[2] + q[2]) / 2; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0] + (i ? 0 : .1), q[1]); x.stroke(); }); return; } x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.er ? erS() : L.c; x.lineWidth = L.w; x.beginPath(); L.p.forEach((q, i) => i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1])); if (L.p.length === 1) x.lineTo(L.p[0][0] + .1, L.p[0][1]); x.stroke(); };
     /* 색연필: 선을 따라 작은 점을 흩뿌려 결을 만들어요 (점 자리는 정해진 순서라 되돌리기 해도 똑같이 다시 그려져요) */
     const crayon = (L, from) => { x.fillStyle = L.c; x.globalAlpha = .7;
       for (let i = Math.max(0, from); i < L.p.length; i++) { let s = (L.s + i * 7919) % 233280; const R = () => (s = (s * 9301 + 49297) % 233280) / 233280;
@@ -9720,7 +9722,7 @@ window.srJoin = function (rs) { const out = [];
     cv.addEventListener('pointermove', e => { if (!st.cur || st.locked || e.pointerId !== st.pid) return; e.preventDefault(); if (e.pointerType === 'pen') penT = performance.now(); const L = st.cur, ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
       (ev.length ? ev : [e]).forEach(v => { const q = pos(v), a = L.p[L.p.length - 1]; if (L.pr) q.push(thick(L, v, a[2])); L.p.push(q);
         if (L.cr) return crayon(L, L.p.length - 1);
-        x.lineCap = 'round'; x.strokeStyle = L.er ? '#fff' : L.c; x.lineWidth = L.pr ? (a[2] + q[2]) / 2 : L.w; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0], q[1]); x.stroke(); }); });
+        x.lineCap = 'round'; x.strokeStyle = L.er ? erS() : L.c; x.lineWidth = L.pr ? (a[2] + q[2]) / 2 : L.w; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0], q[1]); x.stroke(); }); });
     const up = e => { if (e.pointerId === st.pid) st.cur = null; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up); cv.addEventListener('pointerleave', up); cv.addEventListener('lostpointercapture', up);
 
 redraw();
@@ -9889,7 +9891,7 @@ redraw();
   function traceHow(D) { const c = trCount(D.id);
     page(D.e + ' ' + D.n + ' 그리기', '<div class="dcard" style="text-align:center">' + trSVG(D, 99, -1, 150) + '<p style="margin-top:6px">' + D.s.length + '단계 + 내 것으로 바꾸기' + (c ? '<br><span class="soft">전에 ' + c + '번 그렸어요. 그때보다 늘었는지 앨범에서 견주어 봐요!</span>' : '') + '</p></div>'
       + '<button class="db p" id="trp" style="font-size:1.1rem">📄 종이에 따라 그리기 <small style="display:block;font-size:.8rem;opacity:.9">추천! 연필과 종이를 준비해요</small></button>'
-      + '<button class="db" id="trs">📱 화면 위에 대고 그리기 <small style="display:block;font-size:.8rem;color:#5A668C">흐린 선 위를 손가락이나 터치펜으로 따라가요 (몸풀기)</small></button>', true);
+      + '<button class="db" id="trs">📱 화면 위에 대고 그리기 <small style="display:block;font-size:.8rem;color:#5A668C">흐린 선 위를 손가락으로 따라가요 (몸풀기)</small></button>', true);
     $w.querySelector('#trp').onclick = () => traceStep(D, 0); $w.querySelector('#trs').onclick = () => traceScreen(D); }
   function traceStep(D, k) { const last = k >= D.s.length;
     page(D.e + ' ' + D.n + ' · ' + (last ? '마지막' : (k + 1) + ' / ' + D.s.length + '단계'),
@@ -10017,7 +10019,7 @@ redraw();
       + '<div class="row"><button class="db" id="trb"' + (k ? '' : ' disabled') + '>◀ 이전</button><button class="db y" id="trr">🔁 다시 보기</button><button class="db p" id="trn">다음 ▶</button></div>', true);
     $w.querySelector('#trb').onclick = () => featDraw(D, k - 1); $w.querySelector('#trr').onclick = () => featDraw(D, k); $w.querySelector('#trn').onclick = () => k + 1 < D.s.length ? featDraw(D, k + 1) : featCmp(D); }
   function featCmp(D) { page(D.e + ' ' + D.n + ' · 3. 견주기', '<div class="dcard"><p class="prompt" style="font-size:1.1rem">특징이 있을 때와 없을 때를 견주어 봐요</p><div class="ftwo"><figure>' + fFull(D, 1) + '<figcaption>' + D.fe + ' 있음</figcaption></figure><figure>' + fNo(D) + '<figcaption>' + D.fe + ' 없음</figcaption></figure></div><p style="margin-top:8px">' + D.nof + '</p></div>'
-      + '<div class="dcard"><h3>🎨 내 것으로 바꾸기</h3><p>' + D.my + '</p></div><div class="dcard"><p>다 그렸으면 종이 그림을 📷 사진으로 올려요. 사진은 이 폰의 앨범에만 저장돼요.</p></div><div class="row"><label class="db m" style="cursor:pointer">📷 내 그림 사진 올리기<input type="file" accept="image/*" id="dph" hidden></label><button class="db" id="trno">사진 없이 확인하기</button></div><button class="db y gbtn" id="fpad">🖊️ 종이 대신 터치펜으로 화면에 그리기</button>', true);
+      + '<div class="dcard"><h3>🎨 내 것으로 바꾸기</h3><p>' + D.my + '</p></div><div class="dcard"><p>다 그렸으면 종이 그림을 📷 사진으로 올려요. 사진은 이 폰의 앨범에만 저장돼요.</p></div><div class="row"><label class="db m" style="cursor:pointer">📷 내 그림 사진 올리기<input type="file" accept="image/*" id="dph" hidden></label><button class="db" id="trno">사진 없이 확인하기</button></div><button class="db y gbtn" id="fpad">👆 종이 대신 손가락으로 화면에 그리기</button>', true);
     $w.querySelector('#fpad').onclick = () => featPad(D);
     const ph = $w.querySelector('#dph'); ph.onchange = () => { const f = ph.files && ph.files[0]; if (!f) return; const img = new Image(); img.onload = () => { const o = document.createElement('canvas'), s = Math.min(img.width, img.height); o.width = 480; o.height = 480;
         o.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 480, 480); URL.revokeObjectURL(img.src); featCheck(D, o.toDataURL('image/jpeg', .72)); }; img.src = URL.createObjectURL(f); };
