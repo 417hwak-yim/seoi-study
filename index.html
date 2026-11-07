@@ -4996,13 +4996,15 @@ const READPIC_KEY=SAVE_KEY+'-readpics';
 /* 날마다 새 책 한 권: 추천한 책은 날짜와 함께 적어 두고, 한 번 추천한 책은 다시 추천하지 않아요.
    지난 날짜에는 그날 실제로 추천했던 책이 보여요. 목록을 다 소개하면 새 책이 없다고 알려 줘요. */
 /* 11월 1일: 파주시 도서관 추천 그림책이 먼저 나오고, 그다음 원래처럼 섞은 차례로 */
-const RBSEQ=(()=>{ const P=RBOOKS.map((b,i)=>i).filter(i=>/파주/.test(RBOOKS[i][5])); const a=RBOOKS.map((b,i)=>i).filter(i=>P.indexOf(i)<0); let s=20261010; for(let i=a.length-1;i>0;i--){ s=(s*1103515245+12345)%2147483648; const j=s%(i+1); [a[i],a[j]]=[a[j],a[i]]; } return P.concat(a).filter(i=>RBOOKS[i][3]!=='c72'); })(); /* 2026-11-07: 《줄무늬가 생겼어요》는 서이가 이미 읽어서 추천하지 않아요 */
+/* 2026-11-08: 서이가 혼자 읽을 수 있게 글밥이 많은 책은 추천에서 빼요. 알라딘 미리보기로 쪽당 글 양을 보고 골랐어요. 책장에 적으면 책 이름은 그대로 알아봐요 */
+const RBSKIP=new Set(['9791194344438','9791194770602','9788964965474','b01','b03','b07','b08','b09','b13','b16','b18','b20','b23','b24','c02','c03','c04','c06','c09','c10','c11','c12','c13','c14','c15','c17','c18','c19','c20','c21','c23','c26','c27','c28','c29','c30','c33','c35','c38','c42','c43','c51','c52','c54','c55','c68','c69','c70','c72','c73','c74']);
+const RBSEQ=(()=>{ const P=RBOOKS.map((b,i)=>i).filter(i=>/파주/.test(RBOOKS[i][5])); const a=RBOOKS.map((b,i)=>i).filter(i=>P.indexOf(i)<0); let s=20261010; for(let i=a.length-1;i>0;i--){ s=(s*1103515245+12345)%2147483648; const j=s%(i+1); [a[i],a[j]]=[a[j],a[i]]; } return P.concat(a).filter(i=>!RBSKIP.has(RBOOKS[i][3])); })();
 /* 책은 한 주(월요일~일요일)에 한 권씩 골라요. 기록은 그 주의 월요일 날짜로 남겨요.
    예전처럼 날마다 골라 둔 기록이 있으면 그 주에 처음 고른 책을 그 주의 책으로 써요 */
 const weekKey=k=>{ const [y,m,d]=k.split('-').map(Number), t=new Date(y,m-1,d); t.setDate(t.getDate()-(t.getDay()+6)%7); return dkey(t); };
 const weekLabel=k=>{ const [y,m,d]=weekKey(k).split('-').map(Number), e=new Date(y,m-1,d+6); return m+'월 '+d+'일~'+(e.getMonth()+1!==m?(e.getMonth()+1)+'월 ':'')+e.getDate()+'일'; };
 function bookOfDay(k){ const L=STATE.recLog=STATE.recLog||{}, tk=dkey(new Date()), wk=weekKey(k);
-  if(wk===weekKey(tk)&&L[wk]==='c72') delete L[wk];   /* 이미 읽은 책이 이번 주 책이었으면 새 책으로 바꿔요 */
+  if(wk===weekKey(tk)) Object.keys(L).filter(d=>weekKey(d)===wk&&RBSKIP.has(L[d])).forEach(d=>delete L[d]);   /* 이번 주 책이 뺀 책이면 새 책으로 바꿔요 */
   const idx=id=>RBOOKS.findIndex(b=>b[3]===id);
   if(L[wk]&&idx(L[wk])>=0) return idx(L[wk]);
   const old=Object.keys(L).filter(d=>weekKey(d)===wk).sort()[0]; if(old&&idx(L[old])>=0) return idx(L[old]);
@@ -5043,7 +5045,7 @@ function USUM(us,sl){ const t=us.length; return t?'<small class="usum">✅ '+us.
 const RB2='2026-11-02';
 function bookTwo(k,first){ const L=STATE.recLog=STATE.recLog||{}, tk=dkey(new Date()), wk=weekKey(k); if(wk<RB2||first<0) return -1;
   const [y,m,d]=wk.split('-').map(Number), k2=dkey(new Date(y,m-1,d+1)), idx=id=>RBOOKS.findIndex(b=>b[3]===id), one=RBOOKS[first][3];
-  if(L[k2]&&L[k2]!==one&&L[k2]!=='c72'&&idx(L[k2])>=0) return idx(L[k2]);
+  if(L[k2]&&L[k2]!==one&&idx(L[k2])>=0) return idx(L[k2]);
   if(wk!==weekKey(tk)) return -1;
   const used=new Set(Object.values(L)), i=RBSEQ.find(x=>!used.has(RBOOKS[x][3])&&x!==first); if(i===undefined) return -1;
   L[k2]=RBOOKS[i][3]; saveLocal(); setTimeout(()=>{ try{ pushCloud(); }catch(e){} },0); return i; }
