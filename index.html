@@ -9487,6 +9487,546 @@ window.srJoin = function (rs) { const out = [];
 })();
 </script>
 <!-- ===== 토토네 가게 끝 ===== -->
+<!-- ===== 서이의 그림 공방 (2026-11-07, 채이 공방에서 가져옴) 시작 ===== -->
+<style id="drw-css">
+/* 그림 공방: '잘 그리기'가 아니라 '자주, 즐겁게, 늘어나는 걸 보기'. 공부방 위에 따로 창으로 열려요 */
+#drw{position:fixed;inset:0;z-index:9000;background:#FFFBF3;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:"Gowun Dodum","Jua",sans-serif;color:#1B2750}
+#drw *{box-sizing:border-box}
+#drw .dw{max-width:520px;margin:0 auto;padding:12px 14px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+#drw .dtop{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;background:#FFFBF3;padding:6px 0;z-index:2}
+#drw .dtop b{font-family:"Jua",sans-serif;font-size:1.25rem;color:#E0457B}
+#drw .db{font:inherit;font-family:"Jua",sans-serif;border:2.5px solid #1B2750;border-radius:14px;background:#fff;color:#1B2750;padding:9px 12px;font-size:1rem;box-shadow:0 3px 0 #1B2750;cursor:pointer;touch-action:manipulation}
+#drw .db:active{transform:translateY(2px);box-shadow:0 1px 0 #1B2750}
+#drw .db[disabled]{opacity:.45}
+#drw .db.p{background:#FF7AA8;color:#fff}#drw .db.m{background:#43C6A6;color:#fff}#drw .db.y{background:#FFD45C}
+#drw .dcard{background:#fff;border:2.5px solid #1B2750;border-radius:18px;padding:12px;box-shadow:0 4px 0 #1B2750}
+#drw h3{margin:0 0 6px;font-family:"Jua",sans-serif;font-size:1.12rem}
+#drw p{margin:0;line-height:1.65;word-break:keep-all}
+#drw .soft{color:#5A668C;font-size:.92rem}
+#drw .mis{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;text-align:left;margin-top:8px}
+#drw .mis .e{font-size:2rem}#drw .mis b{display:block;font-family:"Jua",sans-serif;font-size:1.05rem}#drw .mis small{color:#5A668C;font-size:.85rem;line-height:1.4;display:block}
+#drw .mis.ok{background:#E9FBF4;border-color:#2E9E7A;box-shadow:0 3px 0 #2E9E7A}
+#drw .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#drw .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* 그리기판 */
+#drw .padw{position:relative;width:100%;max-width:380px;margin:0 auto;aspect-ratio:1/1;border:3px solid #1B2750;border-radius:14px;overflow:hidden;background:#fff;touch-action:none}
+#drw .padw canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+@media(min-width:700px){#drw .dw{max-width:760px}#drw .padw,#drw .starw{max-width:min(720px,max(380px,calc(100vh - 300px)))}}
+#drw .cover small{font-size:.95rem;line-height:1.35}#drw .cdot{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#E0457B88;border:2px solid #C2185B}
+#drw .cover{position:absolute;inset:0;background:repeating-linear-gradient(45deg,#FFE4EE 0 18px,#FFD3E3 18px 36px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:"Jua",sans-serif;font-size:1.2rem;color:#C2185B;pointer-events:none;text-align:center;padding:12px}
+#drw .tools{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+#drw .sw{width:32px;height:32px;border-radius:50%;border:2.5px solid #1B2750;padding:0;cursor:pointer}
+#drw .sw.on{box-shadow:0 0 0 3px #fff,0 0 0 6px #1B2750}
+#drw .tb{font-size:.9rem;padding:6px 9px;border-radius:10px;box-shadow:0 2px 0 #1B2750}
+#drw .tb.on{background:#1B2750;color:#fff}
+#drw .timer{font-family:"Jua",sans-serif;font-size:1.6rem;text-align:center;color:#E0457B}
+#drw .prompt{font-family:"Jua",sans-serif;font-size:1.3rem;text-align:center}
+/* 별 붙이기 */
+#drw .starw{position:relative;width:100%;max-width:380px;margin:0 auto;border:3px solid #1B2750;border-radius:14px;overflow:hidden;background:#fff}
+#drw .starw img{display:block;width:100%;height:auto}
+#drw .star{position:absolute;transform:translate(-50%,-50%);font-size:2rem;pointer-events:none;filter:drop-shadow(0 2px 0 #fff)}
+/* 앨범 */
+#drw .alb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#drw .alb figure{margin:0;position:relative;border:2px solid #1B2750;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer}
+#drw .alb img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+#drw .alb figcaption{font-size:.72rem;padding:2px 4px;color:#5A668C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#drw .alb .star{font-size:1.1rem}
+#drw .hand{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+#drw .hand figure{flex:0 0 42%;margin:0;border:2px solid #1B2750;border-radius:10px;overflow:hidden;background:#fff}
+#drw .hand img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+#drw .hand figcaption{text-align:center;font-family:"Jua",sans-serif;font-size:.9rem;padding:3px}
+/* 픽셀 */
+#drw .pxg{display:grid;grid-template-columns:repeat(16,1fr);width:100%;max-width:380px;margin:0 auto;border:3px solid #1B2750;border-radius:8px;overflow:hidden;touch-action:none;background:#fff}
+#drw .pxg i{aspect-ratio:1/1;border-right:1px solid #EEF0F6;border-bottom:1px solid #EEF0F6}
+#drw .tpl{display:flex;gap:6px;overflow-x:auto;padding:2px}
+#drw .tpl button{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;padding:5px}
+#drw .tip li{margin:4px 0;line-height:1.6}
+/* 2026-11-05: 특징 잡기 수업 */
+#drw .trsvg .fhi *{stroke:#FF4F8B;stroke-width:5}
+#drw .fgrp{margin:12px 0 6px;font-family:Jua,sans-serif;font-weight:400;color:#3B5BDB}
+#drw .fphoto{margin:0 0 10px;text-align:center}#drw .fphoto img{max-width:100%;max-height:300px;border-radius:14px;border:3px solid #1B2750}#drw .fphoto figcaption{font-size:.72rem;color:#5A668C;margin-top:2px}
+#drw .fopts{display:grid;gap:8px;margin-top:8px}#drw .fopts .db:disabled{opacity:.45}
+#drw .ftwo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}#drw .ftwo figure{margin:0;border:2px solid #1B2750;border-radius:10px;background:#fff;padding:4px;text-align:center;min-width:0}#drw .ftwo img{display:block;width:100%;border-radius:6px}#drw .ftwo figcaption{font-family:Jua,sans-serif;font-size:.9rem}
+#drw .fchk{display:grid;gap:8px;margin-top:6px}#drw .fchk label{display:flex;gap:8px;align-items:center;line-height:1.5}#drw .fchk input{width:22px;height:22px;flex:none}
+/* 2026-11-05: 사용법 */
+#drw .gbtn{display:block;width:100%;margin:0 0 10px;font-size:1.05rem}
+#drw details.how{margin-bottom:10px;background:#FFFBE8;border:2px solid #F5A524;border-radius:14px;padding:8px 12px}
+#drw details.how summary{font-family:Jua,sans-serif;cursor:pointer;color:#B45309}
+#drw .how ol,#drw .gsteps{margin:8px 0 2px;padding-left:1.4em}#drw .how li,#drw .gsteps li{margin:6px 0;line-height:1.6}
+#drw .gplay{display:grid;gap:8px;margin-top:8px}#drw .gplay div{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:6px;align-items:start;line-height:1.5}#drw .gplay span{font-size:1.4rem;text-align:center}#drw .gplay small{display:block;color:#5A668C}
+#drw input.ttl{width:100%;font:inherit;font-size:1rem;border:2px solid #1B2750;border-radius:10px;padding:8px 10px}
+#drw .big{position:fixed;inset:0;background:rgba(27,39,80,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:3}
+#drw .big .starw{max-width:460px}
+/* 따라 그리기: 지난 단계는 남색, 이번 단계는 분홍으로 그려지는 모습 */
+#drw .trbox{background:#fff;border:3px solid #1B2750;border-radius:14px;padding:6px;max-width:380px;width:100%;margin:0 auto}
+#drw .trsvg{display:block;margin:0 auto}#drw .trsvg .trp *{stroke:#1B2750;stroke-width:3.5}#drw .trsvg .trc *{stroke:#FF4F8B;stroke-width:5.5;stroke-dasharray:1;stroke-dashoffset:1;animation:trdraw 1.4s ease forwards}
+@keyframes trdraw{to{stroke-dashoffset:0}}
+#drw .trlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#drw .trpick{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px}#drw .trpick b{font-size:1rem}#drw .trpick small{font-size:.75rem;color:#5A668C}
+#drw .trpick.rec{border-color:#FF4F8B;box-shadow:0 3px 0 #FF4F8B;background:#FFF5F9}
+/* 첫 화면 카드 */
+#app .drcard{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;margin:10px 0 0;padding:10px 12px;border-radius:16px;text-align:left;font:inherit;color:#1B2750;background:#F3F7FF;border:2px solid #6C8CF5;box-shadow:0 3px 0 #6C8CF5;cursor:pointer}
+#app .drcard b{display:block;font-family:Jua,sans-serif;font-weight:400;font-size:1.05rem;color:#3B5BDB;line-height:1.3}#app .drcard small{display:block;font-size:.8rem;color:#5A668C;line-height:1.4}#app .drcard .st{display:inline-block;font-size:.78rem;font-weight:800;color:#C2185B;margin-bottom:2px}#app .drcard.did .st{color:#2E9E7A}
+#app .drcard.drweek{border-color:#E0457B;box-shadow:0 3px 0 #E0457B;background:#FFF5F9}#app .drcard .go{font-size:1.6rem}
+</style>
+<script>
+/* ===== 🎨 서이의 그림 공방 =====
+   서이도 그림 공방을 하고 싶어 해요. 채이 공방과 같은 방향이에요: 폰은 보고 배우는 곳, 그림은 종이에 연필로, 평가와 점수는 없어요.
+   · 잘·못을 가를 수 없는 놀이 미션 (안 보고 그리기, 30초 그리기, 낙서 이어 그리기, 생각 그림) — 일주일에 2번 (첫 화면 카드에 📌)
+   · 매달 첫 미션은 '내 손 그리기' → 📈 성장 앨범에 달마다 나란히 (늘어나는 걸 눈으로)
+   · 다 그리면 '마음에 드는 곳 한 군데'에 스스로 ⭐ (구체적인 자기 칭찬). 점수·평가는 없어요
+   · 👨‍👩 어른용 칭찬 도우미: '잘 그렸다' 대신 본 것을 말해 주는 말 예시
+   · 🟦 픽셀 그리기판: 칸을 채우면 누구나 완성 (언제든)
+   기록: STATE.draw.log (날짜·종류), 그림 파일은 이 폰의 IndexedDB 'seoi-draw' (기록 옮기기에는 그림 파일이 함께 가지 않아요) */
+(function () {
+  const p2 = n => String(n).padStart(2, '0'), dk = d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+  const DS = () => { STATE.draw = STATE.draw || { log: [] }; STATE.draw.log = STATE.draw.log || []; return STATE.draw; };
+  const save = () => { try { persist(); } catch (e) {} };
+  const monday = () => { const n = new Date(); return dk(new Date(n.getFullYear(), n.getMonth(), n.getDate() - ((n.getDay() + 6) % 7))); };
+  const weekN = () => Math.floor((new Date(monday() + 'T00:00') - new Date(2026, 0, 5)) / 6048e5);
+  const month = () => dk(new Date()).slice(0, 7);
+  const WEEKGOAL = 2;
+  const wkLog = () => DS().log.filter(x => x.m && x.d >= monday());
+  const handDone = () => DS().log.some(x => x.t === 'hand' && x.d.slice(0, 7) === month());
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+  /* ---------- 미션 ---------- */
+  const MS = {
+    feat: { e: '🔍', n: '특징 잡기 수업', s: '사진을 보고 특징을 찾아서 종이에 그려요. 특징 하나만 잡아도 누구나 알아봐요!' },
+    trace: { e: '✏️', n: '따라 그리기', s: '한 단계씩 새 선이 나와요. 종이에 연필로 따라 그리면 그리는 순서가 손에 붙어요!' },
+    hand: { e: '✋', n: '성장 그리기 · 내 손', s: '한 달에 한 번, 내 손을 보고 천천히 그려요. 달마다 모아서 나란히 보면 늘어난 게 보여요!' },
+    blind: { e: '🙈', n: '안 보고 그리기', s: '그리는 동안 판이 가려져요! 물건만 보고 1분 동안 선을 이어 그려요. 웃기게 나와야 성공!' },
+    speed: { e: '⏱️', n: '30초 그리기', s: '30초씩 3장! 제일 중요한 특징부터 빠르게 그려요.' },
+    doodle: { e: '〰️', n: '낙서 이어 그리기', s: '꼬불꼬불 선이 하나 나와요. 이 선으로 무엇이든 만들어 봐요.' },
+    idea: { e: '💡', n: '생각 그림', s: '예쁘게보다 알아보게! 생각을 그림으로 보여 줘요.' } };
+  /* 한 주 두 번: ✏️ 따라 그리기(그리는 법 익히기) + 한 가지 (매달 처음엔 ✋ 내 손, 아니면 💡 생각 그림·〰️ 낙서 번갈아). 🙈·⏱️는 '가끔 하는 놀이' */
+  const weekPair = () => ['feat', handDone() || wkLog().some(x => x.t === 'hand') ? (weekN() % 2 ? 'doodle' : 'idea') : 'hand'];
+  const BLIND = ['내 손', '컵', '신발', '필통', '인형', '가족 얼굴', '바나나', '의자'];
+  const SPEED = [['고양이', '자전거', '아이스크림'], ['물고기', '집', '우산'], ['강아지', '나무', '로켓'], ['토끼', '자동차', '케이크'], ['새', '꽃', '기차'], ['거북', '해와 구름', '모자']];
+  const IDEA = [['🗯️ 4컷 만화: 나의 아침', 4], ['🗺️ 우리 동네 지도', 1], ['🍕 내가 제일 좋아하는 음식', 1], ['🌱 오늘 본 식물이나 동물', 1], ['🗯️ 4컷 만화: 채이랑 있었던 일', 4], ['🏪 내가 만든 가게의 간판과 메뉴', 1], ['🗯️ 4컷 만화: 만약 내가 하늘을 날 수 있다면', 4], ['🛏️ 내 방에서 제일 좋아하는 곳', 1]];
+  const pickW = a => a[((weekN() % a.length) + a.length) % a.length];
+
+  /* ---------- 그림 저장 (이 폰 안) ---------- */
+  let DBP = null;
+  const db = () => DBP = DBP || new Promise((res, rej) => { try { const r = indexedDB.open('seoi-draw', 1); r.onupgradeneeded = () => r.result.createObjectStore('pics', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } });
+  const putPic = o => db().then(d => new Promise(r => { const t = d.transaction('pics', 'readwrite'); t.objectStore('pics').put(o); t.oncomplete = () => r(true); t.onerror = () => r(false); })).catch(() => false);
+  const allPics = () => db().then(d => new Promise(r => { const q = d.transaction('pics').objectStore('pics').getAll(); q.onsuccess = () => r((q.result || []).sort((a, b) => a.id < b.id ? -1 : 1)); q.onerror = () => r([]); })).catch(() => []);
+
+  /* ---------- 창 ---------- */
+  let $w = null, pushed = false, timers = [];
+  const clearT = () => { timers.forEach(t => clearInterval(t)); timers = []; };
+  function openDrw(view) { if (!$w) { $w = document.createElement('div'); $w.id = 'drw'; $w.setAttribute('role', 'dialog'); $w.setAttribute('aria-label', '그림 공방'); document.body.appendChild($w); document.body.style.overflow = 'hidden';
+      try { history.pushState({ drw: 1 }, ''); pushed = true; window.addEventListener('popstate', onPop); } catch (e) {} }
+    (view || (DS().guide ? home : guide))(); }
+  const onPop = () => { pushed = false; closeDrw(); };
+  function closeDrw() { clearT(); if ($w) { $w.remove(); $w = null; } document.body.style.overflow = ''; window.removeEventListener('popstate', onPop); if (pushed) { pushed = false; try { history.back(); } catch (e) {} } refreshCard(); }
+  const page = (title, body, back) => { clearT(); $w.innerHTML = '<div class="dw"><div class="dtop"><b>' + title + '</b><button class="db" data-dx="' + (back ? 'home' : 'close') + '">' + (back ? '← 공방으로' : '닫기') + '</button></div>' + body + '</div>'; $w.scrollTop = 0; };
+
+  /* ---------- 공방 첫 화면 ---------- */
+  /* 사용법: 처음 들어오면 먼저 나오고, 공방 맨 위 버튼으로 언제든 다시 봐요 */
+  const FIN = '<b>다 그렸어요 ✔</b>를 누르고, 마음에 드는 곳에 ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.';
+  const HOW = {
+    feat: ['연필과 종이를 준비해요.', '아래에서 분홍색 <b>오늘 추천</b> 수업을 눌러요.', '사진을 보고 특징을 찾는 문제를 풀어요.', '폰에 나오는 순서대로 <b>종이에</b> 그려요.', '특징이 있을 때와 없을 때를 견주어 봐요.', '종이 그림을 📷 사진으로 올리거나, 사진 없이 스스로 확인하면 끝!'],
+    trace: ['연필과 종이를 준비해요.', '아래에서 분홍색 <b>오늘 추천</b> 그림을 눌러요. 다른 그림을 골라도 돼요.', '<b>📄 종이에 따라 그리기</b>를 눌러요.', '폰에 분홍색 새 선이 나오면 종이에 똑같이 그리고 <b>다음 ▶</b>을 눌러요. 놓쳤으면 <b>🔁 다시 보기</b>!', '다 그렸으면 📷 사진을 올리고 ⭐를 붙여요. 사진을 못 찍으면 <b>사진 없이 끝내기</b>를 눌러도 돼요.'],
+    hand: ['한 손을 책상 위에 올려놓아요.', '그 손을 보면서, 다른 손으로 아래 흰 판에 그려요. 손가락도 터치펜도 좋아요.', '종이에 그려도 좋아요. 그때는 <b>📷 종이 그림 사진</b>을 눌러 올려요.', FIN],
+    blind: ['적혀 있는 물건을 앞에 가져다 놓아요.', '화면 맨 아래 <b>🙈 가리고 시작!</b>을 누르면 판이 분홍색으로 가려지고 1분 시계가 움직여요. 선은 안 보여도 그려지고 있어요. 이 안내는 접혀요.', '화면은 보지 말고 물건만 보면서, 손가락이나 터치펜을 판 위에서 움직여 선을 그려요.', '1분이 지나거나 <b>그림 보기</b>를 누르면 내 그림이 짠! 나타나요. ' + FIN],
+    speed: ['화면 맨 아래 <b>시작! ⏱️</b>을 눌러야 판에 그릴 수 있어요. 누르면 이 안내는 접혀요.', '위에 나온 것을 30초 동안 손가락이나 터치펜으로 빠르게 그려요.', '시간이 끝나면 <b>다음 그림 ▶</b>을 눌러요. 모두 3장을 그려요.', '3장을 다 그리면 첫 번째 그림에 ⭐를 붙이고 <b>공방에 걸기 🖼️</b>를 눌러요.'],
+    doodle: ['흰 판에 꼬불꼬불 선이 미리 나와 있어요.', '폰을 돌려 보면서 이 선이 무엇으로 보이는지 생각해요.', '손가락이나 터치펜으로 눈, 다리, 무늬를 더해서 그림을 완성해요.', FIN],
+    idea: ['위에 적힌 주제를 읽어요. 주제는 주마다 바뀌어요.', '아래 흰 판에 손가락이나 터치펜으로 그려요. 글자나 화살표를 써도 돼요.', FIN],
+    pixel: ['아래에서 색 동그라미를 하나 골라요.', '네모 칸을 누르거나 쓱 문지르면 색이 채워져요.', '따라 만들고 싶으면 위쪽 그림을 골라요. 본보기가 작게 나와요.', '<b>다 만들었어요 ✔</b>를 누르고, ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.'] };
+  const howOff = () => { const h = $w && $w.querySelector('details.how'); if (h) h.open = false; if ($w) { const p = $w.querySelector('#dtm'); if (p) p.scrollIntoView({ block: 'start' }); } };
+  const how = t => { const D = DS(), seen = D.seen = D.seen || {}, first = !seen[t]; if (first) { seen[t] = 1; save(); }
+    return '<details class="how"' + (first ? ' open' : '') + '><summary>❓ 어떻게 하는 거예요?</summary><ol>' + HOW[t].map(x => '<li>' + x + '</li>').join('') + '</ol></details>'; };
+  function guide() { DS().guide = 1; save();
+    const play = [['🔍', '특징 잡기 수업', '사진에서 특징을 찾고, 종이에 연필로 그리는 법을 배워요.'], ['✏️', '따라 그리기', '폰을 보면서 종이에 연필로 한 단계씩 따라 그려요.'], ['✋', '내 손', '한 달에 한 번, 내 손을 보고 그려요.'], ['💡', '생각 그림', '주제를 보고 만화나 지도처럼 생각을 그려요.'], ['〰️', '낙서 이어 그리기', '꼬불꼬불 선에 더 그려서 무언가를 만들어요.'], ['🙈', '안 보고 그리기', '화면을 안 보고 1분 동안 그려요. 웃기게 나오면 성공!'], ['⏱️', '30초 그리기', '30초씩 3장을 빠르게 그려요.'], ['🟦', '픽셀 그리기', '칸을 채워 그림을 만들어요. 그림 시간 횟수에는 안 들어가요.']];
+    page('❓ 그림 공방 사용법', '<div class="dcard"><h3>그림 공방은 이런 곳이에요</h3><p>시험도 점수도 없어요. <b>일주일에 그림 2번</b>만 그리면 돼요. 잘 그리지 않아도 괜찮아요!</p></div>'
+      + '<div class="dcard"><h3>이렇게 해요</h3><ol class="gsteps"><li>공방 첫 화면에서 <b>이번 주 그림</b> 두 가지 가운데 하나를 눌러요.</li><li>화면에 나오는 순서대로 그려요. 종이에 그리는 것도 있고, 손가락이나 터치펜으로 흰 판에 그리는 것도 있어요.</li><li>다 그렸으면 마음에 드는 곳을 눌러 ⭐를 붙여요. 선 하나, 색 하나도 좋아요.</li><li><b>공방에 걸기 🖼️</b>를 누르면 끝! 그림 시간이 1번 채워져요.</li><li>같은 방법으로 한 번 더 하면 이번 주 그림 시간이 끝나요. ✅</li></ol></div>'
+      + '<div class="dcard"><h3>어떤 놀이가 있나요?</h3><div class="gplay">' + play.map(x => '<div><span>' + x[0] + '</span><p><b>' + x[1] + '</b><small>' + x[2] + '</small></p></div>').join('') + '</div></div>'
+      + '<div class="dcard"><h3>흰 판에 그릴 때 쓰는 버튼</h3><ul class="tip"><li>맨 위 색 동그라미로 색을 골라요.</li><li>✏️ 가는 선, 🖊️ 굵은 선, 🖍️ 색연필로 그려요.</li><li>🪣 색 채우기: 선으로 둘러싼 곳을 누르면 한 번에 칠해져요.</li><li>🧽 지우개로 문질러 지우고, ↩️ 되돌리기로 방금 그린 것을 없애요.</li><li>🖊️ 손가락 대신 터치펜으로 그려도 돼요. 폰 화면에서 써지는 펜이면 바로 그려져요.</li></ul></div>'
+      + '<div class="dcard"><p>🖼️ 공방에 건 그림은 <b>📈 그림 앨범</b>에 모여요. 예전 그림과 견주어 보면 늘어난 곳이 보여요!</p></div>'
+      + '<button class="db p gbtn" data-dx="home">알겠어요! 그리러 가기 ▶</button>', true); }
+  function home() { const pair = weekPair(), wl = wkLog(), n = DS().log.length;
+    const doneT = t => wl.some(x => x.t === t);
+    page('🎨 서이의 그림 공방',
+      '<button class="db y gbtn" data-go="guide">❓ 어떻게 하는 거예요? 사용법 보기</button><div class="dcard"><h3>이번 주 그림 시간 ' + Math.min(WEEKGOAL, wl.length) + ' / ' + WEEKGOAL + (wl.length >= WEEKGOAL ? ' ✅' : '') + '</h3><p class="soft">그림은 <b>연습하면 누구나 늘어요.</b> 특징 잡기 수업으로 그리는 법을 하나씩 배워요. 지금까지 ' + n + '번 그렸어요!</p><p style="margin:8px 0 4px"><b>👇 이번 주 그림: 하나를 눌러 시작해요</b></p>'
+      + pair.map(t => '<button class="db mis' + (doneT(t) ? ' ok' : '') + '" data-go="' + t + '"><span class="e">' + MS[t].e + '</span><span><b>' + MS[t].n + (doneT(t) ? ' ✓' : '') + '</b><small>' + MS[t].s + '</small></span><span>▶</span></button>').join('')
+      + '<p class="soft" style="margin-top:8px">🎲 가끔 하는 놀이 👇</p><div class="row" style="margin-top:6px">' + Object.keys(MS).filter(t => !pair.includes(t) && t !== 'hand').map(t => '<button class="db tb" data-go="' + t + '">' + MS[t].e + ' ' + MS[t].n + '</button>').join('') + '</div></div>'
+      + '<div class="grid2"><button class="db y" data-go="pixel">🟦 픽셀 그리기</button><button class="db m" data-go="album">📈 그림 앨범</button></div>'
+      + '<details class="dcard"><summary style="font-family:Jua,sans-serif;cursor:pointer">👨‍👩 어른용: 칭찬 도우미</summary><ul class="tip">'
+      + '<li>"잘 그렸네" 대신 <b>본 것</b>을 말해 주세요: "이 꼬리 선에서 움직이는 게 느껴져", "색을 이렇게 섞은 게 재밌다", "이 부분은 어떻게 생각해 냈어?"</li>'
+      + '<li>서이가 ⭐를 붙인 곳을 먼저 물어봐 주세요. "여기가 마음에 들었구나, 왜?"</li>'
+      + '<li>🔍 특징 잡기 수업은 앱이 그림을 분석하지 않아요. 수업 뒤 "어떤 특징을 골랐어?", "이 특징을 더 키우면 어떨까?"처럼 물어봐 주세요.</li>'
+      + '<li>고쳐 주거나 다른 아이 그림과 견주지 않아요. 안 보고 그리기·30초 그리기는 어른도 같이 하고 같이 웃어요.</li>'
+      + '<li>📈 성장 앨범의 \'내 손\'을 몇 달에 한 번 같이 넘겨 보며 "지난달보다 손가락 마디가 보이네!"처럼 달라진 점을 찾아 주세요.</li></ul></details>'); }
+
+  /* ---------- 그리기판 ---------- */
+  const COLS = ['#1B2750', '#E5484D', '#F5A524', '#FFD43B', '#2FB36B', '#2F80ED', '#8B5CF6', '#9C6B3F', '#FF7AA8', '#9AA3B5'];
+  function makePad(wrap, guide) { const W = 600, cv = document.createElement('canvas'); cv.width = W; cv.height = W; wrap.appendChild(cv); const x = cv.getContext('2d', { willReadFrequently: true });
+    /* 도구: pen 선 · crayon 🖍️ 색연필(결이 있는 굵은 선) · fill 🪣 색 채우기(선으로 둘러싼 곳을 누르면 안이 칠해져요) · er 지우개 */
+    const st = { col: COLS[0], w: 6, mode: 'pen', lines: [], cur: null, locked: false, pid: null, ptype: '' };
+    /* 터치펜 (2026-11-07): 펜을 쓰고 8초 동안은 손이 닿아도 선이 그어지지 않아요. 고무 끝 펜은 넓게 닿기도 해서 닿는 넓이로는 막지 않아요 */
+    let penT = -1e9; const palm = e => e.pointerType === 'touch' && performance.now() - penT < 8000;
+    const thick = (L, e, prev) => { const w = L.w * (.4 + 1.2 * Math.min(1, e.pressure || .5)); return prev ? prev * .6 + w * .4 : w; };
+    const redraw = () => { x.fillStyle = '#fff'; x.fillRect(0, 0, W, W); if (guide) guide(x, W); st.lines.forEach(L => L.k === 'fill' ? flood(L) : seg(L)); };
+    const seg = L => { if (L.cr) return crayon(L, 0); if (L.pr) { x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.c; L.p.forEach((q, i) => { const a = L.p[Math.max(0, i - 1)]; x.lineWidth = (a[2] + q[2]) / 2; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0] + (i ? 0 : .1), q[1]); x.stroke(); }); return; } x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = L.er ? '#fff' : L.c; x.lineWidth = L.w; x.beginPath(); L.p.forEach((q, i) => i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1])); if (L.p.length === 1) x.lineTo(L.p[0][0] + .1, L.p[0][1]); x.stroke(); };
+    /* 색연필: 선을 따라 작은 점을 흩뿌려 결을 만들어요 (점 자리는 정해진 순서라 되돌리기 해도 똑같이 다시 그려져요) */
+    const crayon = (L, from) => { x.fillStyle = L.c; x.globalAlpha = .7;
+      for (let i = Math.max(0, from); i < L.p.length; i++) { let s = (L.s + i * 7919) % 233280; const R = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+        const a = L.p[Math.max(0, i - 1)], b = L.p[i], dx = b[0] - a[0], dy = b[1] - a[1], n = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 2));
+        for (let j = 0; j < n; j++) { const cx = a[0] + dx * j / n, cy = a[1] + dy * j / n; for (let k = 0; k < 10; k++) { const ang = R() * 6.283, rr = Math.sqrt(R()) * L.w / 2; x.fillRect(cx + Math.cos(ang) * rr - 1.3, cy + Math.sin(ang) * rr - 1.3, 2.6, 2.6); } } }
+      x.globalAlpha = 1; };
+    /* 색 채우기: 누른 곳과 비슷한 색이 이어진 곳을 칠해요. 선 가장자리의 흐린 픽셀까지 1칸 더 칠해서 흰 테두리가 남지 않게 */
+    const flood = L => { const x0 = Math.max(0, Math.min(W - 1, Math.floor(L.x))), y0 = Math.max(0, Math.min(W - 1, Math.floor(L.y))), im = x.getImageData(0, 0, W, W), d = im.data, i0 = (y0 * W + x0) * 4;
+      const h = parseInt(L.c.slice(1), 16), r = h >> 16 & 255, g = h >> 8 & 255, b = h & 255, tr = d[i0], tg = d[i0 + 1], tb = d[i0 + 2];
+      if (Math.abs(tr - r) + Math.abs(tg - g) + Math.abs(tb - b) < 12) return;
+      const same = p => { const i = p * 4; return Math.abs(d[i] - tr) + Math.abs(d[i + 1] - tg) + Math.abs(d[i + 2] - tb) <= 96; };
+      const mark = new Uint8Array(W * W), stk = [y0 * W + x0];
+      while (stk.length) { const p = stk.pop(); if (mark[p]) continue; const yy = (p / W) | 0; let lx = p, rx = p; const row0 = yy * W, row1 = row0 + W - 1;
+        while (lx > row0 && !mark[lx - 1] && same(lx - 1)) lx--; while (rx < row1 && !mark[rx + 1] && same(rx + 1)) rx++;
+        for (let q = lx; q <= rx; q++) { mark[q] = 1; if (yy > 0 && !mark[q - W] && same(q - W)) stk.push(q - W); if (yy < W - 1 && !mark[q + W] && same(q + W)) stk.push(q + W); } }
+      for (let p = 0; p < W * W; p++) { const c = p % W; if (mark[p] || (c > 0 && mark[p - 1]) || (c < W - 1 && mark[p + 1]) || (p >= W && mark[p - W]) || (p < W * W - W && mark[p + W])) { const i = p * 4; d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = 255; } }
+      x.putImageData(im, 0, 0); };
+    const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * W]; };
+    cv.addEventListener('contextmenu', e => e.preventDefault());
+    cv.addEventListener('pointerdown', e => { if (st.locked) { if (st.lockMsg) toastD(st.lockMsg); return; } if (palm(e)) return; e.preventDefault(); const isPen = e.pointerType === 'pen'; if (isPen) penT = performance.now();
+      if (st.cur) { const L = st.cur, a = L.p[0], b = L.p[L.p.length - 1]; if (isPen && st.ptype === 'pen') st.cur = null; else { if (st.ptype !== 'touch' || (!isPen && Math.hypot(b[0] - a[0], b[1] - a[1]) > 24)) return; st.lines.pop(); st.cur = null; redraw(); } } /* 폰에 쓰는 터치펜은 손가락처럼 잡혀요. 손이 먼저 닿아 가만히 있다가 펜이 오면 손 자국을 지우고 펜으로 그려요 */
+      const q = pos(e);
+      if (st.mode === 'fill') { const F = { k: 'fill', x: q[0], y: q[1], c: st.col }; st.lines.push(F); flood(F); return; }
+      try { cv.setPointerCapture(e.pointerId); } catch (x) {} const er = st.mode === 'er' || !!(e.buttons & 32); st.pid = e.pointerId; st.ptype = e.pointerType; st.cur = { c: st.col, w: er ? 26 : st.mode === 'crayon' ? 24 : st.w, er, cr: st.mode === 'crayon' && !er ? 1 : 0, pr: isPen && st.mode === 'pen' && !er ? 1 : 0, s: Math.floor(Math.random() * 233280), p: [q] }; if (st.cur.pr) q.push(thick(st.cur, e)); st.lines.push(st.cur); seg(st.cur); });
+    cv.addEventListener('pointermove', e => { if (!st.cur || st.locked || e.pointerId !== st.pid) return; e.preventDefault(); if (e.pointerType === 'pen') penT = performance.now(); const L = st.cur, ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+      (ev.length ? ev : [e]).forEach(v => { const q = pos(v), a = L.p[L.p.length - 1]; if (L.pr) q.push(thick(L, v, a[2])); L.p.push(q);
+        if (L.cr) return crayon(L, L.p.length - 1);
+        x.lineCap = 'round'; x.strokeStyle = L.er ? '#fff' : L.c; x.lineWidth = L.pr ? (a[2] + q[2]) / 2 : L.w; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(q[0], q[1]); x.stroke(); }); });
+    const up = e => { if (e.pointerId === st.pid) st.cur = null; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up); cv.addEventListener('pointerleave', up); cv.addEventListener('lostpointercapture', up);
+
+redraw();
+    return { st, cv, redraw, undo: () => { st.lines.pop(); redraw(); }, clear: () => { st.lines = []; redraw(); }, used: () => st.lines.length > 0,
+      data: () => { const o = document.createElement('canvas'); o.width = 480; o.height = 480; o.getContext('2d').drawImage(cv, 0, 0, 480, 480); return o.toDataURL('image/jpeg', .72); } }; }
+  const toolsHTML = () => '<div class="tools">' + COLS.map((c, i) => '<button class="sw' + (i ? '' : ' on') + '" data-col="' + c + '" style="background:' + c + '" aria-label="색"></button>').join('') + '</div>'
+    + '<div class="tools"><button class="db tb on" data-md="pen" data-w="6">✏️ 가는 선</button><button class="db tb" data-md="pen" data-w="14">🖊️ 굵은 선</button><button class="db tb" data-md="crayon">🖍️ 색연필</button><button class="db tb" data-md="fill">🪣 색 채우기</button><button class="db tb" data-md="er">🧽 지우개</button><button class="db tb" data-un="1">↩️ 되돌리기</button></div>'
+    + '<p class="soft dmhint" style="text-align:center;font-size:.85rem;min-height:1.3em"></p>';
+  const MDHINT = { pen: '', crayon: '🖍️ 문질러서 색연필처럼 칠해요', fill: '🪣 선으로 둘러싼 곳 안을 누르면 한 번에 칠해져요', er: '🧽 지우고 싶은 곳을 문질러요' };
+  function bindTools(P) { const hint = $w.querySelector('.dmhint');
+    $w.querySelectorAll('[data-col]').forEach(b => b.onclick = () => { P.st.col = b.dataset.col; if (P.st.mode === 'er') { P.st.mode = 'pen'; $w.querySelectorAll('[data-md]').forEach(y => y.classList.toggle('on', y.dataset.md === 'pen' && +y.dataset.w === P.st.w)); if (hint) hint.textContent = ''; }
+      $w.querySelectorAll('[data-col]').forEach(y => y.classList.toggle('on', y === b)); });
+    $w.querySelectorAll('[data-md]').forEach(b => b.onclick = () => { P.st.mode = b.dataset.md; if (b.dataset.w) P.st.w = +b.dataset.w; $w.querySelectorAll('[data-md]').forEach(y => y.classList.toggle('on', y === b)); if (hint) hint.textContent = MDHINT[P.st.mode] || ''; });
+    const un = $w.querySelector('[data-un]'); if (un) un.onclick = () => P.undo(); }
+  function countdown(sec, el, done) { let t = sec; el.textContent = '⏱️ ' + t + '초'; const id = setInterval(() => { t--; el.textContent = '⏱️ ' + Math.max(0, t) + '초'; if (t <= 0) { clearInterval(id); done(); } }, 1000); timers.push(id); return id; }
+
+  /* 미션 화면 공통: 그리기 → 끝 → ⭐ 붙이기 */
+  function drawMission(t) { const M = MS[t];
+    if (t === 'feat') return featMenu();
+    if (t === 'trace') return traceMenu();
+    if (t === 'speed') return speedRun(0, []);
+    let guide = null, top = '', sub = '';
+    if (t === 'hand') { top = '✋ 내 손을 책상에 올려놓고, 보면서 천천히 그려요.'; sub = '손가락 마디, 손톱, 주름을 찾아보세요. 시간 제한은 없어요. 종이에 그렸다면 📷 사진으로 올려도 돼요.'; }
+    if (t === 'blind') { const what = pickW(BLIND); top = '🙈 오늘 그릴 것: <b>' + what + '</b>'; sub = '시작을 누르면 판이 가려져요. 화면은 보지 말고 ' + what + '만 보면서 1분 동안 선을 이어 그려요!'; }
+    if (t === 'doodle') { const seed = Date.now() % 100000; let s = seed; const R = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+      const pts = Array(8).fill(0).map((q, i) => [90 + (i % 2 ? 260 : 0) + R() * 160, 70 + i * 60 + R() * 40]);
+      guide = (x, W) => { x.strokeStyle = '#1B2750'; x.lineWidth = 7; x.lineCap = 'round'; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length - 1; i++) x.quadraticCurveTo(pts[i][0], pts[i][1], (pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2); x.stroke(); };
+      top = '〰️ 이 꼬불꼬불 선으로 무엇을 만들까요?'; sub = '돌려 보고, 뒤집어 보고… 동물? 사람? 괴물? 정답은 없어요!'; }
+    if (t === 'idea') { const I = pickW(IDEA); top = I[0]; sub = I[1] === 4 ? '네 칸에 차례대로 그려요. 졸라맨도 좋아요! 말풍선을 넣어도 돼요.' : '예쁘게보다 <b>알아보게</b>! 글자나 화살표를 써도 돼요.';
+      if (I[1] === 4) guide = (x, W) => { x.strokeStyle = '#C9CFDD'; x.lineWidth = 4; x.strokeRect(10, 10, W - 20, W - 20); x.beginPath(); x.moveTo(W / 2, 10); x.lineTo(W / 2, W - 10); x.moveTo(10, W / 2); x.lineTo(W - 10, W / 2); x.stroke(); x.fillStyle = '#C9CFDD'; x.font = 'bold 28px sans-serif'; [[24, 44], [W / 2 + 14, 44], [24, W / 2 + 34], [W / 2 + 14, W / 2 + 34]].forEach((q, i) => x.fillText(i + 1, q[0], q[1])); }; }
+    page(M.e + ' ' + M.n, how(t) + '<div class="dcard"><p class="prompt" style="font-size:1.1rem">' + top + '</p><p class="soft" style="margin-top:4px">' + sub + '</p></div>'
+      + (t === 'blind' ? '<div class="timer" id="dtm">1분</div>' : '') + '<div class="padw" id="dpad"></div>' + toolsHTML()
+      + '<div class="row">' + (t === 'blind' ? '<button class="db p" id="dgo">🙈 가리고 시작!</button>' : '') + '<button class="db m" id="dfin"' + (t === 'blind' ? ' hidden' : '') + '>다 그렸어요 ✔</button>'
+      + (t === 'hand' ? '<label class="db y" style="cursor:pointer">📷 종이 그림 사진<input type="file" accept="image/*" id="dph" hidden></label>' : '') + '</div>', true);
+    const P = makePad($w.querySelector('#dpad'), guide); bindTools(P);
+    const fin = () => { if (!P.used()) return toastD('먼저 조금이라도 그려 봐요!'); starStep(t, P.data(), t === 'blind' ? top.replace(/<[^>]+>/g, '').replace('🙈 오늘 그릴 것: ', '') : t === 'idea' ? top.replace(/^\S+\s/, '') : ''); };
+    $w.querySelector('#dfin').onclick = fin;
+    if (t === 'blind') { P.st.locked = true; P.st.lockMsg = '아래 🙈 가리고 시작!을 먼저 눌러요'; $w.querySelector('#dgo').onclick = e => { const row = e.target.parentNode; e.target.remove(); howOff(); P.st.locked = false; P.st.lockMsg = ''; const c = document.createElement('div'); c.className = 'cover'; c.innerHTML = '<span style="font-size:2.4rem">🙈</span>판은 보지 말고<br>물건만 보면서 그려요!<small>선은 가려져 있어요. 끝나면 짠! 나타나요</small><i class="cdot" hidden></i>'; $w.querySelector('#dpad').appendChild(c);
+        /* 2026-11-07: 분홍 덮개 때문에 안 그려지는 줄 알아서, 닿는 곳에 점을 보여 주고 일찍 끝낼 수도 있게 했어요 */
+        const dot = c.querySelector('.cdot'), tip = c.querySelector('small'), mv = v => { if (!P.st.cur) return; const r = P.cv.getBoundingClientRect(); dot.hidden = false; dot.style.left = (v.clientX - r.left) + 'px'; dot.style.top = (v.clientY - r.top) + 'px'; tip.textContent = '✏️ 잘 그려지고 있어요!'; }, off = () => { dot.hidden = true; }; P.cv.addEventListener('pointerdown', mv); P.cv.addEventListener('pointermove', mv); P.cv.addEventListener('pointerup', off); P.cv.addEventListener('pointercancel', off);
+        const early = document.createElement('button'); early.className = 'db y'; early.textContent = '👀 다 그렸어요, 그림 보기'; row.appendChild(early);
+        const reveal = () => { clearT(); c.remove(); early.remove(); P.st.cur = null; P.st.locked = true; $w.querySelector('#dtm').textContent = '짜잔! 어떤 그림이 나왔나요? 😆'; $w.querySelector('#dfin').hidden = false; };
+        early.onclick = () => { if (!P.used()) return toastD('먼저 조금이라도 그려 봐요!'); reveal(); }; countdown(60, $w.querySelector('#dtm'), reveal); }; }
+    const ph = $w.querySelector('#dph'); if (ph) ph.onchange = () => { const f = ph.files && ph.files[0]; if (!f) return; const img = new Image(); img.onload = () => { const o = document.createElement('canvas'), s = Math.min(img.width, img.height); o.width = 480; o.height = 480;
+        o.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 480, 480); URL.revokeObjectURL(img.src); starStep(t, o.toDataURL('image/jpeg', .72), '종이 그림'); }; img.src = URL.createObjectURL(f); }; }
+  function speedRun(k, out) { const L = pickW(SPEED);
+    if (k >= 3) return starStep('speed', out[0], L[0], out.slice(1).map((d, i) => ({ img: d, title: L[i + 1] })));
+    page('⏱️ 30초 그리기 ' + (k + 1) + ' / 3', (k ? '' : how('speed')) + '<p class="prompt">' + ['🐾', '✏️', '🎈'][k] + ' <b>' + L[k] + '</b>!</p><div class="timer" id="dtm">30초</div><div class="padw" id="dpad"></div>' + toolsHTML() + '<div class="row"><button class="db p" id="dgo">시작! ⏱️</button></div>', true);
+    const P = makePad($w.querySelector('#dpad')); bindTools(P); P.st.locked = true; P.st.lockMsg = '아래 시작! ⏱️을 먼저 눌러요';
+    $w.querySelector('#dgo').onclick = e => { e.target.remove(); howOff(); P.st.locked = false; P.st.lockMsg = ''; countdown(30, $w.querySelector('#dtm'), () => { P.st.locked = true; $w.querySelector('#dtm').textContent = '⏰ 끝! 특징을 잡았나요?';
+        const b = document.createElement('button'); b.className = 'db m'; b.textContent = k < 2 ? '다음 그림 ▶' : '다 했어요 ✔'; b.onclick = () => speedRun(k + 1, out.concat(P.data())); $w.querySelector('.row').appendChild(b); }); }; }
+  /* ⭐ 마음에 드는 곳 한 군데 + 제목 → 저장 */
+  function starStep(t, img, title, extra, meta) { let at = null;
+    page('⭐ 마음에 드는 곳', '<div class="dcard"><p>오늘 그림에서 <b>마음에 드는 곳을 한 군데</b> 눌러 ⭐를 붙여요. 어디든 좋아요. 선 하나, 색 하나도!</p></div>'
+      + '<div class="starw" id="dsw"><img src="' + img + '" alt="오늘 그림"></div><input class="ttl" id="dtt" maxlength="30" placeholder="그림 이름 (안 써도 돼요)" value="' + esc(title || '') + '"><div class="row"><button class="db m" id="dsv">공방에 걸기 🖼️</button></div>', true);
+    const sw = $w.querySelector('#dsw'); sw.onclick = e => { const r = sw.getBoundingClientRect(); at = [Math.round((e.clientX - r.left) / r.width * 100), Math.round((e.clientY - r.top) / r.height * 100)]; let s = sw.querySelector('.star'); if (!s) { s = document.createElement('span'); s.className = 'star'; s.textContent = '⭐'; sw.appendChild(s); } s.style.left = at[0] + '%'; s.style.top = at[1] + '%'; };
+    $w.querySelector('#dsv').onclick = async () => { if (!at) return toastD('⭐를 한 군데 붙여 줘요!'); const d = dk(new Date()), base = Date.now(), T = $w.querySelector('#dtt').value.trim();
+      const items = [{ img, title: T }].concat(extra || []); for (let i = 0; i < items.length; i++) await putPic({ id: d + '-' + (base + i), d, t, title: items[i].title || '', pid: (meta || {}).pid || '', img: items[i].img, star: i ? null : at });
+      const wasWeek = wkLog().length; DS().log.push(Object.assign({ d, t, m: t !== 'pixel' ? 1 : 0 }, meta || {})); if (DS().log.length > 500) DS().log.splice(0, DS().log.length - 500); save();
+      doneMsg(t, wasWeek); }; }
+  function doneMsg(t, wasWeek) { const n = DS().log.length, wk = wkLog().length;
+      page('🎉 걸었어요!', '<div class="dcard" style="text-align:center"><div style="font-size:3rem">🖼️</div><p style="font-size:1.1rem">벌써 <b>' + n + '번째</b> 그림이에요!<br>' + (t === 'feat' ? '특징 잡는 눈이 하나 더 자랐어요! 다른 물건은 어떤 특징이 있는지 찾아봐요. 🔍' : t === 'trace' ? '그리는 순서가 손에 하나 더 붙었어요! 다음엔 폰을 안 보고도 그려 볼까요? 😉' : t === 'hand' ? '이번 달 손 그림이 📈 성장 앨범에 들어갔어요. 다음 달 손이랑 견주어 봐요!' : t === 'blind' ? '안 보고 그린 그림은 원래 웃겨요. 그게 바로 성공! 😆' : t === 'speed' ? '30초 그림 3장 끝! 빨리 그릴수록 손이 용감해져요.' : '손이 한 번 더 연습했어요. 자주 그릴수록 손이 늘어요!') + '</p>'
+        + (wk >= WEEKGOAL && wasWeek < WEEKGOAL ? '<p style="margin-top:8px;color:#2E9E7A"><b>✅ 이번 주 그림 시간 끝!</b></p>' : '') + '</div><div class="grid2"><button class="db" data-dx="home">🎨 공방으로</button><button class="db m" data-go="album">📈 앨범 보기</button></div>', true); }
+
+  /* ---------- 앨범 ---------- */
+  async function album() { page('📈 그림 앨범', '<p class="soft">불러오는 중…</p>', true); const A = await allPics(); if (!$w) return;
+    const hands = A.filter(x => x.t === 'hand'), byM = {}; hands.forEach(x => { byM[x.d.slice(0, 7)] = x; });
+    const fig = x => '<figure data-big="' + x.id + '"><img src="' + x.img + '" alt="">' + (x.star ? '<span class="star" style="left:' + x.star[0] + '%;top:' + x.star[1] + '%">⭐</span>' : '') + '<figcaption>' + x.d.slice(5).replace('-', '/') + ' ' + esc(x.title || (MS[x.t] || {}).n || '픽셀') + '</figcaption></figure>';
+    page('📈 그림 앨범', '<div class="dcard"><h3>✋ 성장 앨범 · 내 손</h3>' + (Object.keys(byM).length ? '<p class="soft">왼쪽이 처음, 오른쪽이 최근이에요. 달라진 곳을 찾아봐요!</p><div class="hand">' + Object.keys(byM).sort().map(m => '<figure><img src="' + byM[m].img + '" alt=""><figcaption>' + (+m.slice(5)) + '월</figcaption></figure>').join('') + '</div>' : '<p class="soft">매달 첫 그림 시간에 내 손을 그려요. 두 달만 모여도 차이가 보여요!</p>') + '</div>'
+      + (() => { const by = {}; A.filter(x => (x.t === 'trace' || x.t === 'feat') && x.pid).forEach(x => (by[x.pid] = by[x.pid] || []).push(x)); const ks = Object.keys(by).filter(k => by[k].length > 1);
+          return ks.length ? '<div class="dcard"><h3>✏️ 같은 그림 · 처음과 최근</h3><p class="soft">같은 그림을 다시 그렸어요. 어디가 달라졌나요?</p>' + ks.map(k => { const a = by[k], f = a[0], l = a[a.length - 1];
+            return '<div class="hand"><figure><img src="' + f.img + '" alt=""><figcaption>처음 ' + f.d.slice(5).replace('-', '/') + '</figcaption></figure><figure><img src="' + l.img + '" alt=""><figcaption>최근 ' + l.d.slice(5).replace('-', '/') + '</figcaption></figure></div>'; }).join('') + '</div>' : ''; })()
+      + '<div class="dcard"><h3>🖼️ 모든 그림 (' + A.length + '장)</h3>' + (A.length ? '<div class="alb">' + A.slice().reverse().map(fig).join('') + '</div>' : '<p class="soft">아직 그림이 없어요. 첫 그림을 걸어 봐요!</p>') + '</div>', true);
+    $w.querySelectorAll('[data-big]').forEach(f => f.onclick = () => { const x = A.find(y => y.id === f.dataset.big); if (!x) return; const b = document.createElement('div'); b.className = 'big'; b.innerHTML = '<div class="starw"><img src="' + x.img + '" alt="">' + (x.star ? '<span class="star" style="left:' + x.star[0] + '%;top:' + x.star[1] + '%">⭐</span>' : '') + '</div>'; b.onclick = () => b.remove(); $w.appendChild(b); }); }
+
+  /* ---------- 픽셀 그리기 ---------- */
+  const PX = ['', '#1B2750', '#FFFFFF', '#E5484D', '#F5A524', '#FFD43B', '#2FB36B', '#2F80ED', '#8B5CF6', '#FF7AA8', '#9C6B3F', '#C9CFDD'];
+  /* 따라 만들기 그림 (16×16, 숫자 = 색 번호) — 이름과 그림이 꼭 맞게 */
+  const TPL = { '하트': '0000000000000000|0011100001110000|0133310013331000|1333331133333100|1333333333333100|1333333333333100|0133333333331000|0013333333310000|0001333333100000|0000133331000000|0000013310000000|0000001100000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000',
+    '토끼': '0001100000110000|0012910001921000|0012910001921000|0012910001921000|0001222222210000|0012222222221000|0122122222122100|0122222222222100|0129222112229100|0122222222222100|0012222222221000|0001111111110000|0000000000000000|0000000000000000|0000000000000000|0000000000000000',
+    '버섯': '0000011111100000|0001133333311000|0013332233333100|0133322233322310|0133333333322310|1333223333333331|1333223333333331|0111111111111110|0000122222210000|0000122122210000|0000122122210000|0000122222210000|0000011111100000|0000000000000000|0000000000000000|0000000000000000',
+    '별': '0000000110000000|0000001551000000|0000001551000000|0000015555100000|1111115555111111|1555555555555551|0155555555555510|0015555555555100|0001555555551000|0001555555551000|0015555115555100|0015551001555100|0155510000155510|0111100000011110|0000000000000000|0000000000000000',
+    '컵': '0000000000000000|0000000000000000|0011111111110000|0012222222210000|0019999999911100|0019999999910010|0019999999910010|0019999999911100|0019999999910000|0011999999110000|0001111111100000|0000000000000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000',
+    '물고기': '0000000000000000|0000000000000000|0000011110000000|0001177771100011|0017777777710171|0177177777771771|0177777777777771|0177777777771771|0017777777710171|0001177771100011|0000011110000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000' };
+  function pixel() { const G = Array(256).fill(0); let col = 1, tpl = null, down = false;
+    page('🟦 픽셀 그리기', how('pixel') + '<div class="dcard"><p>칸을 눌러(쓱 문질러도 돼요) 색을 채워요. <b>칸만 채우면 누구나 완성!</b> 아래 그림을 따라 만들어도 좋아요.</p></div>'
+      + '<div class="tpl"><button class="db tb" data-tp="">✏️ 내 마음대로</button>' + Object.keys(TPL).map(k => '<button class="db tb" data-tp="' + k + '">' + mini(TPL[k]) + k + '</button>').join('') + '</div>'
+      + '<div id="dtp" class="soft" style="text-align:center"></div><div class="pxg" id="dpx">' + G.map((v, i) => '<i data-i="' + i + '"></i>').join('') + '</div>'
+      + '<div class="tools">' + PX.map((c, i) => i ? '<button class="sw' + (i === 1 ? ' on' : '') + '" data-pc="' + i + '" style="background:' + c + '"></button>' : '<button class="db tb" data-pc="0">🧽</button>').join('') + '</div>'
+      + '<div class="row"><button class="db" id="dpclr">🗑️ 처음부터</button><button class="db m" id="dpsv">다 만들었어요 ✔</button></div>', true);
+    const grid = $w.querySelector('#dpx'), cells = [...grid.children];
+    const paint = i => { if (i < 0 || i > 255 || G[i] === col) return; G[i] = col; cells[i].style.background = PX[col] || ''; };
+    const at = e => { const el = document.elementFromPoint(e.clientX, e.clientY); return el && el.dataset && el.dataset.i != null && el.parentNode === grid ? +el.dataset.i : -1; };
+    grid.addEventListener('pointerdown', e => { e.preventDefault(); down = true; paint(at(e)); }); grid.addEventListener('pointermove', e => { if (down) { e.preventDefault(); paint(at(e)); } });
+    window.addEventListener('pointerup', () => down = false);
+    $w.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { col = +b.dataset.pc; $w.querySelectorAll('[data-pc]').forEach(y => y.classList.toggle('on', y === b)); });
+    $w.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => { tpl = b.dataset.tp; $w.querySelector('#dtp').innerHTML = tpl ? '따라 만들기: ' + mini(TPL[tpl], 64) + ' <b>' + tpl + '</b>' : ''; });
+    $w.querySelector('#dpclr').onclick = () => { G.fill(0); cells.forEach(c => c.style.background = ''); };
+    $w.querySelector('#dpsv').onclick = () => { if (!G.some(Boolean)) return toastD('칸을 몇 개 채워 봐요!'); const o = document.createElement('canvas'); o.width = 480; o.height = 480; const x = o.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 480, 480);
+      G.forEach((v, i) => { if (v) { x.fillStyle = PX[v]; x.fillRect((i % 16) * 30, Math.floor(i / 16) * 30, 30, 30); } }); starStep('pixel', o.toDataURL('image/jpeg', .85), tpl || ''); }; }
+  function mini(t, sz) { sz = sz || 32; const o = document.createElement('canvas'); o.width = 16; o.height = 16; const x = o.getContext('2d'); t.split('|').forEach((r, y) => [...r].forEach((c, i) => { const v = parseInt(c, 36); if (v) { x.fillStyle = PX[v]; x.fillRect(i, y, 1, 1); } }));
+    return '<img src="' + o.toDataURL() + '" width="' + sz + '" height="' + sz + '" style="image-rendering:pixelated;vertical-align:middle" alt="">'; }
+
+  let tT = 0; function toastD(t) { let d = $w && $w.querySelector('.dtoast'); if (!$w) return; if (!d) { d = document.createElement('div'); d.className = 'dtoast'; d.style.cssText = 'position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);background:#fff;border:2.5px solid #1B2750;border-radius:14px;padding:12px 16px;font-family:Jua,sans-serif;z-index:5;box-shadow:0 4px 0 #1B2750'; $w.appendChild(d); } d.textContent = t; clearTimeout(tT); tT = setTimeout(() => d.remove(), 1500); }
+
+  /* ---------- ✏️ 따라 그리기: 폰은 '선생님'(한 단계씩 새 선이 그려지는 걸 보여 줘요), 종이는 '그리는 곳' ----------
+     그림마다 단계: [설명, SVG 선]. 마지막 단계는 '내 것으로 바꾸기'(선 없음). 쉬운 것부터 (lv 1 → 3) */
+  const TR = [
+    { id: 'cat', n: '고양이', e: '🐱', lv: 1, s: [
+      ['큰 동그라미를 하나 그려요. 고양이 얼굴이에요.', '<circle cx="100" cy="112" r="58"/>'],
+      ['위쪽 양옆에 뾰족한 세모 귀 두 개!', '<path d="M54 82 L58 34 L88 62"/><path d="M146 82 L142 34 L112 62"/>'],
+      ['가운데보다 조금 위에 동그란 눈 두 개.', '<circle cx="78" cy="106" r="7"/><circle cx="122" cy="106" r="7"/>'],
+      ['눈 사이 아래에 작은 세모 코, 그 밑에 ω 모양 입.', '<path d="M93 124 L107 124 L100 132 Z"/><path d="M100 132 Q94 144 84 138"/><path d="M100 132 Q106 144 116 138"/>'],
+      ['양쪽 볼에 수염을 세 줄씩 쭉!', '<path d="M70 128 L40 122 M70 134 L40 136 M70 140 L44 150"/><path d="M130 128 L160 122 M130 134 L160 136 M130 140 L156 150"/>']], my: '리본, 줄무늬, 표정을 바꿔서 나만의 고양이로!' },
+    { id: 'fish', n: '물고기', e: '🐟', lv: 1, s: [
+      ['옆으로 긴 타원을 그려요. 물고기 몸이에요.', '<ellipse cx="90" cy="100" rx="60" ry="38"/>'],
+      ['오른쪽 끝에 세모 꼬리를 붙여요.', '<path d="M148 100 L182 72 L182 128 Z"/>'],
+      ['왼쪽에 동그란 눈, 앞쪽 끝에 작은 입.', '<circle cx="58" cy="92" r="7"/><path d="M32 106 Q38 110 44 106"/>'],
+      ['위와 아래에 둥근 지느러미.', '<path d="M80 63 Q100 40 118 66"/><path d="M86 137 Q98 154 112 135"/>'],
+      ['몸에 ) 모양 비늘을 세 줄!', '<path d="M90 85 Q100 100 90 115 M108 85 Q118 100 108 115 M126 88 Q134 100 126 112"/>']], my: '물방울, 줄무늬, 친구 물고기를 더 그려 봐요!' },
+    { id: 'house', n: '집', e: '🏠', lv: 1, s: [
+      ['아래쪽에 큰 네모. 집의 벽이에요.', '<rect x="45" y="90" width="110" height="85"/>'],
+      ['네모 위에 지붕 세모를 얹어요.', '<path d="M35 92 L100 35 L165 92 Z"/>'],
+      ['가운데 아래에 긴 네모 문, 손잡이도 콕.', '<rect x="88" y="128" width="26" height="47"/><circle cx="108" cy="152" r="2.5"/>'],
+      ['문 양옆에 십자 창문 두 개.', '<rect x="56" y="104" width="24" height="24"/><path d="M68 104 V128 M56 116 H80"/><rect x="122" y="104" width="24" height="24"/><path d="M134 104 V128 M122 116 H146"/>'],
+      ['지붕 위에 굴뚝, 꼬불꼬불 연기!', '<path d="M128 60 V40 H144 V74"/><path d="M136 32 Q130 24 138 18 Q146 12 140 4"/>']], my: '꽃, 나무, 해, 우리 가족을 집 앞에 그려 봐요!' },
+    { id: 'bear', n: '곰', e: '🐻', lv: 2, s: [
+      ['큰 동그라미 얼굴.', '<circle cx="100" cy="112" r="58"/>'],
+      ['위쪽 양옆에 동그란 귀, 귀 안에 작은 동그라미.', '<circle cx="54" cy="64" r="20"/><circle cx="146" cy="64" r="20"/><circle cx="54" cy="64" r="9"/><circle cx="146" cy="64" r="9"/>'],
+      ['얼굴 아래쪽 가운데에 가로로 긴 타원 (주둥이).', '<ellipse cx="100" cy="132" rx="26" ry="20"/>'],
+      ['주둥이 위에 눈 두 개, 주둥이 안 위쪽에 코.', '<circle cx="78" cy="100" r="6"/><circle cx="122" cy="100" r="6"/><ellipse cx="100" cy="124" rx="9" ry="6"/>'],
+      ['코 아래로 짧은 선, 그리고 웃는 입.', '<path d="M100 130 V138 M100 138 Q92 146 86 140 M100 138 Q108 146 114 140"/>']], my: '모자, 목도리, 꿀단지를 그려 줘요!' },
+    { id: 'rabbit', n: '토끼', e: '🐰', lv: 2, s: [
+      ['옆으로 살짝 넓은 타원 얼굴.', '<ellipse cx="100" cy="128" rx="54" ry="48"/>'],
+      ['위로 길쭉한 귀 두 개, 안에 가는 타원.', '<ellipse cx="78" cy="50" rx="14" ry="40"/><ellipse cx="122" cy="50" rx="14" ry="40"/><ellipse cx="78" cy="54" rx="6" ry="27"/><ellipse cx="122" cy="54" rx="6" ry="27"/>'],
+      ['동그란 눈 두 개.', '<circle cx="80" cy="120" r="6"/><circle cx="120" cy="120" r="6"/>'],
+      ['작은 세모 코와 ω 입.', '<path d="M95 136 L105 136 L100 142 Z"/><path d="M100 142 Q94 152 86 148 M100 142 Q106 152 114 148"/>'],
+      ['양쪽 볼에 수염을 두 줄씩!', '<path d="M72 138 L44 132 M72 146 L46 152"/><path d="M128 138 L156 132 M128 146 L154 152"/>']], my: '당근을 들려 주거나 귀를 한쪽만 접어 봐요!' },
+    { id: 'cupcake', n: '컵케이크', e: '🧁', lv: 2, s: [
+      ['아래가 좁은 사다리꼴 컵.', '<path d="M55 110 L145 110 L130 178 L70 178 Z"/>'],
+      ['컵에 세로줄 세 개.', '<path d="M80 110 L86 178 M100 110 V178 M120 110 L114 178"/>'],
+      ['컵 위에 구름처럼 몽글몽글 크림.', '<path d="M50 112 Q40 90 62 82 Q60 58 86 60 Q96 38 116 58 Q142 56 138 82 Q160 90 150 112 Z"/>'],
+      ['맨 위에 동그란 체리와 꼭지.', '<circle cx="100" cy="40" r="11"/><path d="M100 29 Q104 16 116 12"/>'],
+      ['크림에 짧은 선으로 스프링클 톡톡!', '<path d="M75 90 l6 -4 M100 80 l6 3 M122 92 l5 -5 M88 100 l6 2 M112 104 l6 -3"/>']], my: '초를 꽂아 생일 케이크로 만들어 봐요!' },
+    { id: 'dog', n: '강아지', e: '🐶', lv: 3, s: [
+      ['동그라미 얼굴.', '<circle cx="100" cy="108" r="52"/>'],
+      ['양옆에 아래로 축 늘어진 귀.', '<path d="M58 80 Q30 90 40 140 Q56 136 62 110"/><path d="M142 80 Q170 90 160 140 Q144 136 138 110"/>'],
+      ['동그란 눈 두 개.', '<circle cx="80" cy="100" r="6"/><circle cx="120" cy="100" r="6"/>'],
+      ['가운데에 큰 타원 코, 그 밑에 웃는 입.', '<ellipse cx="100" cy="122" rx="12" ry="8"/><path d="M100 130 V138 M100 138 Q92 146 84 140 M100 138 Q108 146 116 140"/>'],
+      ['메롱 혀와 눈 위 얼룩무늬!', '<path d="M94 142 Q100 160 106 142"/><path d="M118 80 Q132 70 138 86 Q130 96 118 92 Z"/>']], my: '목걸이, 뼈다귀, 꼬리를 그려 줘요!' },
+    { id: 'penguin', n: '펭귄', e: '🐧', lv: 3, s: [
+      ['세로로 긴 큰 타원. 펭귄 몸이에요.', '<ellipse cx="100" cy="112" rx="55" ry="72"/>'],
+      ['안에 조금 작은 타원 배.', '<ellipse cx="100" cy="124" rx="36" ry="54"/>'],
+      ['위쪽에 눈 두 개, 그 사이 아래에 세모 부리.', '<circle cx="84" cy="74" r="6"/><circle cx="116" cy="74" r="6"/><path d="M90 88 L110 88 L100 100 Z"/>'],
+      ['양옆에 둥근 날개.', '<path d="M46 100 Q28 130 50 150"/><path d="M154 100 Q172 130 150 150"/>'],
+      ['아래에 납작한 발 두 개!', '<path d="M74 182 Q82 194 92 182 M108 182 Q118 194 126 182"/>']], my: '목도리, 얼음 조각, 물고기를 그려 줘요!' } ];
+  const trSVG = (D, upto, cur, sz) => { let g = ''; D.s.forEach((st, i) => { if (i > upto) return; g += '<g class="' + (i === cur ? 'trc' : 'trp') + '">' + st[1].replace(/<(path|circle|ellipse|rect)/g, '<$1 pathLength="1"') + '</g>'; });
+    return '<svg class="trsvg" viewBox="0 0 200 200" width="' + (sz || '100%') + '" fill="none" stroke-linecap="round" stroke-linejoin="round">' + g + '</svg>'; };
+  const trCount = id => DS().log.filter(x => x.t === 'trace' && x.pid === id).length;
+  const trNext = () => TR.find(D => !trCount(D.id)) || TR.slice().sort((a, b) => trLast(a.id) < trLast(b.id) ? -1 : 1)[0];
+  const trLast = id => (DS().log.filter(x => x.t === 'trace' && x.pid === id).pop() || { d: '' }).d;
+  function traceMenu() { const R = trNext();
+    page('✏️ 따라 그리기', how('trace') + '<div class="dcard"><p>폰은 <b>선생님</b>, 종이는 <b>그리는 곳</b>이에요. 한 단계씩 새 선이 그려지면 옆에 놓은 종이에 연필로 따라 그려요.<br><span class="soft">✏️ 처음엔 연하게, 마음에 들면 진하게! 지우개는 얼마든지 써도 돼요.</span></p></div>'
+      + '<div class="trlist">' + TR.map(D => { const c = trCount(D.id); return '<button class="db trpick' + (D === R ? ' rec' : '') + '" data-tr="' + D.id + '">' + trSVG(D, 99, -1, 64) + '<b>' + D.e + ' ' + D.n + '</b><small>' + '⭐'.repeat(D.lv) + (c ? ' · ' + c + '번 그림' : '') + (D === R ? ' · 오늘 추천' : '') + '</small></button>'; }).join('') + '</div>', true);
+    $w.querySelectorAll('[data-tr]').forEach(b => b.onclick = () => traceHow(TR.find(D => D.id === b.dataset.tr))); }
+  function traceHow(D) { const c = trCount(D.id);
+    page(D.e + ' ' + D.n + ' 그리기', '<div class="dcard" style="text-align:center">' + trSVG(D, 99, -1, 150) + '<p style="margin-top:6px">' + D.s.length + '단계 + 내 것으로 바꾸기' + (c ? '<br><span class="soft">전에 ' + c + '번 그렸어요. 그때보다 늘었는지 앨범에서 견주어 봐요!</span>' : '') + '</p></div>'
+      + '<button class="db p" id="trp" style="font-size:1.1rem">📄 종이에 따라 그리기 <small style="display:block;font-size:.8rem;opacity:.9">추천! 연필과 종이를 준비해요</small></button>'
+      + '<button class="db" id="trs">📱 화면 위에 대고 그리기 <small style="display:block;font-size:.8rem;color:#5A668C">흐린 선 위를 손가락이나 터치펜으로 따라가요 (몸풀기)</small></button>', true);
+    $w.querySelector('#trp').onclick = () => traceStep(D, 0); $w.querySelector('#trs').onclick = () => traceScreen(D); }
+  function traceStep(D, k) { const last = k >= D.s.length;
+    page(D.e + ' ' + D.n + ' · ' + (last ? '마지막' : (k + 1) + ' / ' + D.s.length + '단계'),
+      '<div class="dcard"><p class="prompt" style="font-size:1.15rem">' + (last ? '🎨 내 것으로 바꾸기' : D.s[k][0]) + '</p>' + (last ? '<p class="soft" style="text-align:center;margin-top:4px">' + D.my + '</p>' : '') + '</div>'
+      + '<div class="trbox">' + trSVG(D, last ? 99 : k, last ? -1 : k) + '</div>'
+      + (last ? '<div class="dcard"><p>다 그렸으면 종이 그림을 📷 사진으로 올려요. 앨범에 모아 두면 다음에 같은 그림을 그릴 때 늘어난 게 보여요!</p></div><div class="row"><label class="db m" style="cursor:pointer">📷 내 그림 사진 올리기<input type="file" accept="image/*" id="dph" hidden></label><button class="db" id="trno">사진 없이 끝내기</button></div>'
+        : '<div class="row"><button class="db" id="trb"' + (k ? '' : ' disabled') + '>◀ 이전</button><button class="db y" id="trr">🔁 다시 보기</button><button class="db p" id="trn">다음 ▶</button></div>'), true);
+    if (!last) { $w.querySelector('#trb').onclick = () => traceStep(D, k - 1); $w.querySelector('#trn').onclick = () => traceStep(D, k + 1); $w.querySelector('#trr').onclick = () => traceStep(D, k); return; }
+    const ph = $w.querySelector('#dph'); ph.onchange = () => { const f = ph.files && ph.files[0]; if (!f) return; const img = new Image(); img.onload = () => { const o = document.createElement('canvas'), s = Math.min(img.width, img.height); o.width = 480; o.height = 480;
+        o.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 480, 480); URL.revokeObjectURL(img.src); starStep('trace', o.toDataURL('image/jpeg', .72), D.n, null, { pid: D.id }); }; img.src = URL.createObjectURL(f); };
+    $w.querySelector('#trno').onclick = () => { const d = dk(new Date()), wasWeek = wkLog().length; DS().log.push({ d, t: 'trace', m: 1, pid: D.id }); save(); doneMsg('trace', wasWeek); }; }
+  /* 화면 위에 대고 그리기: 다 된 그림을 흐리게 깔아 두고 그 위를 따라가요 */
+  function traceScreen(D) { const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="600" height="600" fill="none" stroke="#C9CFDD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' + D.s.map(s => s[1]).join('') + '</svg>', im = new Image();
+    im.onload = () => { if (!$w) return; page(D.e + ' ' + D.n + ' · 대고 그리기', '<div class="dcard"><p>흐린 선 위를 천천히 따라 그려요. 다 그리면 🖍️ 색연필이나 🪣 색 채우기로 칠해 봐요!</p></div><div class="padw" id="dpad"></div>' + toolsHTML() + '<div class="row"><button class="db m" id="dfin">다 그렸어요 ✔</button></div>', true);
+      const P = makePad($w.querySelector('#dpad'), (x, W) => x.drawImage(im, 0, 0, W, W)); bindTools(P);
+      $w.querySelector('#dfin').onclick = () => { if (!P.used()) return toastD('먼저 조금이라도 그려 봐요!'); starStep('trace', P.data(), D.n + ' (대고 그리기)', null, { pid: D.id, scr: 1 }); }; };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }
+  /* ---------- 🔍 특징 잡기 수업 (2026-11-05): 폰으로 보고 배우고, 그림은 종이에 연필로 그려요 ----------
+     차례: 사진 보고 특징 찾기(q) → 단계대로 종이에 그리기(s) → 특징을 뺀 그림과 견주기(f 또는 no) → 스스로 확인하기(chk) → 앨범.
+     사진은 위키미디어 공용 (인터넷이 없으면 사진 자리는 저절로 빠져요). 내 그림 사진은 이 폰에만 저장되고 어디로도 보내지 않아요 */
+  const zig = (cx, cy, r1, r2, n) => { let d = ''; for (let i = 0; i < n * 2; i++) { const a = Math.PI * i / n, r = i % 2 ? r2 : r1; d += (i ? ' L' : 'M') + (cx + Math.cos(a) * r).toFixed(1) + ' ' + (cy + Math.sin(a) * r).toFixed(1); } return '<path d="' + d + ' Z"/>'; };
+  const FT = [
+    { id: 'ears', g: '첫 수업', n: '귀만 바꾸기', e: '🐰', photo: 'Domestic white rabbit sitting in a meadow.jpg', fe: '귀 모양',
+      q: '고양이, 토끼, 곰의 얼굴은 어디가 가장 다를까요?', o: ['귀 모양', '눈의 개수', '코의 개수'], why: '눈과 코는 비슷해도 귀 모양이 달라요. 사진 속 토끼도 긴 귀 덕분에 멀리서도 토끼인 걸 알 수 있어요.',
+      s: [['똑같은 동그라미 얼굴을 세 개 그려요.', '<circle cx="40" cy="130" r="28"/><circle cx="100" cy="130" r="28"/><circle cx="160" cy="130" r="28"/>'],
+        ['첫째 얼굴에 뾰족한 세모 귀! 고양이가 돼요.', '<path d="M20 110 L20 78 L42 102"/><path d="M60 110 L60 78 L38 102"/>'],
+        ['둘째 얼굴에 길쭉한 귀! 토끼가 돼요.', '<ellipse cx="90" cy="72" rx="8" ry="32"/><ellipse cx="110" cy="72" rx="8" ry="32"/>'],
+        ['셋째 얼굴에 둥근 귀! 곰이 돼요.', '<circle cx="140" cy="106" r="11"/><circle cx="180" cy="106" r="11"/>'],
+        ['세 얼굴에 똑같은 눈과 코를 콕콕 찍어요.', '<circle cx="30" cy="126" r="2.5"/><circle cx="50" cy="126" r="2.5"/><path d="M36 138 L44 138 L40 143 Z"/><circle cx="90" cy="126" r="2.5"/><circle cx="110" cy="126" r="2.5"/><path d="M96 138 L104 138 L100 143 Z"/><circle cx="150" cy="126" r="2.5"/><circle cx="170" cy="126" r="2.5"/><path d="M156 138 L164 138 L160 143 Z"/>']],
+      f: [1, 2, 3], nof: '귀를 빼면 셋 다 똑같은 얼굴이 돼요. 귀 하나가 어떤 동물인지 정해 줘요!', chk: ['세 얼굴의 귀 모양이 서로 다른가요?', '귀만 보고도 어떤 동물인지 알 수 있나요?'], my: '귀만 바꿔서 다른 동물 얼굴도 만들어 봐요!' },
+    { id: 'cup', g: '작은 소품', n: '컵', e: '☕', photo: 'Coffee - Massachusetts.jpg', fe: '손잡이',
+      q: '컵을 통이나 화분과 구별해 주는 것은 무엇일까요?', o: ['옆에 달린 손잡이', '빨간색', '크기'], why: '손잡이가 있으면 멀리서 봐도 컵이에요. 색이나 크기는 컵마다 달라요.',
+      s: [['납작한 타원으로 컵 입구를 그려요.', '<ellipse cx="90" cy="60" rx="55" ry="14"/>'],
+        ['입구 양끝에서 아래로 내려 몸통을 그려요.', '<path d="M35 60 V150 Q35 172 90 172 Q145 172 145 150 V60"/>'],
+        ['옆에 손잡이를 일부러 크게! 귀처럼 붙여요.', '<path d="M145 80 Q190 80 190 112 Q190 145 145 142"/><path d="M145 98 Q170 98 170 114 Q170 128 145 126"/>'],
+        ['꼬불꼬불 김을 그리면 따뜻한 컵이 돼요.', '<path d="M75 42 Q66 32 75 22 Q84 12 75 4"/><path d="M105 42 Q96 32 105 22 Q114 12 105 4"/>']],
+      f: [2], nof: '손잡이가 없으면 통이나 화분처럼 보여요.', chk: ['손잡이가 잘 보이나요?', '컵 입구가 타원으로 그려졌나요?'], my: '무늬나 내 이름을 넣어 나만의 컵으로!' },
+    { id: 'pencil', g: '작은 소품', n: '연필', e: '✏️', photo: 'Buntstifte -- 2021 -- 9148.jpg', fe: '뾰족한 끝',
+      q: '연필을 막대기와 구별해 주는 것은 무엇일까요?', o: ['뾰족하게 깎은 끝', '긴 길이', '색깔'], why: '깎은 끝과 그 안의 심이 보이면 바로 연필이에요. 사진에서 끝부분을 살펴봐요.',
+      s: [['옆으로 긴 네모 몸통을 그려요.', '<rect x="60" y="85" width="115" height="30"/>'],
+        ['왼쪽 끝에 뾰족한 세모! 깎은 나무 부분이에요.', '<path d="M60 85 L18 100 L60 115"/>'],
+        ['세모 맨 끝에 작은 세모로 심을 그려요. 연필로 까맣게 칠해요.', '<path d="M32 95 L18 100 L32 105 Z"/>'],
+        ['몸통에 긴 줄 두 개, 오른쪽 끝에 지우개를 붙여요.', '<path d="M60 95 H175 M60 105 H175"/><rect x="175" y="85" width="22" height="30"/><path d="M183 85 V115"/>']],
+      f: [1, 2], nof: '뾰족한 끝이 없으면 막대기나 상자처럼 보여요.', chk: ['끝이 뾰족하게 그려졌나요?', '연필심이 보이나요?'], my: '짧게 닳은 몽당연필로도 그려 봐요!' },
+    { id: 'key', g: '작은 소품', n: '열쇠', e: '🔑', photo: '003 2019 06 25 Schluessel und Schluesselloecher.jpg', fe: '톱니',
+      q: '열쇠가 자물쇠를 열 수 있게 해 주는 부분은 어디일까요?', o: ['끝의 울퉁불퉁한 톱니', '둥근 머리', '색깔'], why: '끝의 울퉁불퉁한 부분이 자물쇠 안에 꼭 맞아요. 그래서 그림에서도 이곳이 가장 중요해요.',
+      s: [['왼쪽에 큰 동그라미 머리, 안에 작은 구멍을 그려요.', '<circle cx="55" cy="100" r="35"/><circle cx="55" cy="100" r="12"/>'],
+        ['머리에서 오른쪽으로 긴 막대를 그려요.', '<path d="M90 92 H180 V108 H90"/>'],
+        ['막대 아래에 네모 톱니를 올록볼록! 크게 그려요.', '<path d="M130 108 V122 H140 V108 M150 108 V130 H160 V108 M170 108 V122 H180 V108"/>']],
+      f: [2], nof: '톱니가 없으면 막대 달린 고리처럼 보여요.', chk: ['톱니가 잘 보이나요?', '머리에 구멍이 있나요?'], my: '머리 모양을 하트나 별로 바꿔 봐요!' },
+    { id: 'umbrella', g: '작은 소품', n: '우산', e: '☂️', photo: 'Beige and brown oil-paper umbrella on the edge of a wooden house in Luang Prabang Laos.jpg', fe: '긴 손잡이',
+      q: '우산을 모자나 버섯과 구별해 주는 것은 무엇일까요?', o: ['가운데 긴 손잡이', '둥근 모양', '색깔'], why: '둥근 지붕만 있으면 모자나 버섯 같아요. 가운데 긴 손잡이가 있어야 우산이에요.',
+      s: [['크게 반달 모양 지붕을 그려요.', '<path d="M20 100 A80 72 0 0 1 180 100"/>'],
+        ['지붕 아래를 물결처럼 둥글게 이어요.', '<path d="M20 100 Q40 82 60 100 Q80 82 100 100 Q120 82 140 100 Q160 82 180 100"/>'],
+        ['꼭대기에서 물결까지 살을 세 줄 그려요.', '<path d="M100 28 Q60 50 60 100 M100 28 V100 M100 28 Q140 50 140 100"/>'],
+        ['가운데 긴 손잡이! 끝을 J처럼 꺾으면 더 우산 같아요.', '<path d="M100 100 V165 Q100 185 82 185 Q66 185 66 170"/>']],
+      f: [3], nof: '손잡이가 없으면 모자나 버섯처럼 보여요.', chk: ['손잡이가 길게 보이나요?', '지붕에 살이 그려졌나요?'], my: '빗방울이나 장화를 더 그려 봐요!' },
+    { id: 'apple', g: '자연에서 찾기', n: '사과', e: '🍎', photo: 'Red Apple.jpg', fe: '꼭지',
+      q: '사과를 공과 구별해 주는 것은 무엇일까요?', o: ['꼭지와 쏙 들어간 윗부분', '둥근 모양', '크기'], why: '둥글기만 하면 공 같아요. 위쪽이 쏙 들어가고 꼭지가 있어야 사과예요.',
+      s: [['둥글게 그리되, 위 가운데는 쏙 들어가게 그려요.', '<path d="M100 62 Q130 40 160 70 Q180 110 150 155 Q125 180 100 165 Q75 180 50 155 Q20 110 40 70 Q70 40 100 62 Z"/>'],
+        ['쏙 들어간 곳에 짧은 꼭지를 그려요.', '<path d="M100 62 Q98 44 108 30"/>'],
+        ['꼭지 옆에 잎을 하나 달아요.', '<path d="M106 44 Q130 24 152 34 Q134 56 106 44 Z"/>'],
+        ['왼쪽에 짧은 선을 그려 반짝이게 해요.', '<path d="M58 90 Q52 110 60 128"/>']],
+      f: [1, 2], nof: '꼭지와 잎이 없으면 토마토나 공처럼 보여요.', chk: ['윗부분이 쏙 들어갔나요?', '꼭지가 보이나요?'], my: '한 입 베어 문 사과로 바꿔 봐요!' },
+    { id: 'leaf', g: '자연에서 찾기', n: '나뭇잎', e: '🍃', photo: 'Weinblatt-P7089806PS.jpg', fe: '잎맥',
+      q: '사진 속 잎에서 가장 눈에 띄는 무늬는 무엇일까요?', o: ['가지처럼 갈라진 잎맥', '동그란 점', '네모난 칸'], why: '잎에는 물이 다니는 길인 잎맥이 있어요. 가운데 줄에서 양옆으로 갈라져요.',
+      s: [['양끝이 뾰족한 잎 모양을 그려요.', '<path d="M100 20 Q190 70 100 180 Q10 70 100 20 Z"/>'],
+        ['가운데에 긴 잎맥을 쭉! 아래로 내려 잎자루까지 그려요.', '<path d="M100 20 V195"/>'],
+        ['가운데 줄에서 양옆 위로 비스듬히 곁가지를 그려요.', '<path d="M100 80 L128 54 M100 80 L72 54 M100 115 L138 85 M100 115 L62 85 M100 150 L130 125 M100 150 L70 125"/>']],
+      f: [1, 2], nof: '잎맥이 없으면 럭비공이나 눈처럼 보여요.', chk: ['가운데 줄이 있나요?', '곁가지가 양옆으로 뻗었나요?'], my: '밖에서 주운 나뭇잎을 보고 그려 봐요!' },
+    { id: 'snail', g: '동물', n: '달팽이', e: '🐌', photo: 'Garden Snail (Cornu aspersum).jpg', fe: '소용돌이 껍데기',
+      q: '달팽이를 가장 달팽이답게 보여 주는 것은 무엇일까요?', o: ['돌돌 말린 껍데기', '갈색', '작은 크기'], why: '돌돌 말린 껍데기만 봐도 달팽이인 걸 바로 알 수 있어요.',
+      s: [['큰 동그라미 껍데기를 그려요.', '<circle cx="110" cy="85" r="55"/>'],
+        ['가운데로 돌돌 말려 들어가는 소용돌이! 크게 그려요.', '<path d="M160 85 Q158 130 112 128 Q72 126 74 88 Q76 56 108 56 Q136 56 136 84 Q136 106 112 106 Q96 106 96 88 Q96 76 110 76"/>'],
+        ['아래에 길쭉한 몸, 앞쪽은 고개를 들어요.', '<path d="M12 168 L150 168 Q188 168 188 125 Q188 102 172 102 Q158 102 160 125"/><path d="M12 168 Q40 150 62 130"/>'],
+        ['머리 위에 더듬이 두 개, 끝에 동그란 눈.', '<path d="M172 102 L160 70 M180 104 L190 72"/><circle cx="160" cy="66" r="4"/><circle cx="190" cy="68" r="4"/>']],
+      f: [1], nof: '소용돌이가 없으면 공을 업은 벌레처럼 보여요.', chk: ['껍데기가 돌돌 말렸나요?', '더듬이가 보이나요?'], my: '껍데기에 나만의 무늬를 넣어 봐요!' },
+    { id: 'turtle', g: '동물', n: '거북', e: '🐢', photo: 'Aldabra giant tortoise (Aldabrachelys gigantea) - Alibel Tortoise Park - Mahe - Seychelles - 01.jpg', fe: '등딱지 무늬',
+      q: '거북의 등을 단단해 보이게 하는 것은 무엇일까요?', o: ['칸칸이 나뉜 등딱지 무늬', '긴 꼬리', '큰 귀'], why: '등딱지가 칸으로 나뉘어 있어요. 이 칸을 그리면 단단한 느낌이 나요.',
+      s: [['엎어 놓은 밥그릇 모양 등딱지를 그려요.', '<path d="M40 130 Q40 50 110 50 Q180 50 180 130 Z"/>'],
+        ['가운데 육각형을 크게 그리고, 둘레로 선을 뻗어요.', '<path d="M85 85 L110 72 L135 85 L135 110 L110 122 L85 110 Z"/><path d="M110 72 V50 M135 85 L165 75 M85 85 L55 75 M135 110 L178 118 M85 110 L42 118 M110 122 V130"/>'],
+        ['왼쪽에 둥근 머리와 눈을 그려요.', '<path d="M42 120 Q10 125 8 105 Q10 85 30 88 Q42 92 46 100"/><circle cx="22" cy="102" r="3"/>'],
+        ['아래에 짧은 다리 두 개, 뒤에 작은 꼬리.', '<path d="M65 130 V152 H90 V130 M130 130 V152 H155 V130"/><path d="M180 125 L196 134 L178 130"/>']],
+      f: [1], nof: '무늬가 없으면 빵을 업은 동물처럼 물렁해 보여요.', chk: ['등딱지에 칸이 보이나요?', '다리가 짧고 굵은가요?'], my: '등딱지 칸마다 다른 색을 칠해 봐요!' },
+    { id: 'elephant', g: '동물', n: '코끼리', e: '🐘', photo: 'African elephant side view portrait.jpg', fe: '긴 코',
+      q: '코끼리의 가장 큰 특징은 무엇일까요?', o: ['아주 긴 코', '짧은 꼬리', '작은 눈'], why: '코끼리처럼 코가 긴 동물은 드물어요. 코만 길게 그려도 코끼리로 보여요.',
+      s: [['왼쪽에 동그란 머리를 그려요.', '<circle cx="60" cy="85" r="32"/>'],
+        ['머리 옆에 부채 같은 큰 귀를 그려요.', '<path d="M72 58 Q118 50 112 96 Q106 130 76 112"/>'],
+        ['귀 뒤로 크고 둥근 몸통을 이어 그려요.', '<path d="M105 60 Q140 44 168 62 Q192 82 186 128 L170 148 H88 Q80 140 76 118"/>'],
+        ['머리에서 긴 코를 아래로 구불! 일부러 길게 그려요.', '<path d="M30 102 Q18 150 28 180 Q30 192 46 190 Q56 186 48 178 Q40 150 50 116"/>'],
+        ['기둥 같은 다리, 작은 꼬리, 눈을 그려요.', '<path d="M90 148 V185 H115 V148 M145 148 V185 H170 V148"/><path d="M188 100 Q198 112 193 132"/><circle cx="50" cy="80" r="3.5"/>']],
+      f: [3], nof: '코가 없으면 돼지나 하마처럼 보여요.', chk: ['코가 길게 그려졌나요?', '귀가 크게 보이나요?'], my: '코로 물을 뿜는 모습으로 바꿔 봐요!' },
+    { id: 'giraffe', g: '동물', n: '기린', e: '🦒', photo: 'Giraffe Standing Lupande Zambia Jul23 A7C 06176.jpg', fe: '긴 목',
+      q: '기린의 가장 큰 특징은 무엇일까요?', o: ['아주 긴 목', '둥근 귀', '짧은 다리'], why: '기린은 목이 아주 길어요. 몸의 얼룩무늬도 기린임을 알려 주는 두 번째 특징이에요.',
+      s: [['작은 타원으로 몸통을 그려요.', '<ellipse cx="120" cy="125" rx="45" ry="25"/>'],
+        ['몸에서 위로 아주 긴 목! 일부러 더 길게 그려요.', '<path d="M82 112 L52 42 M108 100 L80 36"/>'],
+        ['목 끝에 작은 머리, 머리 위에 뿔 두 개와 눈.', '<ellipse cx="52" cy="32" rx="24" ry="12"/><path d="M60 20 V8 M72 22 L76 10"/><circle cx="48" cy="30" r="2.5"/>'],
+        ['길고 곧은 다리를 네 개 그려요.', '<path d="M90 143 V190 M104 148 V190 M136 148 V190 M150 143 V190"/>'],
+        ['몸과 목에 네모난 얼룩무늬를 넣어요.', '<path d="M105 115 h16 v14 h-16 Z M130 112 h14 v13 h-14 Z M72 62 h12 v12 h-12 Z M80 84 h12 v12 h-12 Z"/>']],
+      f: [1], no: '<ellipse cx="120" cy="125" rx="45" ry="25"/><path d="M82 112 L74 86 M108 100 L100 78"/><ellipse cx="72" cy="74" rx="24" ry="12"/><path d="M80 62 V50 M92 64 L96 52"/><circle cx="68" cy="72" r="2.5"/><path d="M90 143 V190 M104 148 V190 M136 148 V190 M150 143 V190"/>', nof: '목이 짧으면 말이나 소처럼 보여요.', chk: ['목이 몸보다 길게 보이나요?', '얼룩무늬가 있나요?'], my: '높은 나뭇잎을 먹는 모습으로 그려 봐요!' },
+    { id: 'lion', g: '동물', n: '사자', e: '🦁', photo: 'Lion (Panthera leo) male 6y.jpg', fe: '갈기',
+      q: '수사자의 가장 큰 특징은 무엇일까요?', o: ['얼굴을 둘러싼 갈기', '짧은 다리', '긴 코'], why: '수사자는 얼굴 둘레에 풍성한 털, 갈기가 있어요. 갈기만 그려도 사자로 보여요.',
+      s: [['동그란 얼굴을 그려요.', '<circle cx="100" cy="105" r="42"/>'],
+        ['얼굴 둘레에 삐죽삐죽 갈기! 크고 풍성하게 그려요.', zig(100, 105, 60, 86, 14)],
+        ['얼굴 위에 작은 귀 둘, 가운데에 눈 둘.', '<circle cx="68" cy="74" r="9"/><circle cx="132" cy="74" r="9"/><circle cx="84" cy="98" r="5"/><circle cx="116" cy="98" r="5"/>'],
+        ['세모 코와 웃는 입을 그려요.', '<path d="M92 114 L108 114 L100 124 Z"/><path d="M100 124 Q92 138 80 130 M100 124 Q108 138 120 130"/>']],
+      f: [1], nof: '갈기가 없으면 곰이나 고양이처럼 보여요.', chk: ['갈기가 얼굴을 둘러쌌나요?', '갈기가 풍성하게 보이나요?'], my: '왕관을 씌우거나 갈기 색을 바꿔 봐요!' }];
+  const fCount = id => DS().log.filter(x => x.t === 'feat' && x.pid === id).length;
+  const fNext = () => FT.find(D => !fCount(D.id)) || FT[0];
+  const fPic = (parts, hi) => '<svg class="trsvg" viewBox="0 0 200 200" width="100%" fill="none" stroke-linecap="round" stroke-linejoin="round">' + parts.map((p, i) => '<g class="' + ((hi || []).includes(i) ? 'fhi' : 'trp') + '">' + p + '</g>').join('') + '</svg>';
+  const fFull = (D, hi) => fPic(D.s.map(x => x[1]), hi ? D.f : null);
+  const fNo = D => D.no ? fPic([D.no]) : fPic(D.s.filter((x, i) => !D.f.includes(i)).map(x => x[1]));
+  function featMenu() { const R = fNext(), G = []; FT.forEach(D => { if (!G.includes(D.g)) G.push(D.g); });
+    page('🔍 특징 잡기 수업', how('feat') + '<div class="dcard"><p>잘 그린 그림은 선이 많은 그림이 아니에요. <b>그것만의 특징 한두 가지</b>를 잡으면 누구나 알아봐요!<br><span class="soft">폰으로 배우고, 그림은 종이에 연필로 그려요.</span></p></div>'
+      + G.map(g => '<h3 class="fgrp">' + g + '</h3><div class="trlist">' + FT.filter(D => D.g === g).map(D => { const c = fCount(D.id); return '<button class="db trpick' + (D === R ? ' rec' : '') + '" data-ft="' + D.id + '"><span style="width:64px">' + fFull(D) + '</span><b>' + D.e + ' ' + D.n + '</b><small>' + (D === R ? '오늘 추천' : c ? c + '번 그림' : '특징: ' + D.fe) + '</small></button>'; }).join('') + '</div>').join(''), true);
+    $w.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => featLook(FT.find(D => D.id === b.dataset.ft))); }
+  function featLook(D) { const o = D.o.slice().sort(() => Math.random() - .5);
+    page(D.e + ' ' + D.n + ' · 1. 살펴보기', '<figure class="fphoto"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(D.photo) + '?width=640" alt="' + D.n + ' 사진" onerror="this.parentNode.remove()"><figcaption>사진: 위키미디어 공용</figcaption></figure>'
+      + '<div class="dcard"><p class="prompt" style="font-size:1.1rem">' + D.q + '</p><div class="fopts">' + o.map(x => '<button class="db" data-fo="' + x + '">' + x + '</button>').join('') + '</div><div id="fwhy"></div></div>', true);
+    $w.querySelectorAll('[data-fo]').forEach(b => b.onclick = () => { if (b.dataset.fo !== D.o[0]) { b.disabled = true; return toastD('사진을 다시 살펴봐요!'); }
+      $w.querySelectorAll('[data-fo]').forEach(y => { y.disabled = true; }); b.classList.add('m');
+      $w.querySelector('#fwhy').innerHTML = '<p style="margin-top:10px">⭕ ' + D.why + '</p><p style="margin-top:6px">✏️ 연필과 종이를 준비해요.</p><button class="db p gbtn" id="fgo" style="margin-top:8px">종이에 그리러 가기 ▶</button>';
+      $w.querySelector('#fgo').onclick = () => featDraw(D, 0); $w.querySelector('#fgo').scrollIntoView({ block: 'center' }); }); }
+  function featDraw(D, k) { page(D.e + ' ' + D.n + ' · 2. 그리기 ' + (k + 1) + ' / ' + D.s.length, '<div class="dcard"><p class="prompt" style="font-size:1.15rem">' + D.s[k][0] + '</p></div><div class="trbox">' + trSVG(D, k, k) + '</div><p class="soft" style="text-align:center;margin:6px 0">분홍색 새 선을 종이에 따라 그려요.</p>'
+      + '<div class="row"><button class="db" id="trb"' + (k ? '' : ' disabled') + '>◀ 이전</button><button class="db y" id="trr">🔁 다시 보기</button><button class="db p" id="trn">다음 ▶</button></div>', true);
+    $w.querySelector('#trb').onclick = () => featDraw(D, k - 1); $w.querySelector('#trr').onclick = () => featDraw(D, k); $w.querySelector('#trn').onclick = () => k + 1 < D.s.length ? featDraw(D, k + 1) : featCmp(D); }
+  function featCmp(D) { page(D.e + ' ' + D.n + ' · 3. 견주기', '<div class="dcard"><p class="prompt" style="font-size:1.1rem">특징이 있을 때와 없을 때를 견주어 봐요</p><div class="ftwo"><figure>' + fFull(D, 1) + '<figcaption>' + D.fe + ' 있음</figcaption></figure><figure>' + fNo(D) + '<figcaption>' + D.fe + ' 없음</figcaption></figure></div><p style="margin-top:8px">' + D.nof + '</p></div>'
+      + '<div class="dcard"><h3>🎨 내 것으로 바꾸기</h3><p>' + D.my + '</p></div><div class="dcard"><p>다 그렸으면 종이 그림을 📷 사진으로 올려요. 사진은 이 폰의 앨범에만 저장돼요.</p></div><div class="row"><label class="db m" style="cursor:pointer">📷 내 그림 사진 올리기<input type="file" accept="image/*" id="dph" hidden></label><button class="db" id="trno">사진 없이 확인하기</button></div><button class="db y gbtn" id="fpad">🖊️ 종이 대신 터치펜으로 화면에 그리기</button>', true);
+    $w.querySelector('#fpad').onclick = () => featPad(D);
+    const ph = $w.querySelector('#dph'); ph.onchange = () => { const f = ph.files && ph.files[0]; if (!f) return; const img = new Image(); img.onload = () => { const o = document.createElement('canvas'), s = Math.min(img.width, img.height); o.width = 480; o.height = 480;
+        o.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 480, 480); URL.revokeObjectURL(img.src); featCheck(D, o.toDataURL('image/jpeg', .72)); }; img.src = URL.createObjectURL(f); };
+    $w.querySelector('#trno').onclick = () => featCheck(D, null); }
+  function featPad(D) { page(D.e + ' ' + D.n + ' · 화면에 그리기', '<div class="dcard"><p>수업 그림을 보면서 흰 판에 그려요. 특징을 크게 그려 봐요!</p><div class="trbox" style="max-width:150px">' + fFull(D, 1) + '</div></div><div class="padw" id="dpad"></div>' + toolsHTML() + '<div class="row"><button class="db m" id="dfin">다 그렸어요 ✔</button></div>', true);
+    const P = makePad($w.querySelector('#dpad')); bindTools(P); $w.querySelector('#dfin').onclick = () => { if (!P.used()) return toastD('먼저 조금이라도 그려 봐요!'); featCheck(D, P.data()); }; }
+  /* 스스로 확인하기: 점수 없이 내 그림에서 특징을 찾아봐요 (앱이 그림을 분석하지 않아요) */
+  function featCheck(D, img) { page(D.e + ' ' + D.n + ' · 4. 스스로 확인하기', '<div class="dcard"><p>' + (img ? '내 그림과 수업 그림을 나란히 봐요.' : '종이 그림을 옆에 놓고 수업 그림과 견주어 봐요.') + ' 똑같지 않아도 괜찮아요!</p>' + (img ? '<div class="ftwo"><figure><img src="' + img + '" alt="내 그림"><figcaption>내 그림</figcaption></figure><figure>' + fFull(D, 1) + '<figcaption>수업 그림</figcaption></figure></div>' : '<div class="trbox" style="max-width:190px">' + fFull(D, 1) + '</div>') + '</div>'
+      + '<div class="dcard"><h3>내 그림에서 찾아봐요</h3><div class="fchk">' + D.chk.map(x => '<label><input type="checkbox"> ' + x + '</label>').join('') + '</div><p class="soft" style="margin-top:6px">아직이면 그 부분을 더 크게 그려 보면 좋아요. 지금 고쳐도 되고, 다음에 다시 그려도 돼요.</p></div><div class="row"><button class="db m" id="ffin">' + (img ? '다음: ⭐ 붙이기 ▶' : '오늘 수업 끝내기 ✔') + '</button></div>', true);
+    $w.querySelector('#ffin').onclick = () => { if (!$w.querySelector('.fchk input:checked')) return toastD('내 그림에서 찾은 것에 표시해 봐요!'); if (img) return starStep('feat', img, D.n, null, { pid: D.id }); const d = dk(new Date()), wasWeek = wkLog().length; DS().log.push({ d, t: 'feat', m: 1, pid: D.id }); save(); doneMsg('feat', wasWeek); }; }
+  window.__feat = { FT, menu: featMenu, look: featLook, draw: featDraw, cmp: featCmp, check: featCheck };
+  /* 공방 안 누르기 */
+  document.addEventListener('click', e => { if (!$w || !$w.contains(e.target)) return; const b = e.target.closest('[data-go],[data-dx]'); if (!b) return;
+    if (b.dataset.dx === 'close') return closeDrw(); if (b.dataset.dx === 'home') return home();
+    const g = b.dataset.go; if (g === 'album') return album(); if (g === 'pixel') return pixel(); if (g === 'guide') return guide(); if (MS[g]) return drawMission(g); });
+
+  /* ---------- 첫 화면 카드: 읽을거리 묶음 바로 아래 ---------- */
+  function cardHTML() { const n = Math.min(WEEKGOAL, wkLog().length), ok = n >= WEEKGOAL;
+    return '<button type="button" class="drcard' + (ok ? ' did' : ' drweek') + '" data-drw="1"><span><span class="st">' + (ok ? '✅ 이번 주 그림 시간 끝' : '📌 이번 주 그림 시간 ' + n + ' / ' + WEEKGOAL) + '</span><b>🎨 서이의 그림 공방</b><small>'
+      + (ok ? '더 그리고 싶으면 언제든! 🟦 픽셀 그리기도 있어요' : '특징 하나만 잡으면 누구나 알아봐요 🔍') + '</small></span><span class="go">🖍️</span></button>'; }
+  function placeCard() { try { if (typeof CURSUBJ !== 'undefined' && CURSUBJ) return; const app = document.getElementById('app'); if (!app || !app.querySelector('.todaywrap')) return;
+      const old = app.querySelector('.drcard'), html = cardHTML();
+      if (old) { if (old.dataset.h !== html) { old.outerHTML = html; const n = app.querySelector('.drcard'); if (n) n.dataset.h = html; } return; }
+      const g = app.querySelector('.hgrp.read'), bd = app.querySelector('.bdcard'); const at = bd || (g && g.lastElementChild) || app.querySelector('.todaybox'); if (!at) return;
+      at.insertAdjacentHTML(bd || g ? 'afterend' : 'beforebegin', html); const n = app.querySelector('.drcard'); if (n) n.dataset.h = html; } catch (e) {} }
+  function refreshCard() { placeCard(); }
+  /* 첫 화면이 다시 그려질 때마다 (없을 때만 넣고, 내용이 같으면 손대지 않아서 끝없이 다시 그리지 않아요) */
+  { let qd = 0; const go = () => { const a = document.getElementById('app'); if (!a) return setTimeout(go, 300); new MutationObserver(() => { if (!qd) { qd = 1; setTimeout(() => { qd = 0; placeCard(); }, 80); } }).observe(a, { childList: true, subtree: true }); placeCard(); }; go(); }
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-drw]'); if (!b) return; e.preventDefault(); e.stopImmediatePropagation(); try { SFX.play('ok'); } catch (x) {} openDrw(); }, true);
+  window.__drw = { open: openDrw, home, guide, album, pixel, mission: drawMission, TPL };
+})();
+</script>
+<!-- ===== 서이의 그림 공방 끝 ===== -->
 <!-- 2026-11-05 무한 복습 -->
 <style>
 .rrcard{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;margin:12px 0 0;padding:12px;border-radius:16px;text-align:left;font:inherit;color:inherit;background:#F4F0FF;border:2.5px solid #7C5CE0;box-shadow:0 4px 0 #7C5CE0;cursor:pointer}
