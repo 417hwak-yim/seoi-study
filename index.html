@@ -9558,7 +9558,7 @@ window.srJoin = function (rs) { const out = [];
 #drw .hand figcaption{text-align:center;font-family:"Jua",sans-serif;font-size:.9rem;padding:3px}
 /* 픽셀 */
 #drw .pxg{display:grid;grid-template-columns:repeat(16,1fr);width:100%;max-width:380px;margin:0 auto;border:3px solid #1B2750;border-radius:8px;overflow:hidden;touch-action:none;background:#fff}
-#drw .pxg i{aspect-ratio:1/1;border-right:1px solid #EEF0F6;border-bottom:1px solid #EEF0F6}
+#drw .pxg i{min-width:0;aspect-ratio:1/1;border-right:1px solid #EEF0F6;border-bottom:1px solid #EEF0F6}
 #drw .tpl{display:flex;gap:6px;overflow-x:auto;padding:2px}
 #drw .tpl button{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;padding:5px}
 #drw .tip li{margin:4px 0;line-height:1.6}
@@ -9655,7 +9655,7 @@ window.srJoin = function (rs) { const out = [];
     speed: ['화면 맨 아래 <b>시작! ⏱️</b>을 눌러야 판에 그릴 수 있어요. 누르면 이 안내는 접혀요.', '위에 나온 것을 30초 동안 손가락으로 빠르게 그려요.', '시간이 끝나면 <b>다음 그림 ▶</b>을 눌러요. 모두 3장을 그려요.', '3장을 다 그리면 첫 번째 그림에 ⭐를 붙이고 <b>공방에 걸기 🖼️</b>를 눌러요.'],
     doodle: ['흰 판에 꼬불꼬불 선이 미리 나와 있어요.', '폰을 돌려 보면서 이 선이 무엇으로 보이는지 생각해요.', '손가락으로 눈, 다리, 무늬를 더해서 그림을 완성해요.', FIN],
     idea: ['위에 적힌 주제를 읽어요. 주제는 주마다 바뀌어요.', '아래 흰 판에 손가락으로 그려요. 글자나 화살표를 써도 돼요.', FIN],
-    pixel: ['아래에서 색 동그라미를 하나 골라요.', '네모 칸을 누르거나 쓱 문지르면 색이 채워져요.', '따라 만들고 싶으면 위쪽 그림을 골라요. 본보기가 작게 나와요.', '<b>다 만들었어요 ✔</b>를 누르고, ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.'] };
+    pixel: ['아래에서 색 동그라미를 하나 골라요.', '네모 칸을 누르거나 쓱 문지르면 색이 채워져요.', '따라 만들고 싶으면 위쪽 그림을 골라요. 본보기가 작게 나와요.', '그림을 많이 완성할수록 칸이 더 작고 많은 판이 열려요. 3장, 6장, 10장, 15장을 완성하면 새 판이 나와요.', '<b>다 만들었어요 ✔</b>를 누르고, ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.'] };
   const howOff = () => { const h = $w && $w.querySelector('details.how'); if (h) h.open = false; if ($w) { const p = $w.querySelector('#dtm'); if (p) p.scrollIntoView({ block: 'start' }); } };
   const how = t => { const D = DS(), seen = D.seen = D.seen || {}, first = !seen[t]; if (first) { seen[t] = 1; save(); }
     return '<details class="how"' + (first ? ' open' : '') + '><summary>❓ 어떻게 하는 거예요?</summary><ol>' + HOW[t].map(x => '<li>' + x + '</li>').join('') + '</ol></details>'; };
@@ -9807,22 +9807,30 @@ redraw();
     '별': '0000000110000000|0000001551000000|0000001551000000|0000015555100000|1111115555111111|1555555555555551|0155555555555510|0015555555555100|0001555555551000|0001555555551000|0015555115555100|0015551001555100|0155510000155510|0111100000011110|0000000000000000|0000000000000000',
     '컵': '0000000000000000|0000000000000000|0011111111110000|0012222222210000|0019999999911100|0019999999910010|0019999999910010|0019999999911100|0019999999910000|0011999999110000|0001111111100000|0000000000000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000',
     '물고기': '0000000000000000|0000000000000000|0000011110000000|0001177771100011|0017777777710171|0177177777771771|0177777777777771|0177777777771771|0017777777710171|0001177771100011|0000011110000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000|0000000000000000' };
-  function pixel() { const G = Array(256).fill(0); let col = 1, tpl = null, down = false;
-    page('🟦 픽셀 그리기', how('pixel') + '<div class="dcard"><p>칸을 눌러(쓱 문질러도 돼요) 색을 채워요. <b>칸만 채우면 누구나 완성!</b> 아래 그림을 따라 만들어도 좋아요.</p></div>'
+  /* 2026-11-08: 픽셀 그림을 많이 완성할수록 칸이 작아지고 많아져요. 16칸에서 시작해 32칸까지 열려요 (폰에서 손가락으로 칠할 수 있는 크기까지). 열린 크기는 골라서 쓸 수 있어요 */
+  const PXLV = [[16, 0], [20, 3], [24, 6], [28, 10], [32, 15]];
+  const pxDone = () => DS().log.filter(x => x.t === 'pixel').length;
+  function pixel(want) { const done = pxDone(), open = PXLV.filter(l => done >= l[1]).map(l => l[0]), top = open[open.length - 1], nxt = PXLV.find(l => done < l[1]), N = open.indexOf(want) >= 0 ? want : top, T = N * N, G = Array(T).fill(0); let col = 1, tpl = null, down = false, last = -1;
+    const isNew = top > (DS().pxTop || 16); DS().pxTop = top; if (isNew) { save(); setTimeout(() => toastD('🎉 ' + top + '칸 판이 열렸어요! 더 정교하게 그릴 수 있어요'), 300); }
+    page('🟦 픽셀 그리기', how('pixel') + '<div class="dcard"><p>칸을 눌러(쓱 문질러도 돼요) 색을 채워요. <b>칸만 채우면 누구나 완성!</b> 아래 그림을 따라 만들어도 좋아요.</p><p class="soft" style="margin-top:6px">완성한 그림 <b>' + done + '장</b> · ' + (nxt ? (nxt[1] - done) + '장 더 완성하면 <b>' + nxt[0] + '칸 판</b>이 열려요' : '가장 정교한 판까지 다 열었어요! 🎉') + '</p></div>'
+      + (open.length > 1 ? '<div class="tools" style="justify-content:center">' + open.map(n => '<button class="db tb' + (n === N ? ' on' : '') + '" data-pn="' + n + '">' + n + '칸</button>').join('') + '</div>' : '')
       + '<div class="tpl"><button class="db tb" data-tp="">✏️ 내 마음대로</button>' + Object.keys(TPL).map(k => '<button class="db tb" data-tp="' + k + '">' + mini(TPL[k]) + k + '</button>').join('') + '</div>'
-      + '<div id="dtp" class="soft" style="text-align:center"></div><div class="pxg" id="dpx">' + G.map((v, i) => '<i data-i="' + i + '"></i>').join('') + '</div>'
+      + '<div id="dtp" class="soft" style="text-align:center"></div><div class="pxg" id="dpx" style="grid-template-columns:repeat(' + N + ',1fr)">' + G.map((v, i) => '<i data-i="' + i + '"></i>').join('') + '</div>'
       + '<div class="tools">' + PX.map((c, i) => i ? '<button class="sw' + (i === 1 ? ' on' : '') + '" data-pc="' + i + '" style="background:' + c + '"></button>' : '<button class="db tb" data-pc="0">🧽</button>').join('') + '</div>'
       + '<div class="row"><button class="db" id="dpclr">🗑️ 처음부터</button><button class="db m" id="dpsv">다 만들었어요 ✔</button></div>', true);
     const grid = $w.querySelector('#dpx'), cells = [...grid.children];
-    const paint = i => { if (i < 0 || i > 255 || G[i] === col) return; G[i] = col; cells[i].style.background = PX[col] || ''; };
-    const at = e => { const el = document.elementFromPoint(e.clientX, e.clientY); return el && el.dataset && el.dataset.i != null && el.parentNode === grid ? +el.dataset.i : -1; };
-    grid.addEventListener('pointerdown', e => { e.preventDefault(); down = true; paint(at(e)); }); grid.addEventListener('pointermove', e => { if (down) { e.preventDefault(); paint(at(e)); } });
-    window.addEventListener('pointerup', () => down = false);
+    const paint = i => { if (i < 0 || i >= T || G[i] === col) return; G[i] = col; cells[i].style.background = PX[col] || ''; };
+    const at = e => { const r = grid.getBoundingClientRect(), b = grid.clientLeft, w = grid.clientWidth, h = grid.clientHeight, c = Math.floor((e.clientX - r.left - b) / w * N), y = Math.floor((e.clientY - r.top - grid.clientTop) / h * N); return c < 0 || y < 0 || c >= N || y >= N ? -1 : y * N + c; };
+    /* 칸이 작으면 빠르게 문지를 때 건너뛰기 쉬워서, 지나간 칸을 이어서 칠해요 */
+    const line = (a, b) => { if (a < 0 || b < 0) return paint(b); let x0 = a % N, y0 = Math.floor(a / N); const x1 = b % N, y1 = Math.floor(b / N), dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let er = dx - dy; for (let g = 0; g < 200; g++) { paint(y0 * N + x0); if (x0 === x1 && y0 === y1) break; const e2 = 2 * er; if (e2 > -dy) { er -= dy; x0 += sx; } if (e2 < dx) { er += dx; y0 += sy; } } };
+    grid.addEventListener('pointerdown', e => { e.preventDefault(); down = true; last = at(e); paint(last); }); grid.addEventListener('pointermove', e => { if (down) { e.preventDefault(); const q = at(e); line(last, q); last = q; } });
+    window.addEventListener('pointerup', () => { down = false; last = -1; });
+    $w.querySelectorAll('[data-pn]').forEach(b => b.onclick = () => { if (+b.dataset.pn === N) return; if (G.some(Boolean)) return toastD('판을 바꾸면 그림이 사라져요. 🗑️ 처음부터를 먼저 눌러요'); pixel(+b.dataset.pn); });
     $w.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { col = +b.dataset.pc; $w.querySelectorAll('[data-pc]').forEach(y => y.classList.toggle('on', y === b)); });
     $w.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => { tpl = b.dataset.tp; $w.querySelector('#dtp').innerHTML = tpl ? '따라 만들기: ' + mini(TPL[tpl], 64) + ' <b>' + tpl + '</b>' : ''; });
     $w.querySelector('#dpclr').onclick = () => { G.fill(0); cells.forEach(c => c.style.background = ''); };
-    $w.querySelector('#dpsv').onclick = () => { if (!G.some(Boolean)) return toastD('칸을 몇 개 채워 봐요!'); const o = document.createElement('canvas'); o.width = 480; o.height = 480; const x = o.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 480, 480);
-      G.forEach((v, i) => { if (v) { x.fillStyle = PX[v]; x.fillRect((i % 16) * 30, Math.floor(i / 16) * 30, 30, 30); } }); starStep('pixel', o.toDataURL('image/jpeg', .85), tpl || ''); }; }
+    $w.querySelector('#dpsv').onclick = () => { if (G.filter(Boolean).length < 20) return toastD('칸을 20개 넘게 채워 봐요!'); const S = Math.ceil(480 / N), Z = S * N, o = document.createElement('canvas'); o.width = Z; o.height = Z; const x = o.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, Z, Z);
+      G.forEach((v, i) => { if (v) { x.fillStyle = PX[v]; x.fillRect((i % N) * S, Math.floor(i / N) * S, S, S); } }); starStep('pixel', o.toDataURL('image/jpeg', .85), tpl || ''); }; }
   function mini(t, sz) { sz = sz || 32; const o = document.createElement('canvas'); o.width = 16; o.height = 16; const x = o.getContext('2d'); t.split('|').forEach((r, y) => [...r].forEach((c, i) => { const v = parseInt(c, 36); if (v) { x.fillStyle = PX[v]; x.fillRect(i, y, 1, 1); } }));
     return '<img src="' + o.toDataURL() + '" width="' + sz + '" height="' + sz + '" style="image-rendering:pixelated;vertical-align:middle" alt="">'; }
 
