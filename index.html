@@ -8565,6 +8565,21 @@ details[open]:not(.subjfold)>summary::after{transform:rotate(180deg)}
       try { location.replace(u); } catch (e) { location.reload(); }
     }, 250);
   });
+  /* 2026-11-08: 하루에 한 번, 그날 처음 들어왔을 때만 새로고침해요. 켜 둔 채 자정이 지나도 하지 않아요.
+     새 버전이면 새로 받고, 그대로면 가볍게 새로고침해요 (앱이 커서 날마다 다 받지 않아요). 공부·그림·게임 중이면 끊지 않고 첫 화면으로 돌아왔을 때 해요 */
+  var FK = 'fresh-' + location.pathname, VK = 'freshv-' + location.pathname;
+  var dayKey = function () { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+  var lsGet = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, lsSet = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
+  var busy = function () { try { if (typeof VIEW !== 'undefined' && VIEW !== 'start' && VIEW !== 'home') return true; return !!document.querySelector('#drw, iframe, .modalcard, #mgpick'); } catch (e) { return true; } };
+  var save = function () { try { if (typeof persist === 'function') persist(); } catch (e) {} };
+  var pending = false, running = false;
+  var run = function () { if (running) return; running = true; pending = false; var day = dayKey(), old = lsGet(VK); lsSet(FK, day);
+    fetch(location.pathname, { method: 'HEAD', cache: 'no-store' }).then(function (r) { return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified') || '') : ''; }).catch(function () { return ''; }).then(function (v) { if (v) lsSet(VK, v); save();
+      setTimeout(function () { if (v && old !== null && v !== old) { try { location.replace(location.pathname + '?r=' + Date.now() + location.hash); return; } catch (e) {} } location.reload(); }, 150); }); };
+  var entry = function () { if (document.hidden || lsGet(FK) === dayKey()) return; if (busy()) { pending = true; return; } run(); };
+  window.__fresh = entry;
+  setTimeout(entry, 1200); window.addEventListener('pageshow', function (e) { if (e.persisted) entry(); }); document.addEventListener('visibilitychange', function () { if (!document.hidden) entry(); });
+  setInterval(function () { if (pending && !document.hidden && !busy() && lsGet(FK) !== dayKey()) run(); }, 20000);
   /* 메인 화면은 다시 그려질 때마다 새로 만들어져서, 그때마다 단추를 그 안에 다시 붙여요 */
   function place() { var h = document.getElementById('hero'); if (h && b.parentNode !== h) h.appendChild(b); }
   place();
