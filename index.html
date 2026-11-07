@@ -9577,7 +9577,7 @@ window.srJoin = function (rs) { const out = [];
 #drw .gplay{display:grid;gap:8px;margin-top:8px}#drw .gplay div{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:6px;align-items:start;line-height:1.5}#drw .gplay span{font-size:1.4rem;text-align:center}#drw .gplay small{display:block;color:#5A668C}
 #drw input.ttl{width:100%;font:inherit;font-size:1rem;border:2px solid #1B2750;border-radius:10px;padding:8px 10px}
 #drw .big{position:fixed;inset:0;background:rgba(27,39,80,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:3}
-#drw .big .starw{max-width:460px}
+#drw .big .starw{max-width:460px}#drw .bigw{width:100%;max-width:460px;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:8px}#drw .bigw .starw{width:100%;margin:0 auto}#drw .bigw .ttl{width:100%;box-sizing:border-box;margin:0}#drw .bigb{display:grid;grid-template-columns:1fr 1fr;gap:8px}#drw .bigb .db{min-width:0;width:100%}
 /* 따라 그리기: 지난 단계는 남색, 이번 단계는 분홍으로 그려지는 모습 */
 #drw .trbox{background:#fff;border:3px solid #1B2750;border-radius:14px;padding:6px;max-width:380px;width:100%;margin:0 auto}
 #drw .trsvg{display:block;margin:0 auto}#drw .trsvg .trp *{stroke:#1B2750;stroke-width:3.5}#drw .trsvg .trc *{stroke:#FF4F8B;stroke-width:5.5;stroke-dasharray:1;stroke-dashoffset:1;animation:trdraw 1.4s ease forwards}
@@ -9632,6 +9632,7 @@ window.srJoin = function (rs) { const out = [];
   let DBP = null;
   const db = () => DBP = DBP || new Promise((res, rej) => { try { const r = indexedDB.open('seoi-draw', 1); r.onupgradeneeded = () => r.result.createObjectStore('pics', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } });
   const putPic = o => db().then(d => new Promise(r => { const t = d.transaction('pics', 'readwrite'); t.objectStore('pics').put(o); t.oncomplete = () => r(true); t.onerror = () => r(false); })).catch(() => false);
+  const delPic = id => db().then(d => new Promise(r => { const t = d.transaction('pics', 'readwrite'); t.objectStore('pics').delete(id); t.oncomplete = () => r(true); t.onerror = () => r(false); })).catch(() => false);
   const allPics = () => db().then(d => new Promise(r => { const q = d.transaction('pics').objectStore('pics').getAll(); q.onsuccess = () => r((q.result || []).sort((a, b) => a.id < b.id ? -1 : 1)); q.onerror = () => r([]); })).catch(() => []);
 
   /* ---------- 창 ---------- */
@@ -9655,6 +9656,7 @@ window.srJoin = function (rs) { const out = [];
     speed: ['화면 맨 아래 <b>시작! ⏱️</b>을 눌러야 판에 그릴 수 있어요. 누르면 이 안내는 접혀요.', '위에 나온 것을 30초 동안 손가락으로 빠르게 그려요.', '시간이 끝나면 <b>다음 그림 ▶</b>을 눌러요. 모두 3장을 그려요.', '3장을 다 그리면 첫 번째 그림에 ⭐를 붙이고 <b>공방에 걸기 🖼️</b>를 눌러요.'],
     doodle: ['흰 판에 꼬불꼬불 선이 미리 나와 있어요.', '폰을 돌려 보면서 이 선이 무엇으로 보이는지 생각해요.', '손가락으로 눈, 다리, 무늬를 더해서 그림을 완성해요.', FIN],
     idea: ['위에 적힌 주제를 읽어요. 주제는 주마다 바뀌어요.', '아래 흰 판에 손가락으로 그려요. 글자나 화살표를 써도 돼요.', FIN],
+    gem: ['도안을 하나 골라요. 풍경 도안은 판이 열릴수록 더 정교해져요.', '아래에서 색을 고르면 그 색 점이 크게 보여요.', '같은 색 점을 누르거나 쓱 문질러 칸을 채워요. 다른 색 칸은 칠해지지 않아요.', '색 위의 숫자는 남은 칸 수예요. 배경까지 모두 채우면 완성이에요. 중간에 나가도 이어서 할 수 있어요.'],
     pixel: ['아래에서 색 동그라미를 하나 골라요.', '네모 칸을 누르거나 쓱 문지르면 색이 채워져요.', '따라 만들고 싶으면 위쪽 그림을 골라요. 본보기가 작게 나와요.', '그림을 많이 완성할수록 칸이 더 작고 많은 판이 열려요. 3장, 6장, 10장, 15장을 완성하면 새 판이 나와요.', '<b>다 만들었어요 ✔</b>를 누르고, ⭐를 붙인 다음 <b>공방에 걸기 🖼️</b>를 눌러요.'] };
   const howOff = () => { const h = $w && $w.querySelector('details.how'); if (h) h.open = false; if ($w) { const p = $w.querySelector('#dtm'); if (p) p.scrollIntoView({ block: 'start' }); } };
   const how = t => { const D = DS(), seen = D.seen = D.seen || {}, first = !seen[t]; if (first) { seen[t] = 1; save(); }
@@ -9795,8 +9797,16 @@ redraw();
       + (() => { const by = {}; A.filter(x => (x.t === 'trace' || x.t === 'feat') && x.pid).forEach(x => (by[x.pid] = by[x.pid] || []).push(x)); const ks = Object.keys(by).filter(k => by[k].length > 1);
           return ks.length ? '<div class="dcard"><h3>✏️ 같은 그림 · 처음과 최근</h3><p class="soft">같은 그림을 다시 그렸어요. 어디가 달라졌나요?</p>' + ks.map(k => { const a = by[k], f = a[0], l = a[a.length - 1];
             return '<div class="hand"><figure><img src="' + f.img + '" alt=""><figcaption>처음 ' + f.d.slice(5).replace('-', '/') + '</figcaption></figure><figure><img src="' + l.img + '" alt=""><figcaption>최근 ' + l.d.slice(5).replace('-', '/') + '</figcaption></figure></div>'; }).join('') + '</div>' : ''; })()
-      + '<div class="dcard"><h3>🖼️ 모든 그림 (' + A.length + '장)</h3>' + (A.length ? '<div class="alb">' + A.slice().reverse().map(fig).join('') + '</div>' : '<p class="soft">아직 그림이 없어요. 첫 그림을 걸어 봐요!</p>') + '</div>', true);
-    $w.querySelectorAll('[data-big]').forEach(f => f.onclick = () => { const x = A.find(y => y.id === f.dataset.big); if (!x) return; const b = document.createElement('div'); b.className = 'big'; b.innerHTML = '<div class="starw"><img src="' + x.img + '" alt="">' + (x.star ? '<span class="star" style="left:' + x.star[0] + '%;top:' + x.star[1] + '%">⭐</span>' : '') + '</div>'; b.onclick = () => b.remove(); $w.appendChild(b); }); }
+      + '<div class="dcard"><h3>🖼️ 모든 그림 (' + A.length + '장)</h3>' + (A.length ? '<p class="soft">그림을 누르면 크게 보고, 이름이나 그림을 고치거나 지울 수 있어요.</p><div class="alb">' + A.slice().reverse().map(fig).join('') + '</div>' : '<p class="soft">아직 그림이 없어요. 첫 그림을 걸어 봐요!</p>') + '</div>', true);
+    $w.querySelectorAll('[data-big]').forEach(f => f.onclick = () => { const x = A.find(y => y.id === f.dataset.big); if (!x) return; const b = document.createElement('div'); b.className = 'big'; b.innerHTML = '<div class="bigw"><div class="starw"><img src="' + x.img + '" alt="">' + (x.star ? '<span class="star" style="left:' + x.star[0] + '%;top:' + x.star[1] + '%">⭐</span>' : '') + '</div><input class="ttl" id="btt" maxlength="30" placeholder="그림 이름" value="' + esc(x.title || '') + '"><div class="bigb"><button class="db m" id="bsv">✏️ 이름 저장</button><button class="db y" id="bed">🖍️ 그림 고치기</button><button class="db" id="bdl">🗑️ 지우기</button><button class="db" id="bcl">닫기</button></div></div>'; b.onclick = e => { if (e.target === b) b.remove(); }; $w.appendChild(b);
+      /* 2026-11-08: 앨범의 그림을 고치거나 지워요. 지워도 공부한 기록(이번 주 그림 시간, 픽셀 판 장수)은 그대로예요 */
+      b.querySelector('#bcl').onclick = () => b.remove();
+      b.querySelector('#bsv').onclick = async () => { x.title = b.querySelector('#btt').value.trim(); await putPic(x); album(); };
+      b.querySelector('#bed').onclick = () => picEdit(x);
+      let sure = 0; const dl = b.querySelector('#bdl'); dl.onclick = async () => { if (!sure) { sure = 1; dl.textContent = '정말 지울까요? 한 번 더 눌러요'; setTimeout(() => { sure = 0; if (dl.isConnected) dl.textContent = '🗑️ 지우기'; }, 3000); return; } await delPic(x.id); album(); }; }); }
+  function picEdit(x) { const im = new Image(); im.onload = () => { if (!$w) return; page('🖍️ 그림 고치기', '<div class="dcard"><p>그림 위에 더 그려서 고쳐요. 지우개는 <b>새로 그린 것만</b> 지워요.</p></div><div class="padw" id="dpad"></div>' + toolsHTML() + '<div class="row"><button class="db" id="dex">← 고치지 않기</button><button class="db m" id="dey">저장하기 ✔</button></div>', true);
+      const P = makePad($w.querySelector('#dpad'), (c, W) => c.drawImage(im, 0, 0, W, W)); bindTools(P); $w.querySelector('#dex').onclick = () => album();
+      $w.querySelector('#dey').onclick = async () => { if (!P.used()) return toastD('먼저 조금이라도 고쳐 봐요!'); x.img = P.data(); await putPic(x); album(); }; }; im.src = x.img; }
 
   /* ---------- 픽셀 그리기 ---------- */
   const PX = ['', '#1B2750', '#FFFFFF', '#E5484D', '#F5A524', '#FFD43B', '#2FB36B', '#2F80ED', '#8B5CF6', '#FF7AA8', '#9C6B3F', '#C9CFDD'];
@@ -9814,7 +9824,7 @@ redraw();
     const isNew = top > (DS().pxTop || 16); DS().pxTop = top; if (isNew) { save(); setTimeout(() => toastD('🎉 ' + top + '칸 판이 열렸어요! 더 정교하게 그릴 수 있어요'), 300); }
     page('🟦 픽셀 그리기', how('pixel') + '<div class="dcard"><p>칸을 눌러(쓱 문질러도 돼요) 색을 채워요. <b>칸만 채우면 누구나 완성!</b> 아래 그림을 따라 만들어도 좋아요.</p><p class="soft" style="margin-top:6px">완성한 그림 <b>' + done + '장</b> · ' + (nxt ? (nxt[1] - done) + '장 더 완성하면 <b>' + nxt[0] + '칸 판</b>이 열려요' : '가장 정교한 판까지 다 열었어요! 🎉') + '</p></div>'
       + (open.length > 1 ? '<div class="tools" style="justify-content:center">' + open.map(n => '<button class="db tb' + (n === N ? ' on' : '') + '" data-pn="' + n + '">' + n + '칸</button>').join('') + '</div>' : '')
-      + '<div class="tpl"><button class="db tb" data-tp="">✏️ 내 마음대로</button>' + Object.keys(TPL).map(k => '<button class="db tb" data-tp="' + k + '">' + mini(TPL[k]) + k + '</button>').join('') + '</div>'
+      + '<button class="db y" id="dgm0" style="width:100%;margin-bottom:8px">💎 보석 십자수 놀이 (배경까지 모두 채워요)</button>' + '<div class="tpl"><button class="db tb" data-tp="">✏️ 내 마음대로</button>' + Object.keys(TPL).map(k => '<button class="db tb" data-tp="' + k + '">' + mini(TPL[k]) + k + '</button>').join('') + '</div>'
       + '<div id="dtp" class="soft" style="text-align:center"></div><div class="pxg" id="dpx" style="grid-template-columns:repeat(' + N + ',1fr)">' + G.map((v, i) => '<i data-i="' + i + '"></i>').join('') + '</div>'
       + '<div class="tools">' + PX.map((c, i) => i ? '<button class="sw' + (i === 1 ? ' on' : '') + '" data-pc="' + i + '" style="background:' + c + '"></button>' : '<button class="db tb" data-pc="0">🧽</button>').join('') + '</div>'
       + '<div class="row"><button class="db" id="dpclr">🗑️ 처음부터</button><button class="db m" id="dpsv">다 만들었어요 ✔</button></div>', true);
@@ -9828,9 +9838,39 @@ redraw();
     $w.querySelectorAll('[data-pn]').forEach(b => b.onclick = () => { if (+b.dataset.pn === N) return; if (G.some(Boolean)) return toastD('판을 바꾸면 그림이 사라져요. 🗑️ 처음부터를 먼저 눌러요'); pixel(+b.dataset.pn); });
     $w.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { col = +b.dataset.pc; $w.querySelectorAll('[data-pc]').forEach(y => y.classList.toggle('on', y === b)); });
     $w.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => { tpl = b.dataset.tp; $w.querySelector('#dtp').innerHTML = tpl ? '따라 만들기: ' + mini(TPL[tpl], 64) + ' <b>' + tpl + '</b>' : ''; });
-    $w.querySelector('#dpclr').onclick = () => { G.fill(0); cells.forEach(c => c.style.background = ''); };
+    $w.querySelector('#dgm0').onclick = () => gemMenu(); $w.querySelector('#dpclr').onclick = () => { G.fill(0); cells.forEach(c => c.style.background = ''); };
     $w.querySelector('#dpsv').onclick = () => { if (G.filter(Boolean).length < 20) return toastD('칸을 20개 넘게 채워 봐요!'); const S = Math.ceil(480 / N), Z = S * N, o = document.createElement('canvas'); o.width = Z; o.height = Z; const x = o.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, Z, Z);
       G.forEach((v, i) => { if (v) { x.fillStyle = PX[v]; x.fillRect((i % N) * S, Math.floor(i / N) * S, S, S); } }); starStep('pixel', o.toDataURL('image/jpeg', .85), tpl || ''); }; }
+  /* ---------- 💎 보석 십자수 놀이 (2026-11-08): 칸마다 색이 정해져 있고, 배경까지 모든 칸을 채우면 완성이에요. 16칸 도안 6가지와, 열린 판 크기에 맞춰 커지는 풍경 도안 4가지 ---------- */
+  const GBG = { '하트': 9, '토끼': 6, '버섯': 7, '별': 8, '컵': 5, '물고기': 4 };
+  const SCN = {
+    '노을 바다': (u, v, x, y) => { if (v >= .6) return y % 3 === 0 && (x + y) % 5 < 2 ? 2 : 7; if (Math.hypot(u - .5, v - .6) < .2) return 5; return v < .2 ? 8 : v < .4 ? 9 : 4; },
+    '달밤': (u, v, x, y) => { if (v > .78 - .07 * Math.sin(u * 6.3)) return 6; const m = Math.hypot(u - .7, v - .26) < .15, c = Math.hypot(u - .77, v - .22) < .13; if (m && !c) return 5; return !m && v < .62 && (x * 7 + y * 13) % 31 === 0 ? 2 : 1; },
+    '무지개': (u, v) => { if (v > .84) return 6; if (Math.hypot(u - .14, v - .8) < .09 || Math.hypot(u - .26, v - .82) < .08 || Math.hypot(u - .86, v - .8) < .09 || Math.hypot(u - .74, v - .82) < .08) return 2; const r = Math.hypot(u - .5, v - .84); return r > .68 || r < .28 ? 7 : r > .6 ? 3 : r > .52 ? 4 : r > .44 ? 5 : r > .36 ? 6 : 8; },
+    '꽃밭': (u, v) => { if (Math.hypot(u - .16, v - .16) < .1) return 5; const F = [[.16, .68, 3], [.4, .6, 9], [.62, .7, 8], [.85, .6, 3]]; for (const f of F) { const d = Math.hypot(u - f[0], v - f[1]); if (d < .035) return 5; if (d < .095) return f[2]; if (Math.abs(u - f[0]) < .02 && v > f[1]) return 10; } return v > .55 ? 6 : 7; } };
+  const gemPat = (k, N) => { if (TPL[k]) return TPL[k].split('|').join('').split('').map(c => parseInt(c, 36) || GBG[k]); const f = SCN[k], a = []; for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) a.push(f((x + .5) / N, (y + .5) / N, x, y)); return a; };
+  const gemImg = (P, N, S) => { const o = document.createElement('canvas'); o.width = o.height = N * S; const x = o.getContext('2d'); P.forEach((v, i) => { x.fillStyle = PX[v]; x.fillRect((i % N) * S, Math.floor(i / N) * S, S, S); }); return o; };
+  const gemCss = () => { if (document.getElementById('gemcss')) return; const s = document.createElement('style'); s.id = 'gemcss'; s.textContent = PX.map((c, i) => i ? '#drw .gem .g' + i + '{background:radial-gradient(circle,' + c + ' 0 24%,#F7F8FC 30%)}#drw .gem.c' + i + ' .g' + i + '{background:radial-gradient(circle,' + c + ' 0 46%,#DDE3F2 52%)}#drw .gem .f' + i + '{background:' + c + ';box-shadow:inset 1px 1px 0 rgba(255,255,255,.55),inset -1px -1px 0 rgba(0,0,0,.2)}' : '').join('') + '#drw .gem i{border:0}#drw .gmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#drw .gmenu button{padding:6px 2px;font-size:.82rem}#drw .gmenu img{display:block;margin:0 auto 4px;width:100%;max-width:72px;height:auto;aspect-ratio:1/1;image-rendering:pixelated;border-radius:6px}#drw .gcol{position:relative}#drw .gcol b{position:absolute;right:-5px;top:-6px;min-width:18px;padding:0 3px;border-radius:9px;background:#1B2750;color:#fff;font-size:.62rem;line-height:16px;text-align:center}#drw .gbar{height:12px;border-radius:6px;background:#E6E9F2;overflow:hidden;margin:6px 0}#drw .gbar i{display:block;height:100%;background:#2FB36B}'; document.head.appendChild(s); };
+  function gemMenu() { gemCss(); const done = pxDone(), N = PXLV.filter(l => done >= l[1]).pop()[0], S = DS().gem, card = (k, n) => '<button class="db tb" data-gk="' + k + '" data-gn="' + n + '"><img src="' + gemImg(gemPat(k, n), n, 3).toDataURL() + '" alt="">' + k + '<br><small>' + n + '칸</small></button>';
+    page('💎 보석 십자수', how('gem') + '<div class="dcard"><p>칸마다 칠할 색이 정해져 있어요. 색을 고르고 같은 색 점을 눌러 <b>배경까지 모든 칸</b>을 채워요. 풍경 도안은 판이 열릴수록 더 정교해져요.</p></div>'
+      + (S && S.k ? '<button class="db y" id="dgc" style="width:100%">▶ 이어서 하기: ' + S.k + ' (' + Math.floor([...S.d].filter(c => c === '1').length / S.d.length * 100) + '%)</button>' : '')
+      + '<div class="dcard"><h3>🌅 풍경 도안</h3><div class="gmenu" style="grid-template-columns:repeat(4,1fr);gap:5px">' + Object.keys(SCN).map(k => card(k, N)).join('') + '</div></div><div class="dcard"><h3>🐰 작은 도안</h3><div class="gmenu">' + Object.keys(GBG).map(k => card(k, 16)).join('') + '</div></div><button class="db" id="dgb" style="width:100%">🟦 픽셀 그리기로 돌아가기</button>', true);
+    $w.querySelectorAll('[data-gk]').forEach(b => b.onclick = () => gem(b.dataset.gk, +b.dataset.gn)); $w.querySelector('#dgb').onclick = () => pixel(); const c = $w.querySelector('#dgc'); if (c) c.onclick = () => gem(S.k, S.N, S.d); }
+  function gem(k, N, saved) { gemCss(); const P = gemPat(k, N), T = N * N, F = saved && saved.length === T ? [...saved].map(c => c === '1') : Array(T).fill(false), used = [...new Set(P)].sort((a, b) => a - b); let col = used[0], down = false, last = -1, wrongT = 0, sv = null;
+    const left = c => P.filter((v, i) => v === c && !F[i]).length, keep = () => { DS().gem = { k, N, d: F.map(v => v ? '1' : '0').join('') }; save(); };
+    page('💎 ' + k, '<div class="gbar"><i id="dgp"></i></div><p class="soft" id="dgt" style="text-align:center;margin:0 0 6px"></p><div class="pxg gem c' + col + '" id="dgm" style="grid-template-columns:repeat(' + N + ',1fr)">' + P.map((v, i) => '<i class="' + (F[i] ? 'f' : 'g') + v + '"></i>').join('') + '</div>'
+      + '<div class="tools" style="justify-content:center;margin-top:10px">' + used.map(c => '<button class="sw gcol' + (c === col ? ' on' : '') + '" data-gc="' + c + '" aria-label="색 ' + c + '" style="background:' + PX[c] + '"><b>' + left(c) + '</b></button>').join('') + '</div>'
+      + '<div class="row"><button class="db" id="dgx">← 도안 고르기</button></div>', true);
+    const grid = $w.querySelector('#dgm'), cells = [...grid.children], bar = $w.querySelector('#dgp'), txt = $w.querySelector('#dgt');
+    const show = () => { const n = F.filter(Boolean).length; bar.style.width = n / T * 100 + '%'; txt.textContent = n + ' / ' + T + '칸'; $w.querySelectorAll('[data-gc]').forEach(b => { const l = left(+b.dataset.gc); b.querySelector('b').textContent = l || '✓'; }); };
+    const finish = () => { clearTimeout(sv); DS().gem = null; save(); const S = Math.ceil(480 / N); starStep('pixel', gemImg(P, N, S).toDataURL('image/jpeg', .9), '💎 ' + k); };
+    const put = i => { if (i < 0 || i >= T || F[i]) return 0; if (P[i] !== col) { const t = Date.now(); if (t - wrongT > 2500) { wrongT = t; toastD('이 칸은 다른 색이에요. 같은 색 점을 찾아봐요'); } return 0; } F[i] = true; cells[i].className = 'f' + col; return 1; };
+    const at = e => { const r = grid.getBoundingClientRect(), c = Math.floor((e.clientX - r.left - grid.clientLeft) / grid.clientWidth * N), y = Math.floor((e.clientY - r.top - grid.clientTop) / grid.clientHeight * N); return c < 0 || y < 0 || c >= N || y >= N ? -1 : y * N + c; };
+    const line = (a, b) => { if (a < 0 || b < 0) return put(b); let x0 = a % N, y0 = Math.floor(a / N); const x1 = b % N, y1 = Math.floor(b / N), dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let er = dx - dy; for (let g = 0; g < 200; g++) { put(y0 * N + x0); if (x0 === x1 && y0 === y1) break; const e2 = 2 * er; if (e2 > -dy) { er -= dy; x0 += sx; } if (e2 < dx) { er += dx; y0 += sy; } } };
+    const end = () => { if (!down) return; down = false; last = -1; show(); if (F.every(Boolean)) return finish(); clearTimeout(sv); sv = setTimeout(keep, 400); };
+    grid.addEventListener('pointerdown', e => { e.preventDefault(); down = true; last = at(e); put(last); }); grid.addEventListener('pointermove', e => { if (down) { e.preventDefault(); const q = at(e); line(last, q); last = q; } }); grid.addEventListener('pointerup', end); grid.addEventListener('pointercancel', end); grid.addEventListener('pointerleave', end);
+    $w.querySelectorAll('[data-gc]').forEach(b => b.onclick = () => { grid.classList.remove('c' + col); col = +b.dataset.gc; grid.classList.add('c' + col); $w.querySelectorAll('[data-gc]').forEach(y => y.classList.toggle('on', y === b)); });
+    $w.querySelector('#dgx').onclick = () => { keep(); gemMenu(); }; show(); }
   function mini(t, sz) { sz = sz || 32; const o = document.createElement('canvas'); o.width = 16; o.height = 16; const x = o.getContext('2d'); t.split('|').forEach((r, y) => [...r].forEach((c, i) => { const v = parseInt(c, 36); if (v) { x.fillStyle = PX[v]; x.fillRect(i, y, 1, 1); } }));
     return '<img src="' + o.toDataURL() + '" width="' + sz + '" height="' + sz + '" style="image-rendering:pixelated;vertical-align:middle" alt="">'; }
 
@@ -10057,7 +10097,7 @@ redraw();
   /* 첫 화면이 다시 그려질 때마다 (없을 때만 넣고, 내용이 같으면 손대지 않아서 끝없이 다시 그리지 않아요) */
   { let qd = 0; const go = () => { const a = document.getElementById('app'); if (!a) return setTimeout(go, 300); new MutationObserver(() => { if (!qd) { qd = 1; setTimeout(() => { qd = 0; placeCard(); }, 80); } }).observe(a, { childList: true, subtree: true }); placeCard(); }; go(); }
   document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-drw]'); if (!b) return; e.preventDefault(); e.stopImmediatePropagation(); try { SFX.play('ok'); } catch (x) {} openDrw(); }, true);
-  window.__drw = { open: openDrw, home, guide, album, pixel, mission: drawMission, TPL };
+  window.__drw = { open: openDrw, home, guide, album, pixel, gem, gemMenu, mission: drawMission, TPL, putPic, allPics };
 })();
 </script>
 <!-- ===== 서이의 그림 공방 끝 ===== -->
