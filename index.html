@@ -2883,7 +2883,7 @@ function calHTML(){
     +'<p class="lead" style="margin:8px 0 0">이번 달에 '+cnt+'일 공부했어요.</p>'+calDayHTML()+calBookHTML();
 }
 function saveStamp(u,l,stars){ { const sk=Object.keys(SUBJ).find(k=>SUBJ[k].order.includes(u.g)); if(sk&&slotsOf(u).includes(l)){ STATE.last=STATE.last||{}; STATE.last[sk]={uid:u.id,l:l,t:Date.now()}; const T=STATE.td; if(T&&T.a&&T.d===dkey(new Date())&&T.a[sk]&&T.a[sk].uid===u.id&&String(T.a[sk].l)===String(l)){ T.done=T.done||{}; T.done[sk]=1; } } }
-  const k=u.id+'-'+l; if((prog[k]||0)<stars) prog[k]=stars; markToday(u);
+  const k=u.id+'-'+l, was=!!prog[k]; if((prog[k]||0)<stars) prog[k]=stars; if(!was) markToday(u);   /* 2026-11-11: already-finished lesson redo -> stars only, no today/calendar/game credit */
   persist();
 }
 function saveResume(){ if(!Q) return; STATE.resume={uid:Q.u.id,l:Q.l,qs:Q.qs,i:Q.i,right:Q.right}; persist(); }
@@ -6273,104 +6273,89 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 <!-- ===== 생일 이벤트 끝 ===== -->
 <!-- ===== 게임 뽑기 시작 ===== -->
 <script>
-/* ===== 네온 게임 뽑기: 학습 2개를 끝내 게임이 열리면, 먼저 네온 뽑기 기계가 나와요 =====
-   (‘네온 뽑기.html’ 디자인) 유리 돔 안에서 네온 구슬이 굴러다녀요.
-   1) 손잡이를 누르면 구슬이 소용돌이치며 섞이고, 하나가 배출구로 떨어져요
-   2) 캡슐이 저절로 열리며 이번 게임 카드가 짠! → ‘게임 시작’을 누르면 바로 게임이 열려요 (두 번만 누르면 시작) */
+/* ===== 종이 뽑기판 (2026-11-11, 네온 뽑기 기계 대신 · 옛날 문방구 느낌) =====
+   학습으로 게임이 열리면 빨간 종이가 빼곡한 뽑기판이 나와요.
+   1) 마음에 드는 종이 하나를 누르면 쭉 뜯어지며 이번 게임이 나와요 → ‘게임 시작’을 누르면 바로 게임이 열려요
+   2) 오늘 뜯은 자리는 뜯어진 채로 남고(STATE.ppb), 위 칸에 오늘 뽑은 게임이 차례로 놓여요. 다음 날엔 새 판이에요. */
 (function(){
-  const css=document.createElement('style');
-  css.textContent='#gacha{position:fixed;inset:0;z-index:8500;display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:#030308;background-image:radial-gradient(600px 400px at 20% 10%,rgba(0,243,255,.10),transparent 60%),radial-gradient(600px 400px at 80% 90%,rgba(255,0,127,.12),transparent 60%);color:#fff;overflow:hidden;touch-action:manipulation;font-family:"Jua","Gowun Dodum",system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}'
+  const css=document.createElement('style'); document.head.appendChild(css);
+  const N=30, SLOT=['#e53935','#f59e0b','#22a447','#1e6fd9','#8b3fd1'];
+  css.textContent='#gacha{position:fixed;inset:0;z-index:8500;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(30,40,60,.6);overflow-y:auto}'
    +'#gacha *{box-sizing:border-box}'
-   +'#gacha .npanel{position:relative;width:100%;max-width:380px;background:rgba(13,17,33,.88);border:1px solid rgba(0,243,255,.35);border-radius:28px;padding:22px 20px 24px;display:flex;flex-direction:column;align-items:center;box-shadow:0 0 30px rgba(0,243,255,.15)}'
-   +'#gacha h1{margin:0;font-weight:900;font-size:28px;letter-spacing:.06em;background:linear-gradient(90deg,#22d3ee,#f472b6,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px rgba(244,114,182,.45))}'
-   +'#gacha .nsub{margin:4px 0 14px;font-size:14px;color:#aab3c8;text-align:center}'
-   +'#gacha .ndome{position:relative;width:264px;height:264px;border-radius:50%;z-index:2;border:2px solid #00f3ff;background:radial-gradient(circle at 50% 40%,rgba(20,30,60,.65),rgba(3,6,16,.9));box-shadow:0 0 18px rgba(0,243,255,.65),inset 0 0 22px rgba(0,243,255,.3)}'
-   +'#gacha .ndome canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:50%}'
-   +'#gacha .nshine{position:absolute;top:18px;left:34px;width:80px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);filter:blur(4px);transform:rotate(-38deg);pointer-events:none}'
-   +'#gacha .nbase{position:relative;z-index:1;width:290px;margin-top:-40px;padding:54px 18px 18px;border-radius:26px;background:rgba(5,8,20,.92);border:2px solid #ff007f;box-shadow:0 0 20px rgba(255,0,127,.6),inset 0 0 20px rgba(255,0,127,.2);display:flex;flex-direction:column;align-items:center;gap:16px}'
-   +'#gacha .nrow{width:100%;display:flex;justify-content:space-around;align-items:center}'
-   +'#gacha .nhandle{position:relative;width:96px;height:96px;border-radius:50%;border:2px solid #00f3ff;background:rgba(8,51,68,.55);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 16px rgba(0,243,255,.35);padding:0;color:inherit;transition:transform .15s,box-shadow .2s;touch-action:manipulation}'
-   +'#gacha .nhandle:not(:disabled){animation:npulse 1.8s infinite alternate}#gacha .nhandle:active:not(:disabled){transform:scale(.94)}#gacha .nhandle:disabled{cursor:default;opacity:.85}'
-   +'#gacha .nring{position:absolute;inset:4px;border-radius:50%;border:1px dashed rgba(103,232,249,.5);animation:nspin 12s linear infinite}'
-   +'#gacha .nlever{width:66px;height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.8);background:linear-gradient(90deg,#ec4899,#9333ea);display:grid;place-items:center;box-shadow:0 0 10px rgba(236,72,153,.6)}#gacha .nlever i{width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}'
-   +'@keyframes npulse{to{box-shadow:0 0 28px rgba(0,243,255,.7);filter:brightness(1.2)}}@keyframes nspin{to{transform:rotate(360deg)}}'
-   +'#gacha .nslot{position:relative;width:84px;height:84px;border-radius:18px;border:2px solid rgba(168,85,247,.7);background:#0b1020;overflow:hidden;box-shadow:inset 0 6px 16px rgba(0,0,0,.8),0 0 10px rgba(168,85,247,.35);cursor:default;padding:0;touch-action:manipulation}'
-   +'#gacha .nslot::before{content:"";position:absolute;inset:0;background:linear-gradient(#000c,transparent 60%);z-index:2;pointer-events:none}'
-   +'#gacha .nslot.ready{cursor:pointer;animation:nslotg .8s infinite alternate}@keyframes nslotg{to{box-shadow:inset 0 6px 16px rgba(0,0,0,.8),0 0 22px rgba(168,85,247,.9)}}'
-   +'#gacha .nslot canvas{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;transform:translateY(-90px);opacity:0}'
-   +'#gacha .nslot canvas.drop{animation:ndrop .7s cubic-bezier(.3,1.4,.5,1) forwards}@keyframes ndrop{0%{transform:translateY(-90px);opacity:1}100%{transform:translateY(0);opacity:1}}'
-   +'#gacha .ntip{padding:6px 16px;border-radius:999px;background:rgba(80,7,36,.8);border:1px solid rgba(236,72,153,.55);color:#f9a8d4;font-size:15px;text-shadow:0 0 8px rgba(255,0,127,.8);animation:nbob 1s infinite;min-height:30px;text-align:center}@keyframes nbob{50%{transform:translateY(-4px)}}'
-   +'#gacha .nover{position:fixed;inset:0;background:rgba(2,3,10,.78);display:grid;place-items:center;padding:16px;z-index:3}#gacha .nover[hidden]{display:none}'
-   +'#gacha .ncard{width:100%;max-width:340px;border-radius:24px;padding:26px 22px 22px;text-align:center;background:#0a0e1d;border:2px solid var(--c,#00f3ff);box-shadow:0 0 30px var(--c,#00f3ff),inset 0 0 24px rgba(255,255,255,.06);animation:npop .45s cubic-bezier(.3,1.5,.5,1)}@keyframes npop{from{transform:scale(.4);opacity:0}}'
-   +'#gacha .nlbl{color:#aab3c8;font-size:15px}#gacha .nicon{font-size:64px;line-height:1.15;margin-top:4px;filter:drop-shadow(0 0 10px var(--c))}'
-   +'#gacha .ngame{margin:8px 0 6px;font-size:32px;line-height:1.2;color:#fff;word-break:keep-all;text-shadow:0 0 6px var(--c),0 0 18px var(--c),0 0 36px var(--c)}'
-   +'#gacha .nsec{color:#aab3c8;font-size:15px;margin-bottom:16px}'
-   +'#gacha .nbtn{font-family:inherit;font-size:18px;padding:12px 22px;border-radius:999px;cursor:pointer;color:#fff;border:1px solid var(--c,#00f3ff);box-shadow:0 0 12px var(--c,#00f3ff);background:rgba(255,255,255,.08);min-height:48px;width:100%;touch-action:manipulation}'
-   +'#gacha .nlater{display:block;width:100%;margin-top:8px;background:none;border:0;color:#aab3c8;font-family:inherit;font-size:15px;padding:10px;cursor:pointer}'
-   +'@media (prefers-reduced-motion:reduce){#gacha .nhandle,#gacha .ntip,#gacha .nring{animation:none!important}}'
-   +'@media (max-height:640px){#gacha .ndome{width:220px;height:220px}#gacha .nbase{width:260px}#gacha .nsub{margin-bottom:8px}}#mg-re{display:none!important}';
-  document.head.appendChild(css);
-  const NEON=['#00f3ff','#ff2bd6','#39ff14','#ffe600','#b14bff','#ff6a00','#2f7bff','#ff1f4b','#00ffa3','#ff9df5'];
-  function shade(hex,p){ const n=parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255; const t=p<0?0:255, a=Math.abs(p); r=Math.round((t-r)*a+r); g=Math.round((t-g)*a+g); b=Math.round((t-b)*a+b); return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1); }
-  /* 네온 구슬: 어두운 속 + 빛나는 테두리 + 캡슐 이음새 + 하이라이트 */
-  function drawBall(ctx,x,y,r,col,ang,glow){ ang=ang||0; glow=glow==null?1:glow; ctx.save(); ctx.translate(x,y); ctx.rotate(ang);
-    ctx.shadowColor=col; ctx.shadowBlur=r*1.1*glow;
-    const g=ctx.createRadialGradient(-r*.3,-r*.35,r*.1,0,0,r); g.addColorStop(0,'#ffffff'); g.addColorStop(.18,col); g.addColorStop(.75,shade(col,-.55)); g.addColorStop(1,shade(col,-.25));
-    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
-    ctx.lineWidth=Math.max(1.5,r*.14); ctx.strokeStyle=col; ctx.beginPath(); ctx.arc(0,0,r-ctx.lineWidth/2,0,Math.PI*2); ctx.stroke();
-    ctx.shadowBlur=r*.5; ctx.lineWidth=Math.max(1,r*.1); ctx.strokeStyle='#ffffffcc'; ctx.beginPath(); ctx.moveTo(-r*.92,0); ctx.bezierCurveTo(-r*.4,r*.22,r*.4,r*.22,r*.92,0); ctx.stroke(); ctx.shadowBlur=0;
-    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-r*.38,-r*.45,r*.26,r*.14,-.6,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+   +'#gacha .pp{position:relative;width:100%;max-width:380px;margin:auto;border-radius:20px;padding:14px 12px 14px;border:8px solid #9a6534;box-shadow:inset 0 0 0 3px #d9a86a,0 10px 30px rgba(0,0,0,.45);background:linear-gradient(#e8dcc0 1px,transparent 1px) 0 0/100% 22px,#fbf3df;display:flex;flex-direction:column;align-items:center;gap:8px;color:#4a2f12}'
+   +'#gacha .pp-rib{position:relative;margin:2px auto 0;padding:9px 30px 10px;background:#1f4f8f;color:#fff8e1;font-weight:900;font-size:25px;letter-spacing:.04em;line-height:1.1;border-radius:6px;box-shadow:3px 3px 0 #0f2d55;transform:rotate(-1.5deg)}'
+   +'#gacha .pp-sub{margin:0;font-size:14px;font-weight:700;text-align:center;color:#5a3d1c}'
+   +'#gacha .pp-row{width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}'
+   +'#gacha .pp-slot{border:3px solid var(--c);border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column;align-items:center;box-shadow:0 2px 0 rgba(0,0,0,.15)}'
+   +'#gacha .pp-slot b{width:100%;text-align:center;background:var(--c);color:#fff;font-size:11.5px;padding:2px 0;white-space:nowrap}'
+   +'#gacha .pp-slot span{font-size:26px;line-height:44px;height:44px}#gacha .pp-slot.e span{color:#d9c7a3;font-weight:900;font-size:22px}'
+   +'#gacha .pp-slot.now{animation:ppin .6s cubic-bezier(.3,1.6,.5,1)}@keyframes ppin{0%{transform:scale(.4)}100%{transform:none}}'
+   +'#gacha .pp-board{width:100%;padding:7px;border-radius:12px;background:#9fd8f2;border:3px solid #4b9cc4;display:grid;grid-template-columns:repeat(6,1fr);gap:4px}'
+   +'#gacha .pp-board.lock{pointer-events:none}'
+   +'#gacha .pp-c{position:relative;aspect-ratio:1;max-width:100%;border:0;padding:0;margin:0;border-radius:4px;background:#fffaf0;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}'
+   +'#gacha .pp-c .in{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;border-radius:4px;background:repeating-linear-gradient(#fffaf0 0 6px,#f6ecd6 6px 7px)}'
+   +'#gacha .pp-c .fl{position:absolute;inset:0;border-radius:4px;transform-origin:50% 0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.3),transparent 50%),#e8cf9e;border:1px solid #c2a36a;box-shadow:0 2px 0 #b8975c;display:grid;place-items:center}'
+   +'#gacha .pp-c .fl i{font-style:normal;width:26px;height:26px;border:2px solid #2a5db0;border-radius:50%;display:grid;place-items:center;color:#2a5db0;font-weight:900;font-size:13px;transform:rotate(-10deg);opacity:.85}'
+   +'#gacha .pp-c:active .fl{transform:scale(.92)}'
+   +'#gacha .pp-c.rip .fl{animation:pprip .8s cubic-bezier(.5,0,.9,.6) forwards}'
+   +'@keyframes pprip{0%{transform:none}20%{transform:rotate(-8deg) translateY(3px)}35%{transform:rotate(6deg) translateY(4px)}100%{transform:translate(26px,120px) rotate(55deg) scale(.8);opacity:0}}'
+   +'#gacha .pp-c.torn{cursor:default}#gacha .pp-c.torn .fl{display:none}'
+   +'#gacha .pp-c.torn::before{content:"";position:absolute;left:0;right:0;top:0;height:22%;z-index:1;background:#e8cf9e;border-radius:4px 4px 0 0;clip-path:polygon(0 0,100% 0,100% 60%,88% 100%,76% 55%,63% 95%,50% 50%,38% 100%,25% 55%,12% 95%,0 60%)}'
+   +'#gacha .pp-c.torn .in{opacity:.5;filter:grayscale(.35);padding-top:16%}'
+   +'#gacha .pp-c.torn.new .in{opacity:1;filter:none;animation:ppop .5s cubic-bezier(.3,1.7,.5,1)}@keyframes ppop{0%{transform:scale(.3)}100%{transform:none}}'
+   +'#gacha .pp-tip{padding:7px 16px;border-radius:999px;background:#fff;border:2px solid #1f4f8f;color:#1f4f8f;font-size:15px;font-weight:800;text-align:center;animation:ppbob 1s infinite alternate}@keyframes ppbob{to{transform:translateY(-3px)}}'
+   +'#gacha .nover{position:fixed;inset:0;background:rgba(40,18,6,.72);display:grid;place-items:center;padding:16px;z-index:3}#gacha .nover[hidden]{display:none}'
+   +'#gacha .ncard{width:100%;max-width:330px;border-radius:22px;padding:22px 20px 18px;text-align:center;background:#fffaf0;border:5px solid var(--c);box-shadow:0 12px 30px rgba(0,0,0,.4);animation:ppin .5s cubic-bezier(.3,1.5,.5,1)}'
+   +'#gacha .nlbl{color:#7a3b10;font-size:15px;font-weight:700}#gacha .nicon{font-size:66px;line-height:1.15;margin-top:4px}'
+   +'#gacha .ngame{margin:6px 0 4px;font-size:30px;font-weight:900;line-height:1.2;color:#3b1a06;word-break:keep-all}'
+   +'#gacha .nsec{color:#7a3b10;font-size:15px;margin-bottom:14px}'
+   +'#gacha .nbtn{font-family:inherit;font-size:19px;font-weight:900;padding:12px 26px;border-radius:999px;cursor:pointer;color:#fff;border:0;background:var(--c);box-shadow:0 4px 0 rgba(0,0,0,.25)}#gacha .nbtn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}'
+   +'#gacha .nlater{display:block;width:100%;margin-top:6px;background:none;border:0;color:#8a6a4a;font-family:inherit;font-size:15px;padding:10px;cursor:pointer}'
+   +'@media (prefers-reduced-motion:reduce){#gacha .pp-tip,#gacha .pp-c.rip .fl{animation-duration:.01s!important}}'
+   +'#mg-re{display:none!important}';
   /* 소리 (외부 파일 없이) */
   let AC=null; const audio=()=>{ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; };
   function beep(f,t0,dur,type,vol){ const a=audio(); if(!a) return; const o=a.createOscillator(), g=a.createGain(), t=a.currentTime+t0; o.type=type||'square'; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(vol||.06,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+.02); }
-  const clicks=()=>{ for(let i=0;i<10;i++) beep(900+i*40,i*.12,.04,'square',.04); };
-  const plop=()=>{ beep(320,0,.15,'sine',.15); beep(180,.08,.2,'sine',.12); };
+  /* 효과음 (2026-11-11): 판 열림 ‘딩동’, 종이 누름 ‘톡’, 찢김 ‘지지직’, 위 칸에 들어갈 때 ‘뾰롱’, 카드 ‘빰빠밤’, 시작 ‘딩’ */
+  function sweep(f1,f2,t0,dur,type,vol){ const a=audio(); if(!a) return; const o=a.createOscillator(), g=a.createGain(), t=a.currentTime+t0; o.type=type||'sine'; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur); g.gain.setValueAtTime(vol||.08,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur+.05); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+.08); }
+  const rip=()=>{ const a=audio(); if(!a) return; try{ const sr=a.sampleRate, n=Math.floor(sr*.55), buf=a.createBuffer(1,n,sr), d=buf.getChannelData(0);
+      let amp=0; for(let i=0;i<n;i++){ if(i%Math.floor(sr*.012)===0) amp=Math.random()<.7?(.4+Math.random()*.6):.08; const p=i/n, env=p<.08?p/.08:Math.pow(1-p,1.4); d[i]=(Math.random()*2-1)*amp*env; }
+      const s=a.createBufferSource(), hp=a.createBiquadFilter(), bp=a.createBiquadFilter(), g=a.createGain(); hp.type='highpass'; hp.frequency.value=900; bp.type='peaking'; bp.frequency.value=3200; bp.gain.value=6; g.gain.value=.7;
+      s.buffer=buf; s.connect(hp); hp.connect(bp); bp.connect(g); g.connect(a.destination); s.start(a.currentTime+.06); }catch(e){} };
+  const tok=()=>{ beep(700,0,.05,'square',.05); beep(1100,.03,.04,'square',.03); };
+  const dingdong=()=>{ beep(784,0,.22,'triangle',.07); beep(587,.18,.32,'triangle',.07); };
+  const pyorong=()=>{ sweep(520,1250,0,.16,'sine',.1); beep(1568,.16,.15,'triangle',.05); };
+  const ding=()=>{ beep(1047,0,.2,'triangle',.08); beep(1568,.05,.25,'sine',.05); };
   const fanfare=()=>[523,659,784,1047].forEach((f,i)=>beep(f,i*.1,.25,'triangle',.08));
   const buzz=p=>{ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} };
+  const em=k=>(MGAMES[k]||['🎮'])[0];
+  /* 오늘의 뽑기판: 날이 바뀌거나 종이를 다 뜯으면 새 판 */
+  function board(){ const d=dkey(new Date()); let B=STATE.ppb; if(!B||B.d!==d||!B.t||Object.keys(B.t).length>=N) B=STATE.ppb={d,t:{},g:[]}; B.g=B.g||[]; return B; }
   let busy=false;
   function show(done){ const M=mgState(), p=M.pend; if(!p||busy){ done(); return; } busy=true;
-    const G=MGAMES[p.k]||['🎮','게임'], col=NEON[Math.floor(Math.random()*NEON.length)];
-    const el=document.createElement('div'); el.id='gacha'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','게임 뽑기');
-    el.innerHTML='<main class="npanel"><h1>게임 뽑기</h1><p class="nsub">공부 두 개 완료! 어떤 게임이 나올까요?</p>'
-      +'<div class="ndome"><canvas width="528" height="528"></canvas><div class="nshine"></div></div>'
-      +'<div class="nbase"><div class="nrow"><button class="nhandle" type="button" aria-label="손잡이 돌리기"><span class="nring"></span><span class="nlever"><i></i></span></button>'
-      +'<button class="nslot" type="button" aria-label="나온 캡슐 열기" disabled><canvas width="112" height="112"></canvas></button></div><div class="ntip">손잡이를 돌려줘!</div></div></main>'
+    const B=board(), G=MGAMES[p.k]||['🎮','게임'], col=SLOT[B.g.length%SLOT.length];
+    const slots=()=>{ const g=B.g, s=Math.max(0,g.length-5); let h=''; for(let i=0;i<5;i++){ const n=s+i, k=g[n]; h+='<div class="pp-slot'+(k?'':' e')+'" style="--c:'+SLOT[n%SLOT.length]+'"><b>'+(n+1)+'번째</b><span>'+(k?em(k):'?')+'</span></div>'; } return h; };
+    let cells=''; for(let i=0;i<N;i++){ const k=B.t[i]; cells+=k?'<button class="pp-c torn" type="button" disabled aria-label="뜯은 종이"><span class="in">'+em(k)+'</span></button>'
+      :'<button class="pp-c" type="button" data-i="'+i+'" aria-label="'+(i+1)+'번 종이 뜯기"><span class="in"></span><span class="fl"><i>'+(i+1)+'</i></span></button>'; }
+    const el=document.createElement('div'); el.id='gacha'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','게임 뽑기판');
+    el.innerHTML='<main class="pp"><div class="pp-rib">두근두근 게임 뽑기</div><p class="pp-sub">공부 완료! 종이를 뜯으면 게임이 나와요</p>'
+      +'<div class="pp-row">'+slots()+'</div><div class="pp-board">'+cells+'</div><div class="pp-tip">마음에 드는 종이를 하나 뜯어 봐!</div></main>'
       +'<div class="nover" hidden><div class="ncard" style="--c:'+col+'"><div class="nlbl">이번 게임은…</div><div class="nicon">'+G[0]+'</div><div class="ngame">'+G[1]+'</div><div class="nsec">'+p.sec+'초 동안 할 수 있어요</div><button type="button" class="nbtn">게임 시작 ▶</button><button type="button" class="nlater">나중에 할래요</button></div></div>';
     document.body.appendChild(el); document.body.style.overflow='hidden';
-    /* 돔 물리 */
-    const cv=el.querySelector('.ndome canvas'), ctx=cv.getContext('2d'), S=cv.width, C=S/2, R=S/2-10, BR=30;
-    let balls=[], stirUntil=0, stirDir=1, run=true;
-    for(let i=0;i<16;i++){ const a=Math.random()*Math.PI*2, d=Math.random()*(R-BR-10); balls.push({x:C+Math.cos(a)*d,y:C+Math.sin(a)*d*.5+R*.3,vx:0,vy:0,c:NEON[i%NEON.length],ang:Math.random()*6,va:0}); }
-    const step=now=>{ const stirring=now<stirUntil;
-      for(const b of balls){ b.vy+=.55;
-        if(stirring){ const dx=b.x-C, dy=b.y-C, d=Math.hypot(dx,dy)||1; b.vx+=(-dy/d)*1.6*stirDir+(Math.random()-.5)*2; b.vy+=(dx/d)*1.6*stirDir-(b.y>C+R*.3?2.6:0); }
-        b.vx*=.992; b.vy*=.992; b.x+=b.vx; b.y+=b.vy; b.ang+=b.vx*.02+b.va; b.va*=.95;
-        const dx=b.x-C, dy=b.y-C, d=Math.hypot(dx,dy), lim=R-BR;
-        if(d>lim){ const nx=dx/d, ny=dy/d; b.x=C+nx*lim; b.y=C+ny*lim; const vn=b.vx*nx+b.vy*ny; if(vn>0){ b.vx-=1.6*vn*nx; b.vy-=1.6*vn*ny; b.vx*=.9; b.va+=(b.vx*ny-b.vy*nx)*.002; } } }
-      for(let k=0;k<3;k++) for(let i=0;i<balls.length;i++) for(let j=i+1;j<balls.length;j++){ const a=balls[i], c=balls[j]; const dx=c.x-a.x, dy=c.y-a.y, d=Math.hypot(dx,dy);
-        if(d<BR*2&&d>0){ const nx=dx/d, ny=dy/d, ov=(BR*2-d)/2; a.x-=nx*ov; a.y-=ny*ov; c.x+=nx*ov; c.y+=ny*ov; const rv=(c.vx-a.vx)*nx+(c.vy-a.vy)*ny; if(rv<0){ const imp=-rv*.85; a.vx-=imp*nx; a.vy-=imp*ny; c.vx+=imp*nx; c.vy+=imp*ny; } } } };
-    const render=()=>{ ctx.clearRect(0,0,S,S); ctx.save(); ctx.beginPath(); ctx.arc(C,C,R+8,0,Math.PI*2); ctx.clip();
-      ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.3; for(const b of balls){ ctx.fillStyle=b.c; ctx.beginPath(); ctx.arc(b.x,b.y,BR*1.5,0,Math.PI*2); ctx.fill(); }
-      ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; for(const b of balls) drawBall(ctx,b.x,b.y,BR,b.c,b.ang); ctx.restore(); };
-    const loop=now=>{ if(!run) return; step(now); render(); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
-    /* 뽑기 */
-    const handle=el.querySelector('.nhandle'), lever=el.querySelector('.nlever'), slot=el.querySelector('.nslot'), slotCv=slot.querySelector('canvas'), tip=el.querySelector('.ntip'), over=el.querySelector('.nover');
-    let rot=0, state='idle';
-    const drawStatic=(canvas,c)=>{ const g=canvas.getContext('2d'), s=canvas.width; g.clearRect(0,0,s,s); drawBall(g,s/2,s/2,s*.3,c,-.3,.55); };
-    handle.onclick=()=>{ if(state!=='idle') return; state='turning'; handle.disabled=true; audio(); clicks(); buzz([20,40,20,40,20,40,20]);
-      rot+=360; lever.style.transition='transform 1.4s cubic-bezier(.34,1.3,.64,1)'; lever.style.transform='rotate('+rot+'deg)';
-      stirDir=Math.random()<.5?1:-1; stirUntil=performance.now()+1300; tip.textContent='드르륵 드르륵…';
-      setTimeout(()=>{ const i=balls.findIndex(b=>b.c===col); if(i>=0) balls.splice(i,1); else balls.pop();
-        drawStatic(slotCv,col); void slotCv.offsetWidth; slotCv.classList.add('drop'); setTimeout(plop,350); buzz(40);
-        slot.disabled=false; slot.classList.add('ready'); tip.textContent='두근두근… 캡슐이 열려요!'; state='dropped'; setTimeout(()=>slot.onclick(),700); },1700); };
-    slot.onclick=()=>{ if(state!=='dropped') return; state='open'; slot.disabled=true; slot.classList.remove('ready'); slotCv.classList.remove('drop'); slotCv.style.opacity=0;
-      over.hidden=false; fanfare(); buzz(60); };
+    dingdong(); const bd=el.querySelector('.pp-board'), row=el.querySelector('.pp-row'), tip=el.querySelector('.pp-tip'), over=el.querySelector('.nover');
+    let picked=false;
+    bd.onclick=e=>{ const b=e.target.closest('.pp-c'); if(!b||b.disabled||picked) return; picked=true; bd.classList.add('lock'); audio();
+      const i=+b.dataset.i; b.querySelector('.in').textContent=G[0]; b.classList.add('rip'); tok(); rip(); buzz([15,30,25]); tip.textContent='쭈욱…!';
+      B.t[i]=p.k; B.g.push(p.k); p.rev=1; try{ persist(); }catch(e){}
+      setTimeout(()=>{ b.classList.remove('rip'); b.classList.add('torn','new'); b.disabled=true; const f=b.querySelector('.fl'); if(f) f.remove();
+        row.innerHTML=slots(); const last=row.children[Math.min(4,B.g.length-1)]; if(last) last.classList.add('now'); pyorong(); tip.textContent=G[0]+' '+G[1]+'!';
+        setTimeout(()=>{ over.hidden=false; fanfare(); buzz(60); },550); },800); };
     /* 게임 시작: ‘게임 시간’ 창을 한 번 더 거치지 않고 바로 게임이 열려요 */
-    const close=()=>{ run=false; el.remove(); document.body.style.overflow=''; busy=false; p.rev=1; try{ persist(); }catch(e){} };
-    el.querySelector('.nbtn').onclick=()=>{ close(); M.pend=null; try{ persist(); }catch(e){} document.querySelectorAll('[data-go="mg"]').forEach(b=>b.remove()); mgPlay(p.k,p.sec); };
+    const close=()=>{ el.remove(); document.body.style.overflow=''; busy=false; p.rev=1; try{ persist(); }catch(e){} };
+    el.querySelector('.nbtn').onclick=()=>{ ding(); close(); M.pend=null; try{ persist(); }catch(e){} document.querySelectorAll('[data-go="mg"]').forEach(b=>b.remove()); mgPlay(p.k,p.sec); };
     el.querySelector('.nlater').onclick=close;   /* 나중에: 처음 화면의 ‘게임 시간!’ 단추로 언제든 열 수 있어요 */
   }
-  /* 원래 '게임 시간' 창을 띄우기 전에 뽑기부터: 이번에 열린 게임을 아직 뽑지 않았다면 */
+  /* 원래 '게임 시간' 창을 띄우기 전에 뽑기판부터: 이번에 열린 게임을 아직 뽑지 않았다면 */
   const _mo=mgOffer; mgOffer=function(){ try{ const M=mgState(), p=M.pend; if(p&&!p.rev&&!document.getElementById('mg-modal')&&!document.getElementById('bp-modal')&&!document.getElementById('gacha')){ const self=this, args=arguments; return show(()=>_mo.apply(self,args)); } }catch(e){} return _mo.apply(this,arguments); };
   window.__gacha={show};
 })();
