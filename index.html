@@ -2882,8 +2882,10 @@ function calHTML(){
     +(marks.length?'<p class="calmarks">'+marks.join('')+'</p>':'')
     +'<p class="lead" style="margin:8px 0 0">이번 달에 '+cnt+'일 공부했어요.</p>'+calDayHTML()+calBookHTML();
 }
+/* 2026-11-12: 오늘 지정된 단계가 아닌 다른 단계를 끝내면 별·도장만 받고, 달력·게임으로는 치지 않아요 */
+function SEOK(u,l){ try{ const sk=Object.keys(SUBJ).find(k=>SUBJ[k].order.includes(u.g)), T=STATE.td; if(!sk||!T||!T.a||T.d!==dkey(new Date())||!T.a[sk]) return true; return T.a[sk].uid===u.id&&String(T.a[sk].l)===String(l); }catch(e){ return true; } }
 function saveStamp(u,l,stars){ { const sk=Object.keys(SUBJ).find(k=>SUBJ[k].order.includes(u.g)); if(sk&&slotsOf(u).includes(l)){ STATE.last=STATE.last||{}; STATE.last[sk]={uid:u.id,l:l,t:Date.now()}; const T=STATE.td; if(T&&T.a&&T.d===dkey(new Date())&&T.a[sk]&&T.a[sk].uid===u.id&&String(T.a[sk].l)===String(l)){ T.done=T.done||{}; T.done[sk]=1; } } }
-  const k=u.id+'-'+l, was=!!prog[k]; if((prog[k]||0)<stars) prog[k]=stars; if(!was) markToday(u);   /* 2026-11-11: already-finished lesson redo -> stars only, no today/calendar/game credit */
+  const k=u.id+'-'+l, was=!!prog[k]; if((prog[k]||0)<stars) prog[k]=stars; if(!was&&SEOK(u,l)) markToday(u);   /* 2026-11-11: already-finished lesson redo -> stars only, no today/calendar/game credit */
   persist();
 }
 function saveResume(){ if(!Q) return; STATE.resume={uid:Q.u.id,l:Q.l,qs:Q.qs,i:Q.i,right:Q.right}; persist(); }
@@ -3915,10 +3917,11 @@ function maStart(u,l){
   if(u.kind==='ko') return koStart(u,l);
   const ui=UNITS.indexOf(u), M=u.rev?u.members:[u], take=(fn,n)=>Array.from({length:n},(_,k)=>shuffle(M)[k%M.length][fn]()); let acts;
   if(u.rev) acts=l===0?take('drill',10):l===1?take('word',6).concat(take('drill',2)):shuffle([...take('vis',4),...take('drill',7)]).concat(take('word',4));
-  else if(l===0) acts=[...take('vis',5),...take('drill',1)];
-  else if(l===1) acts=take('drill',8);
-  else if(l===2) acts=[LINE(u),PATH(u),PAINT(u)];
-  else if(l===3) acts=take('word',5);
+  /* 2026-11-12: 문제를 늘리고 숫자판으로 직접 쓰는 문제를 절반 넘게, 2단계에는 글 문제와 앞 단원 복습을 섞어 조금 더 어렵게 */
+  else if(l===0) acts=[...take('vis',5),...shuffle(take('drill',5))];
+  else if(l===1){ const prev=UNITS.slice(0,ui).filter(x=>x.kind==='ma'&&!x.rev&&x.drill); acts=shuffle([...take('drill',8),...take('word',2),...pick(prev,Math.min(2,prev.length)).map(x=>x.drill())]); }
+  else if(l===2) acts=[LINE(u),PATH(u),PAINT(u),...take('drill',4)];
+  else if(l===3) acts=shuffle([...take('word',6),...take('drill',4)]);
   else acts=shuffle([...take('vis',3),...take('drill',5)]).concat(take('word',2));
   phRun(u,l,acts,l==='s'?'final:'+ui:u.rev?'quiz:'+ui+':'+l:'mact:'+ui+':'+l);
 }
@@ -4041,9 +4044,9 @@ function koStart(u,l){
   const ui=UNITS.indexOf(u), W=koWords(u), H=(u.rev?u.members[0]:u).sub==='H', mk=(t,n)=>pick(W,Math.min(n,W.length)).map(w=>KOA[t](u,w)), again=l==='s'?'final:'+ui:u.rev?'quiz:'+ui+':'+l:'mact:'+ui+':'+l; let acts;
   const usage=n=>H?[...mk('parts',Math.ceil(n/2)),...mk('which',Math.floor(n/2))]:[...mk('cloze',Math.ceil(n*.7)),...pick(W.filter(w=>w.syn||w.ant),Math.floor(n*.3)).map(w=>KOA.rel(u,w))];
   if(u.rev) acts=l===0?shuffle([...mk('def2word',5),...mk('word2def',5)]):l===1?shuffle([...usage(7),...(H?[KOA.has(u),KOA.has(u),KOA.center(RP(u.members))]:mk('listen',2))]):shuffle([...mk('def2word',4),...mk('word2def',3),...usage(6),...mk('build',2)]);
-  else if(l===0) acts=shuffle([...mk('def2word',2),...mk('word2def',2),...mk('listen',2)]);
-  else if(l===1) acts=[LINE(u),...mk('build',2),PAINT(u)];
-  else if(l===3) acts=H?shuffle([KOA.center(u),...mk('parts',3),...mk('which',2),KOA.has(u)]):shuffle([...mk('cloze',4),...W.filter(w=>w.syn||w.ant).slice(0,2).map(w=>KOA.rel(u,w)),...mk('def2word',1)]);
+  else if(l===0) acts=shuffle([...mk('def2word',3),...mk('word2def',3),...mk('listen',2)]);   /* 2026-11-12: 6→8 */
+  else if(l===1) acts=[LINE(u),...mk('build',2),PAINT(u),...shuffle([...mk('def2word',2),...mk('word2def',2)])];   /* 2026-11-12: 놀이 뒤에 뜻 문제 4개 */
+  else if(l===3) acts=H?shuffle([KOA.center(u),...mk('parts',3),...mk('which',2),KOA.has(u),...mk('def2word',2)]):shuffle([...mk('cloze',4),...W.filter(w=>w.syn||w.ant).slice(0,2).map(w=>KOA.rel(u,w)),...mk('def2word',2),...mk('word2def',1)]);   /* 2026-11-12: 7→9 */
   else acts=shuffle([...mk('def2word',2),...mk('word2def',2),...usage(4),...mk('build',1)]);
   phRun(u,l,acts,again);
 }
@@ -4321,10 +4324,10 @@ function rdQuiz(u,l){
   const TXT=[[['f'],2],[['who'],1],[['ord'],1],[['circ'],1],[['ox'],1],[['main'],1],[['kid'],1],[['why'],1]];
   if(u.rev){ if(l===0) return shuffle([...pickW(['mean','back','cloze'],5),...takeT(['voc'],4)]); if(l===1) return shuffle([...want(TXT,9,['f','why','ox']),...takeT(['sent'],1)]);
     return shuffle([...pickW(['mean','cloze'],2),...takeT(['voc'],2),...want(TXT.slice(0,7),7,['f','why']),...takeT(['sent'],1)]); }
-  if(l===0) return shuffle(want([[['f'],3],[['who'],1],[['ox'],2]],6,['f','ox']));
-  if(l===1) return shuffle([...pickW(['mean'],2),...pickW(['back'],1),...pickW(['cloze'],1),...takeT(['voc'],3)]);
-  if(l===2) return shuffle([...want([[['ord'],1],[['seq'],1],[['circ'],1],[['ox'],1],[['voc'],1]],5,['ox','f']),...takeT(['sent'],2)]);
-  if(l===3) return shuffle(want([[['main'],1],[['why'],2],[['kid'],1],[['who'],1]],5,['why','f']));
+  if(l===0) return shuffle(want([[['f'],4],[['who'],1],[['ox'],3]],8,['f','ox','why','main','circ','kid','seq','voc']));   /* 2026-11-12: 6→8문제 */
+  if(l===1) return shuffle([...pickW(['mean'],3),...pickW(['back'],2),...pickW(['cloze'],1),...takeT(['voc'],3),...takeT(['ox','f','seq'],2)].slice(0,9));   /* 2026-11-12: 7→9문제 (낱말이 적은 글은 내용 문제로 채워요) */
+  if(l===2) return shuffle([...want([[['ord'],1],[['seq'],1],[['circ'],1],[['ox'],2],[['voc'],1]],6,['ox','f']),...takeT(['sent'],2)]);   /* 2026-11-12: 7→8문제 */
+  if(l===3) return shuffle(want([[['main'],1],[['why'],3],[['kid'],1],[['who'],1],[['f'],2]],8,['why','f','ox','circ','seq','voc']));   /* 2026-11-12: 5→8문제 */
   return shuffle([...want([[['f'],2],[['who'],1],[['ord'],1],[['circ'],1],[['main'],1],[['why'],1],[['kid'],1],[['voc'],2]],10,['f','ox']),...takeT(['sent'],1),...pickW(['mean','cloze'],1)]);
 }
 
@@ -4493,7 +4496,9 @@ function hwSetup(){
 }
 function bindQ(q){
   const done=(ok,extra)=>{
-    if(ok) Q.right++;
+    if(ok&&!q.again) Q.right++;
+    /* 2026-11-12: 틀린 고르기 문제는 맨 끝에 한 번 더 나와요 (찍고 넘어가지 않게). 점수는 처음 푼 것만 세요 */
+    if(!ok&&!q.again&&q.t==='c'&&q.ch) Q.qs.push(Object.assign({},q,{again:1,inst:'🔁 다시 풀어 봐요! '+q.inst,ch:shuffle(q.ch.slice())}));
     if(typeof Q.l==='number'){ STATE.resume={uid:Q.u.id,l:Q.l,qs:Q.qs,i:Q.i+1,right:Q.right}; persist(); }
     const last=Q.i===Q.qs.length-1, st=q.t==='o'?q.s:(q.w?sp(q.w):(q.sayAns||q.listen||''));
     document.getElementById('fb').innerHTML='<div class="fb '+(ok?'ok':'no')+'" role="status"><div><b>'+(ok?pick([KID.ya+', 정답이야!','잘했어, '+KID.ya+'!',KID.ya+', 맞았어!'],1)[0]:'괜찮아 '+KID.ya+', 다시 보자.')+'</b><p>'+(extra||'')+'<span class="en">'+esc(q.ex)+'</span> '+(st?sayBtn(st):'')+'</p></div><button class="btn main" id="next">'+(last?'결과 보기':'다음 문제')+'</button></div>';
@@ -4569,11 +4574,12 @@ function bindQ(q){
     chk.onclick=()=>{locked=true; chk.disabled=true; const ok=q.put.map(k=>q.toks[k]).join(' ')===q.s; done(ok, ok?'':'바른 문장: ')};
   }
 }
+const QN=a=>a.filter(q=>!q.again).length||a.length;
 function finish(){
-  const {u,l,qs,right}=Q, r=right/qs.length, stars=r>=.9?3:r>=.6?2:1, bk=u.id+'-'+l, old=STATE.best[bk];
-  if(!old||right>old.r) STATE.best[bk]={r:right,n:qs.length};
+  const {u,l,qs,right}=Q, r=right/QN(qs), stars=r>=.9?3:r>=.6?2:1, bk=u.id+'-'+l, old=STATE.best[bk];
+  if(!old||right>old.r) STATE.best[bk]={r:right,n:QN(qs)};
   STATE.resume=null;
-  resultScreen(u,l,stars,right+' / '+qs.length+' 문제를 맞혔어요.'+(u.rev&&l==='s'?' 평가 결과는 <b>'+['','조금 더 연습해요','잘했어요','참 잘했어요'][stars]+'</b>!':''),l==='s'?'final:'+UNITS.indexOf(u):'quiz:'+UNITS.indexOf(u)+':'+l);
+  resultScreen(u,l,stars,right+' / '+QN(qs)+' 문제를 맞혔어요.'+(u.rev&&l==='s'?' 평가 결과는 <b>'+['','조금 더 연습해요','잘했어요','참 잘했어요'][stars]+'</b>!':''),l==='s'?'final:'+UNITS.indexOf(u):'quiz:'+UNITS.indexOf(u)+':'+l);
 }
 function resultScreen(u,l,stars,msg,again){
   const isNew=!prog[u.id+'-'+l], a=stickerOf(u,l);
@@ -6801,9 +6807,9 @@ const BDSIB={call:'채이 언니',m:10,d:18};
    3) 과목마다 걸리는 시간(약 몇 분)과 남은 시간을 보여 줘요. */
 (function () {
   const SEOI = (typeof KID !== 'undefined') && /서이/.test(KID.name || '');
-  const MIN = SEOI ? { '영어 파닉스': 5, '한자': 5, '수학': 6, '어휘': 5, '영어 동화': 6, '낱말 탐험': 5, '국어독해': 9, '음악': 5, '미술': 5 }
+  const MIN = SEOI ? { '영어 파닉스': 5, '한자': 5, '수학': 7, '어휘': 5, '영어 동화': 5, '낱말 탐험': 4, '국어독해': 7, '슬기로운 생활': 4, '음악': 4, '미술': 4 }   /* 2026-11-12: 실제 문제 수에 맞춘 어림 시간 */
     : { '국어': 7, '국어독해': 8, '수학': 7, '과학': 6, '사회': 6, '한국사': 7, '영어': 6, '영어독해': 8, '영어듣기': 6, '영어 문법': 5, '한자': 5, '도덕': 7, '영어 단어': 6, '생각 교실': 6, '최상위 수학': 8, '아빠와 복습': 8 };
-  const DEF = SEOI ? 5 : 6;
+  const DEF = SEOI ? 4 : 5;
   const nameOf = c => { const b = c.querySelector('.tt b'); return b ? b.textContent.trim() : ''; };
   const minOf = n => MIN[n] || DEF;
   const fmtMin = m => m >= 60 ? Math.floor(m / 60) + '시간' + (m % 60 ? ' ' + (m % 60) + '분' : '') : m + '분';
