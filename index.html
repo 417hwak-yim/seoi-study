@@ -4876,6 +4876,8 @@ let MGSRC=null; const MGSRCGET=()=>MGSRC||(MGSRC=JSON.parse(document.getElementB
    오늘 아직 안 연 게임 가운데서만 골라요. 게임마다 배경음이 나와요.
    시간이 끝나면 게임이 저장돼서 다음에 그 게임이 열리면 이어서 해요. */
 const MGAMES={bubble:['🫧','말랑팝 방울 슈터'],bfit:['🧩','블록 퍼즐'],galaga:['🚀','하늘 갤러그'],ddr:['🎵','손가락 DDR'],drop:['🔢','2048 블록 드롭'],snake:['🐍','컬러 스네이크'],mine:['⛏️','두더지 광산'],stairs:['🪜','무한 계단'],tang:['🍢','탕후루 타이쿤'],road:['🚗','빵빵 도로 탈출'],brick:['🧱','벽돌깨기'],ten:['🔟','10 만들기'],pac:['🟡','팩맨'],fruit:['🍉','과일 썰기'],gem:['💎','보석 맞추기'],suika:['🍑','과일 합치기'],jelly:['🍬','젤리 팡팡'],paint:['🧪','물감 병 정리'],pipe:['🌷','물길 잇기'],golf:['⛳','미니 골프'],sling:['🎯','새총 과녁']};
+/* 2026-11-12: 쉬는 게임 — 새 게임이 늘어서 비슷한 게임 몇 개는 잠깐 안 열리게 해요. 게임 파일은 그대로 있어서, 아래 목록에서 빼면 다시 열려요 */
+const MGREST=['drop','jelly','snake','brick']; MGREST.forEach(k=>{ delete MGAMES[k]; });
 /* 예전에 열린 두더지 게임 시간이 남아 있으면 지워요 (두더지는 게임 목록에서 뺐어요) */
 try{ const M0=STATE.mg; if(M0){ if(M0.pend&&!MGAMES[M0.pend.k]){ const ok=Object.keys(MGAMES); M0.pend.k=(M0.open||[]).find(k=>MGAMES[k])||ok[Math.floor(Math.random()*ok.length)]; }   /* 빠진 게임(수 계산 러시 등)의 게임 시간은 다른 게임으로 바꿔 줘요 */ M0.open=(M0.open||[]).filter(k=>MGAMES[k]); } }catch(e){}
 function mgState(){ const k=dkey(new Date()); let M=STATE.mg; if(!M||M.d!==k) M=STATE.mg={d:k,n:0,open:[],pend:null}; return M; }
