@@ -1674,7 +1674,7 @@ const phLessons=u=>{ if(u._ls) return u._ls; const P=phParts(u), lv1=u.lv===1, o
   out.forEach((o,k)=>{ const same=out.filter(x=>x[0].replace(/ [①②③④]$/,'')===o[0]); if(same.length>1) same.forEach((x,j)=>{ x[0]+=' '+'①②③④'[j]; }); });
   if(P.length===3) out.push(['낱말 모아 다지기','배운 낱말을 모두 섞어 풀어요']);
   out.push(lv1?['글자 다지기','큰 글자와 작은 글자, 첫 글자를 찾아요']:['문장 읽기','배운 낱말로 만든 문장을 읽고 풀어요']); return u._ls=out; };
-const LS=u=>u.rev?REV_LESSONS[u.kind==='rd'?'rd':u.kind==='wd'?'wd':u.kind==='st'?'story':u.kind==='ph'?'eng':u.kind==='ma'?'math':u.kind==='ko'?'ko':'hanja']:u.kind==='ph'?phLessons(u):u.kind==='ma'?MA_LESSONS:u.kind==='ko'?KO_LESSONS[u.sub]:u.kind==='st'?ST_LESSONS:u.kind==='wd'?WD_LESSONS:u.kind==='rd'?RD_LESSONS:LESSONS;
+const LS=u=>u.rev?REV_LESSONS[u.kind==='rd'?'rd':u.kind==='wd'?'wd':u.kind==='st'?'story':u.kind==='ph'?'eng':u.kind==='ma'?'math':u.kind==='ko'?'ko':'hanja']:u.kind==='ph'?phLessons(u):u.kind==='ma'?MA_LESSONS:u.kind==='ko'?KO_LESSONS[u.sub]:u.kind==='st'?ST_LESSONS:u.kind==='wd'?(u.rel==='cho'?CH_LESSONS:WD_LESSONS):u.kind==='rd'?RD_LESSONS:LESSONS;
 const pic=w=>'<span class="pic">'+((w&&w.p)||'')+'</span>';
 const ukeys=u=>u.kind==='rd'?'<span class="pic">'+(u.ic||'📖')+'</span>':u.kind==='st'?'<span class="pic">'+(u.cv||'📚')+'</span>':u.kind==='ko'||u.kind==='wd'?'<span style="letter-spacing:.02em;font-size:.82em">'+u.kshow+'</span>':u.kind==='ma'?'<span class="en" style="letter-spacing:.02em">'+u.kshow+'</span>':u.kind==='ph'?'<span class="en">'+u.keys.map(k=>k[0]).join(' ')+'</span>':'<span class="hj">'+u.chars.map(c=>c.c).join('')+'</span>';
 
@@ -2260,6 +2260,40 @@ SUBJ.wd={name:'낱말 탐험',sub:'비슷한 말, 반대말, 소리가 같은 �
 WDORDER.forEach(g=>ALLG.push(g));
 REVGROUP[501]=[2,2]; REVGROUP[502]=[2,2]; REVGROUP[503]=[2,2]; REVGROUP[504]=[2,2];
 REV_LESSONS.wd=[['낱말 평가','낱말과 뜻을 확인해요'],['문장 평가','문장 속 낱말을 확인해요']];
+/* ===== 한글 놀이: 초성 퀴즈 (2026-11-12) =====
+   그림을 보고 초성(글자마다 맨 앞 자음)을 찾고, 초성을 보고 낱말을 맞혀요. ‘낱말 탐험’과 같은 틀(5단계)을 써요. */
+const CHO19=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const CHOBASE=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const chChoOf=w=>[...w].map(c=>{ const k=c.charCodeAt(0)-0xAC00; return k>=0&&k<11172?CHO19[Math.floor(k/588)]:c; }).join('');
+const CH_LESSONS=[['그림과 초성','그림을 보고 초성과 첫소리를 찾아요'],['짝 찾기 놀이','선 잇기, 징검다리'],['따라 쓰기','낱말을 또박또박 써요'],['문장 속 초성','초성과 뜻, 문장을 보고 낱말을 찾아요'],['놀이 한마당','게임으로 한 번 더 다져요']];
+const CHORDER=[];
+const CHG=[
+ ['그림 보고 초성','두 글자 낱말의 초성 찾기','#D9480F',[
+  ['과일과 채소','사과:🍎:빨갛고 동그란 과일:아침에 [사과]를 깎아 먹었어요.|포도:🍇:작은 알이 송이송이 달린 보라색 과일:[포도] 한 송이를 씻었어요.|수박:🍉:여름에 먹는 크고 줄무늬 있는 과일:여름에는 시원한 [수박]이 최고예요.|딸기:🍓:씨가 겉에 콕콕 박힌 빨간 과일:[딸기]에 우유를 부어 먹었어요.|오이:🥒:길쭉하고 초록색인 채소:엄마가 [오이]를 송송 썰었어요.|감자:🥔:땅속에서 자라는 동글동글한 채소:[감자]를 삶아서 호호 불어 먹었어요.'],
+  ['동물 친구','사자:🦁:갈기가 멋진 동물의 왕:동물원에서 [사자]가 어흥 울었어요.|오리:🦆:꽥꽥 울며 물 위를 헤엄치는 새:연못에서 [오리]가 헤엄쳐요.|토끼:🐰:귀가 길고 깡충깡충 뛰는 동물:[토끼]가 당근을 오물오물 먹어요.|여우:🦊:꼬리가 복슬복슬한 꾀 많은 동물:동화 속 [여우]는 꾀가 많아요.|하마:🦛:입이 아주 크고 물을 좋아하는 동물:[하마]가 입을 쩍 벌렸어요.|고래:🐳:바다에 사는 아주 큰 동물:[고래]가 물을 뿜어 올렸어요.'],
+  ['우리 집 물건','우산:☂️:비 올 때 쓰는 물건:비가 와서 [우산]을 폈어요.|시계:⏰:시간을 알려 주는 물건:[시계]가 일곱 시를 가리켜요.|연필:✏️:글씨를 쓰는 도구:[연필]을 뾰족하게 깎았어요.|의자:🪑:앉을 때 쓰는 가구:[의자]에 바르게 앉아요.|모자:🧢:머리에 쓰는 것:햇볕이 뜨거워서 [모자]를 썼어요.|안경:👓:눈이 잘 보이게 쓰는 것:할아버지가 [안경]을 쓰고 신문을 읽어요.'],
+  ['맛있는 간식','피자:🍕:동그랗고 치즈가 쭉 늘어나는 음식:[피자] 한 조각을 먹었어요.|우유:🥛:소젖으로 만든 하얀 마실 것:아침마다 [우유]를 한 잔 마셔요.|사탕:🍬:입에서 살살 녹여 먹는 달콤한 것:[사탕]을 먹고 이를 닦았어요.|라면:🍜:꼬불꼬불한 면을 끓여 먹는 음식:[라면]이 뜨거워서 후후 불었어요.|달걀:🥚:닭이 낳은 알:[달걀]을 깨서 프라이를 했어요.|쿠키:🍪:바삭하게 구운 과자:[쿠키]를 우유에 콕 찍어 먹었어요.']]],
+ ['초성 탐정','세 글자 낱말, 초성이 닮은 낱말','#7048E8',[
+  ['탈것','기차:🚂:기찻길 위를 달리는 긴 탈것:[기차]가 칙칙폭폭 달려요.|버스:🚌:많은 사람이 함께 타는 큰 차:학교 앞에서 [버스]를 탔어요.|택시:🚕:돈을 내고 가고 싶은 곳까지 타는 차:비가 와서 [택시]를 탔어요.|트럭:🚚:짐을 싣고 다니는 차:[트럭]에 이삿짐을 실었어요.|자전거:🚲:두 바퀴를 발로 굴려 가는 탈것:공원에서 [자전거]를 탔어요.|비행기:✈️:하늘을 나는 탈것:[비행기]를 타고 제주도에 갔어요.'],
+  ['자연과 날씨','구름:☁️:하늘에 떠 있는 하얀 것:하늘에 [구름]이 둥실 떠 있어요.|나무:🌳:땅에 뿌리를 내리고 자라는 큰 식물:[나무] 그늘에서 쉬었어요.|바다:🌊:짠물이 넓게 펼쳐진 곳:여름에 [바다]에서 헤엄쳤어요.|무지개:🌈:비 온 뒤 하늘에 뜨는 일곱 빛깔 띠:비가 그치고 [무지개]가 떴어요.|눈사람:⛄:눈을 뭉쳐 만든 사람:마당에 [눈사람]을 만들었어요.|해바라기:🌻:해를 따라 고개를 돌리는 노란 꽃:[해바라기]가 해를 보고 활짝 폈어요.'],
+  ['닮은 초성 짝','거미:🕷️:다리가 여덟 개이고 줄을 치는 벌레:[거미]가 줄을 쳐서 벌레를 잡아요.|개미:🐜:줄지어 다니며 먹이를 나르는 작은 곤충:[개미]가 과자 부스러기를 날라요.|다리:🌉:강을 건너도록 놓은 길:[다리]를 건너 할머니 댁에 가요.|도로:🛣️:자동차가 다니는 넓은 길:[도로]에 차가 많이 다녀요.|고기:🍖:먹으려고 잡은 짐승의 살:저녁에 [고기]를 구워 먹었어요.|가게:🏪:물건을 파는 곳:[가게]에서 공책을 샀어요.'],
+  ['긴 낱말','고구마:🍠:땅속에서 자라는 달콤한 자주색 뿌리:군 [고구마]가 달콤해요.|바나나:🍌:길쭉하고 노란 과일:원숭이가 [바나나]를 좋아해요.|토마토:🍅:빨갛고 즙이 많은 열매:[토마토]를 잘라 샐러드에 넣었어요.|코끼리:🐘:코가 아주 긴 큰 동물:[코끼리]가 코로 물을 뿜어요.|거북이:🐢:등에 단단한 등딱지가 있는 동물:[거북이]가 느릿느릿 걸어요.|다람쥐:🐿️:도토리를 볼에 가득 넣는 작은 동물:[다람쥐]가 도토리를 모아요.']]]
+];
+CHG.forEach((V,vi)=>{ const g=1001+vi; CHORDER.push(g);
+  GRADES[g]={name:V[0],han:String(vi+1),step:'한글 놀이 '+(vi+1),sub:V[1],color:V[2],subj:'ch',rel:'cho',units:V[3].map((U,k)=>{
+    const items=U[1].split('|').map(x=>{ const a=x.split(':'); return {rel:'cho',w:a[0],e:a[1],d:a[2],s:a[3],c:chChoOf(a[0])}; });
+    const words=items.map(it=>({w:it.w,d:it.e+' '+it.d}));
+    const facts=items.map(it=>({q:it.e+' '+it.c,a:it.w}));
+    let sl=items.map(it=>it.c[0]).slice(0,5); sl.push('★');
+    return {id:'ch'+(vi+1)+'-'+(k+1),kind:'wd',rel:'cho',g,sem:2,num:k+1,title:U[0],ko:'초성 낱말 '+items.length+'개',kshow:items.map(it=>it.c).join(' · '),items,words,chars:[],games:['mem','speed','ox'],seals:sl,facts,fact:()=>RP(facts),
+      memf:()=>shuffle(items.map(it=>({q:'<span style="font-size:1.9rem">'+it.e+'</span>',qs:it.e,a:it.w}))).slice(0,6),
+      speedQ:n=>Array.from({length:n},()=>{ const it=RP(items), others=[...new Set(GRADES[g].units.filter(x=>!x.rev).flatMap(x=>x.items).map(x=>x.c).filter(c=>c!==it.c))];
+        return {lab:'그림에 맞는 초성은?',p:'<span style="font-size:3.2rem">'+it.e+'</span>',a:it.c,ch:shuffle([it.c,...shuffle(others).slice(0,2)])}; }) }; })}; });
+SUBJ.ch={name:'한글 놀이',sub:'그림 보고 초성 맞히기, 초성 탐정',mark:'ㄱㄴ',order:CHORDER,color:'#D9480F'};
+CHORDER.forEach(g=>ALLG.push(g));
+REVGROUP[1001]=[2,2]; REVGROUP[1002]=[2,2];
+/* ===== 한글 놀이 끝 ===== */
+
 /* ================= 국어독해: ERI 예비 단계(7살)와 1단계(초등 1학년) 수준의 짧은 글을 읽고 문제를 풀어요 =================
    글과 문제는 이 프로그램을 위해 새로 썼어요(「해님과 바람의 내기」는 이솝 이야기를 새로 쓴 것이에요).
    문단: p 배열 (동시는 줄마다 \n) / 낱말: "낱말;뜻;글에 나온 모양" /
@@ -2667,7 +2701,7 @@ ALLG.forEach(g=>{
     else if(G.subj==='ko'){ r.kind='ko'; r.sub=mem[0].sub; r.kshow=mem.map(u=>u.sub==='H'?u.cen.c:u.words[0].w).join(' · '); r.games=[]; r.words=mem.flatMap(u=>u.words); r.ko='낱말 '+r.words.length+'개를 모아서 확인해요'; r.fact=()=>RP(mem).fact(); }
     else if(G.subj==='story'){ r.kind='st'; const sw=new Set(); r.words=mem.flatMap(u=>u.words).filter(w=>!sw.has(w.en)&&sw.add(w.en)); r.pages=mem.flatMap(u=>u.pages); r.qs=mem.flatMap(u=>u.qs); r.cv='📚'; r.games=[]; r.seals=[]; r.ko='그림책 '+mem.length+'권의 이야기와 낱말을 모아서 확인해요'; }
     else if(G.subj==='rd'||G.subj==='sg'||G.subj==='mu'||G.subj==='ar'){ r.kind='rd'; r.ic=G.subj==='sg'?'🌱':G.subj==='mu'?'🎹':G.subj==='ar'?'🎨':'📚'; r.words=mem.flatMap(u=>u.words); r.qs=mem.flatMap(u=>u.qs); r.facts=mem.flatMap(u=>u.facts); r.fact=()=>RP(r.facts); r.kshow=''; r.games=[]; r.seals=[]; r.ko='글 '+mem.length+'편을 모아서 확인해요'; }
-    else if(G.subj==='wd'){ r.kind='wd'; r.rel=G.rel; r.items=mem.flatMap(u=>u.items); r.facts=mem.flatMap(u=>u.facts); r.fact=()=>RP(r.facts); r.words=mem.flatMap(u=>u.words); r.kshow=mem.map(u=>u.title).join(' · '); r.games=[]; r.seals=[]; r.ko='낱말 '+r.items.length+'개를 모아서 확인해요'; }
+    else if(G.subj==='wd'||G.subj==='ch'){ r.kind='wd'; r.rel=G.rel; r.items=mem.flatMap(u=>u.items); r.facts=mem.flatMap(u=>u.facts); r.fact=()=>RP(r.facts); r.words=mem.flatMap(u=>u.words); r.kshow=mem.map(u=>u.title).join(' · '); r.games=[]; r.seals=[]; r.ko='낱말 '+r.items.length+'개를 모아서 확인해요'; }
     else if(G.subj==='math'){ r.kind='ma'; r.kshow=mem.map(u=>u.title).join(' · '); r.games=[]; r.ko=mem.length+'개 차시에서 배운 것을 모아서 확인해요'; }
     else{ r.chars=mem.flatMap(u=>u.chars); r.ko='한자 '+r.chars.length+'자를 모아서 확인해요'; }
     out.push(r);
@@ -2969,7 +3003,7 @@ function restoreView(){
 function home(){
   VIEW='home';
   const total=UNITS.reduce((n,u)=>n+slotsOf(u).filter(l=>prog[u.id+'-'+l]).length,0), sems=[[1,'1학기'],[2,'2학기']].filter(x=>UNITS.some(u=>u.sem===x[0])), multi=sems.length>1;
-  let h='<button class="back" data-go="subj:'+GRADES[GRADE].subj+'">← '+({eng:'단계 고르기',hanja:'급수 고르기',math:'단원 고르기',ko:'묶음 고르기',story:'단계 고르기',wd:'묶음 고르기',rd:'단계 고르기',sg:'단계 고르기',mu:'단계 고르기',ar:'단계 고르기'})[GRADES[GRADE].subj]+'</button><header class="hero" style="padding-top:4px"><h1>'+(GRADES[GRADE].subj==='math'||GRADES[GRADE].subj==='ko'?GRADES[GRADE].step+' ':'')+GN(GRADE)+(GRADES[GRADE].subj==='hanja'?' 한자':'')+' <span style="font-size:.5em;color:var(--soft)">'+GRADES[GRADE].sub+'</span></h1><p>'+KID.call+' 단계를 끝내면 배운 '+({eng:'소리가',hanja:'한자가',math:'내용이',ko:'낱말이',story:'낱말이',wd:'낱말이',rd:'글이',sg:'내용이',mu:'내용이',ar:'내용이'})[GRADES[GRADE].subj]+' 빨간 도장으로 찍혀요.</p></header>';
+  let h='<button class="back" data-go="subj:'+GRADES[GRADE].subj+'">← '+({eng:'단계 고르기',hanja:'급수 고르기',math:'단원 고르기',ko:'묶음 고르기',story:'단계 고르기',wd:'묶음 고르기',ch:'단계 고르기',rd:'단계 고르기',sg:'단계 고르기',mu:'단계 고르기',ar:'단계 고르기'})[GRADES[GRADE].subj]+'</button><header class="hero" style="padding-top:4px"><h1>'+(GRADES[GRADE].subj==='math'||GRADES[GRADE].subj==='ko'?GRADES[GRADE].step+' ':'')+GN(GRADE)+(GRADES[GRADE].subj==='hanja'?' 한자':'')+' <span style="font-size:.5em;color:var(--soft)">'+GRADES[GRADE].sub+'</span></h1><p>'+KID.call+' 단계를 끝내면 배운 '+({eng:'소리가',hanja:'한자가',math:'내용이',ko:'낱말이',story:'낱말이',wd:'낱말이',ch:'초성 낱말이',rd:'글이',sg:'내용이',mu:'내용이',ar:'내용이'})[GRADES[GRADE].subj]+' 빨간 도장으로 찍혀요.</p></header>';
   const rs=resumeInfo();
   if(rs&&rs.u.g===GRADE&&rs.r.i<rs.r.qs.length) h+='<button class="lesson" style="--u:'+rs.u.color+';width:100%;margin-top:18px" data-go="resume"><span class="n">이어서 풀기</span><span><b>'+KID.ya+', 지난번에 풀던 문제 이어서 풀까?</b><span>'+rs.u.label+' '+(rs.r.l+1)+'단계 '+LN(rs.u,rs.r.l)[0]+', '+(rs.r.i+1)+'번 문제부터 이어서 풀어요.</span></span><span class="go pic" style="font-size:1.8rem">📖</span></button>';
   h+='<section class="board"><h2>'+KID.name+'의 도장 '+total+'개</h2><p class="lead" style="margin:-4px 0 12px;font-size:.95rem">흐린 도장은 아직 못 받은 도장이에요. 단계를 끝내면 빨간 인주로 찍혀요.</p>';
@@ -3083,7 +3117,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
   let todayBox='';
   /* 오늘의 학습은 그날 처음 정해진 단계가 자정까지 그대로 있어요. 끝내면 ‘완료’로 보이고, 자정이 지나면 그다음 단계로 바뀌어요.
      오늘 못 끝낸 단계는 내일도 그대로 오늘의 학습으로 나와요. */
-  { const TK=subj?[subj]:Object.keys(SUBJ), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
+  { const TK=subj?[subj]:Object.keys(SUBJ), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',ch:'abc',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
     LASTDAY=tk;
     if(!STATE.td||STATE.td.d!==tk||!STATE.td.a){ const old=STATE.td; STATE.td={d:tk,a:{},done:{}};
       /* 어제 못 끝낸 단계는 오늘의 학습으로 그대로 넘어와요 */
@@ -3114,7 +3148,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
     const nAll=TK.length;
     todayBox='<section class="todaybox'+(nDone===nAll?' alldone':'')+'" aria-label="오늘의 학습"><h2>오늘의 학습 <span class="tcount" aria-label="'+nAll+'과목 중 '+nDone+'과목 완료">'+TK.map(k=>'<i class="'+(TD.done[k]||!TD.a[k]?'on':'')+'"></i>').join('')+(subj?'':'<b>'+nDone+' / '+nAll+'</b>')+'</span></h2><p class="lead">'+(nDone===nAll?(subj?'오늘의 '+SUBJ[subj].name+' 학습을 끝냈어요! 🎉 내일 새 단계가 열려요.':'오늘의 학습을 모두 끝냈어요! 🎉 내일 새 단계가 열려요.'):'누르면 바로 시작해요.')+'</p><div class="todaygrid">'+cards+'</div></section>'; }
   const calBox='<section class="board cal" id="cal" aria-label="공부 달력">'+calHTML()+'</section>';
-  let h='<div class="starttop inkhero '+SEASON+'" id="hero"><div id="scene">'+scene(SEASON)+'</div>'+'<header class="hero">'+(KID.photo?'<img class="kidface" src="'+KID.photo+'" alt="'+KID.name+' 사진">':'')+'<div class="herotxt"><h1 style="--tc:'+([...(KID.name+'의'+(subj==='eng'?'영어공부':subj==='hanja'?'한자공부':subj==='math'?'수학공부':subj==='ko'?'어휘학습':subj==='story'?'영어동화':subj==='wd'?'낱말탐험':subj==='rd'?'국어독해':subj==='sg'?'슬기로운생활':subj==='mu'?'음악공부':subj==='ar'?'미술공부':'공부방'))].length+.45)+'"><span class="vseal" aria-hidden="true"><span class="hj">'+(subj?SUBJ[subj].mark:'배움터')+'</span></span>'+KID.name+'의 '+(subj==='eng'?'영어 공부':subj==='hanja'?'한자 공부':subj==='math'?'수학 공부':subj==='ko'?'어휘 학습':subj==='story'?'영어 동화':subj==='wd'?'낱말 탐험':subj==='rd'?'국어 독해':subj==='sg'?'슬기로운 생활':subj==='mu'?'음악 공부':subj==='ar'?'미술 공부':'공부방')+'</h1><p><b class="hello">'+KID.call+'</b><br>'+(subj==='eng'?'공부할 단계를 골라요.':subj==='hanja'?'공부할 급수를 골라요.':subj==='math'?'공부할 단원을 골라요.':subj==='ko'?'공부할 낱말 묶음을 골라요.':subj==='story'?'읽을 그림책 단계를 골라요.':subj==='wd'?'공부할 낱말 묶음을 골라요.':subj==='rd'?'읽을 글의 단계를 골라요.':subj==='sg'||subj==='mu'||subj==='ar'?'알아볼 단계를 골라요.':dailyHello())+'</p></div></header><div class="todaywrap"><div class="moodrow">'+moodBtn()+'</div>'+todayBox+'</div></div>';
+  let h='<div class="starttop inkhero '+SEASON+'" id="hero"><div id="scene">'+scene(SEASON)+'</div>'+'<header class="hero">'+(KID.photo?'<img class="kidface" src="'+KID.photo+'" alt="'+KID.name+' 사진">':'')+'<div class="herotxt"><h1 style="--tc:'+([...(KID.name+'의'+(subj==='eng'?'영어공부':subj==='hanja'?'한자공부':subj==='math'?'수학공부':subj==='ko'?'어휘학습':subj==='story'?'영어동화':subj==='wd'?'낱말탐험':subj==='rd'?'국어독해':subj==='sg'?'슬기로운생활':subj==='mu'?'음악공부':subj==='ar'?'미술공부':subj==='ch'?'한글놀이':'공부방'))].length+.45)+'"><span class="vseal" aria-hidden="true"><span class="hj">'+(subj?SUBJ[subj].mark:'배움터')+'</span></span>'+KID.name+'의 '+(subj==='eng'?'영어 공부':subj==='hanja'?'한자 공부':subj==='math'?'수학 공부':subj==='ko'?'어휘 학습':subj==='story'?'영어 동화':subj==='wd'?'낱말 탐험':subj==='rd'?'국어 독해':subj==='sg'?'슬기로운 생활':subj==='mu'?'음악 공부':subj==='ar'?'미술 공부':subj==='ch'?'한글 놀이':'공부방')+'</h1><p><b class="hello">'+KID.call+'</b><br>'+(subj==='eng'?'공부할 단계를 골라요.':subj==='hanja'?'공부할 급수를 골라요.':subj==='math'?'공부할 단원을 골라요.':subj==='ko'?'공부할 낱말 묶음을 골라요.':subj==='story'?'읽을 그림책 단계를 골라요.':subj==='wd'?'공부할 낱말 묶음을 골라요.':subj==='rd'?'읽을 글의 단계를 골라요.':subj==='sg'||subj==='mu'||subj==='ar'?'알아볼 단계를 골라요.':subj==='ch'?'놀아 볼 단계를 골라요.':dailyHello())+'</p></div></header><div class="todaywrap"><div class="moodrow">'+moodBtn()+'</div>'+todayBox+'</div></div>';
   const rs=resumeInfo();
   /* 채이 공부방처럼 처음 화면에는 따로 두지 않아요 (단계에 들어가면 '○번 문제부터 이어서 풀기'가 나와요) */
   if(false) h+='<button class="lesson" style="--u:'+rs.u.color+';width:100%;margin-top:18px" data-go="resume"><span class="n">이어서 풀기</span><span><b>'+KID.ya+', 지난번에 풀던 문제 이어서 풀까?</b><span>'+GN(rs.u.g)+' '+rs.u.label+' '+(rs.r.l+1)+'단계 '+LN(rs.u,rs.r.l)[0]+', '+(rs.r.i+1)+'번 문제부터 이어서 풀어요.</span></span><span class="go pic" style="font-size:1.6rem">📖</span></button>';
@@ -3123,7 +3157,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
   if(!subj){
     h+='<section class="grades">';
     Object.keys(SUBJ).forEach(k=>{ const S=SUBJ[k]; let got=0, tot=0; S.order.forEach(g=>{ const c=gcount(g); got+=c[0]; tot+=c[1]; });
-      h+='<button class="grade subjcard" style="--u:'+S.color+'" data-go="subj:'+k+'"><span class="gnum '+(k==='hanja'?'hj':'en')+'" style="font-size:'+(k==='hanja'?'1.6rem':'1.5rem')+'">'+S.mark+'</span><span class="gtxt"><b>'+S.name+'</b><span>'+S.sub+'</span><span class="nb">도장 '+got+' / '+tot+'개</span><span class="gbar"><i style="width:'+(got/tot*100)+'%"></i></span></span><span class="subjmas">'+mascot({eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'}[k],54,true)+'</span></button>'; });
+      h+='<button class="grade subjcard" style="--u:'+S.color+'" data-go="subj:'+k+'"><span class="gnum '+(k==='hanja'?'hj':'en')+'" style="font-size:'+(k==='hanja'?'1.6rem':'1.5rem')+'">'+S.mark+'</span><span class="gtxt"><b>'+S.name+'</b><span>'+S.sub+'</span><span class="nb">도장 '+got+' / '+tot+'개</span><span class="gbar"><i style="width:'+(got/tot*100)+'%"></i></span></span><span class="subjmas">'+mascot({eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',ch:'abc',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'}[k],54,true)+'</span></button>'; });
     h+='</section><button class="lesson" style="--u:#3E7F5F;width:100%;margin-top:18px" data-go="read"><span class="n">'+KID.name+'의 책장</span><span><b>📚 읽은 책을 꽂아요</b><span>표지를 찍어 기록해요. 지금까지 '+((STATE.reads||[]).length)+'권 읽었어요.</span></span><span class="go pic" style="font-size:1.6rem">📖</span></button><div class="calrow">'+calBox+'</div>'+friendsHTML()+'<p class="sync" id="sync">'+syncText()+'</p>';
     h+='<details><summary>다른 기기로 기록 옮기기</summary><p>같은 주소에서 새 버전으로 바뀌면 기록은 그대로 이어져요. <b>새 파일이나 새 주소, 다른 기기</b>에서 열 때는 여기에서 기록을 옮겨요. 도장, 달력, 하던 곳, 오늘의 학습, 기분, 책장(표지 사진 포함), 나무, 설정까지 모두 그대로 옮겨져서 하던 곳 다음부터 공부할 수 있어요.</p><div class="row" style="margin-bottom:12px"><button class="btn sun" id="savefile">💾 기록 파일로 저장</button><label class="btn rdpick">📂 기록 파일 불러오기<input type="file" id="loadfile" accept=".txt,text/plain" hidden></label></div><p class="lead" style="margin:0 0 6px">파일 대신 코드를 복사해서 붙여 넣어도 돼요.</p><div class="row"><input class="code en" id="mycode" readonly aria-label="내 기록 코드" value="'+makeCode()+'"><button class="btn" id="copycode">코드 복사</button></div><div class="row" style="margin-top:12px"><input class="code en" id="incode" aria-label="받은 기록 코드" placeholder="받은 코드를 붙여 넣어요" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn main" id="usecode">기록 가져오기</button></div><p id="codemsg" class="lead" style="margin:10px 0 0"></p></details>';
     h+='<details><summary>이 프로그램에 쓰인 자료</summary><p>한자의 뜻과 소리는 한국어문회 급수 한자(8급, 7급Ⅱ, 7급)를 따랐어요. 급수는 8급, 7급Ⅱ, 7급 순서로 높아져요. 획순 그림은 Make Me a Hanzi 자료(hanzi-writer-data, Arphic Public License)를, 획순 따라 쓰기는 Hanzi Writer(MIT License)를 사용했어요. 획순 자료는 중국 표준을 따른 것이라, 몇몇 글자는 우리나라 교재와 쓰는 순서가 조금 다를 수 있어요.</p><p>어휘 학습은 비상교육 초등 교과 어휘·한자 어휘 1학년 학습지의 낱말과 차례를 따랐고, 뜻풀이와 예문, 문제는 이 프로그램에서 새로 썼어요.</p><p>수학은 비상교육 초등 수학 1학년 2학기 기초 학습지의 차례와 문제 유형을 따랐고, 문제의 수와 글은 이 프로그램에서 풀 때마다 새로 만들어요. 5단원 ‘규칙 찾기’는 받은 학습지가 없어서, 교육과정의 주제에 맞춰 이 프로그램에서 직접 만들었어요.</p><p>영어 파닉스는 알파벳 소리, 짧은 모음, 긴 모음, 두 글자 소리의 순서로 엮었고, 낱말과 문장은 이 프로그램을 위해 새로 지었어요. 글자 옆에 적은 우리말 소리는 비슷하게 적은 것이니, 소리 듣기로 실제 소리를 들어 주세요.</p><p>영어 동화의 그림책은 이 프로그램을 위해 새로 썼어요. 2단계의 「개미와 비둘기」, 「사자와 생쥐」, 「거북이와 토끼」는 이솝 이야기를, 「커다란 당근」은 옛이야기 ‘커다란 순무’를 아이 눈높이에 맞게 새로 쓴 것이에요. 그림은 기기의 그림 글자(이모지)로 보여 줘요.</p><p>낱말 탐험의 비슷한 말, 반대말, 소리가 같은 말, 헷갈리는 말은 1학년 국어 교육과정의 낱말 공부에 맞춰 골랐고, 예문과 문제는 이 프로그램에서 새로 썼어요.</p><p>국어독해는 7살~초등 1학년이 하는 국어 학습지의 구성(서너 문단이 넘는 긴 이야기, 차례 늘어놓기, 바르게 말한 친구 찾기, 낱말 순서대로 문장 만들기, 포함하는 말·반대말·흉내 내는 말·높임말)을 참고해, 서너 문단의 기본 단계와 네다섯 문단의 도전 단계로 나누었어요. 글과 문제는 이 프로그램을 위해 새로 썼고, 「여우와 두루미」는 이솝 이야기를 새로 쓴 것이에요.</p></details>';
@@ -4196,14 +4230,15 @@ const wdBold=s=>s.replace(/\[([^\]|]+)(?:\|[^\]]+)?\]/,'<b class="kfill">$1</b>'
 function wdCard(it){
   const sayb=t=>canSpeak?' <button class="say" data-say="'+esc(t).replace(/"/g,'&quot;')+'">소리 듣기</button>':'';
   if(it.rel==='syn'||it.rel==='ant') return '<article class="hcard wdcard" style="grid-template-columns:1fr"><div class="hinfo"><p class="wdpair"><b>'+it.w+'</b><span class="wdsym" aria-label="'+(it.rel==='syn'?'비슷한 말':'반대말')+'">'+(it.rel==='syn'?'≈':'↔')+'</span><b>'+it.p+'</b></p><p class="hnote kex"><b class="wdlab">예제</b> '+wdBold(it.s)+sayb(wdSent(it.s))+'</p></div></article>';
+  if(it.rel==='cho') return '<article class="hcard wdcard" style="grid-template-columns:1fr"><div class="hinfo"><p class="wdpair"><span class="pic" style="font-size:2rem">'+it.e+'</span><b>'+it.w+'</b><span class="wdsym" aria-label="초성">'+it.c+'</span>'+sayb(it.w)+'</p><p class="wdmean"><b class="wdlab">뜻</b> '+it.d+'</p><p class="hnote kex"><b class="wdlab">예제</b> '+wdBold(it.s)+'</p></div></article>';
   if(it.rel==='hom') return '<article class="hcard wdcard" style="grid-template-columns:1fr"><div class="hinfo"><p class="wdpair"><b>'+it.w+'</b>'+sayb(it.w)+'</p>'+it.ss.map(s=>'<p class="wdsense"><span class="pic">'+s.e+'</span><span><b class="wdlab">뜻</b> <b>'+s.d+'</b><br><span class="kex"><b class="wdlab">예제</b> '+wdBold(s.s)+'</span></span></p>').join('')+'</div></article>';
   return '<article class="hcard wdcard" style="grid-template-columns:1fr"><div class="hinfo wdcf">'+[[it.a,it.da,it.sa],[it.b,it.db,it.sb]].map(x=>'<div><p class="wdpair"><b>'+x[0]+'</b>'+sayb(x[0])+'</p><p class="wdmean"><b class="wdlab">뜻</b> '+x[1]+'</p><p class="kex"><b class="wdlab">예제</b> '+wdBold(x[2])+'</p></div>').join('')+'</div></article>';
 }
 function wdIntro(u,l){
-  const i=UNITS.indexOf(u), a=stickerOf(u,l), has=prog[u.id+'-'+l], L=WD_LESSONS[l], R=u.rel;
+  const i=UNITS.indexOf(u), a=stickerOf(u,l), has=prog[u.id+'-'+l], L=(u.rel==='cho'?CH_LESSONS:WD_LESSONS)[l], R=u.rel;
   const rz=resumeInfo(), canRes=rz&&rz.u===u&&rz.r.l===l&&rz.r.i>0&&rz.r.i<rz.r.qs.length;
   const quizBtn=label=>canRes?'<button class="btn main" data-go="resume">'+(rz.r.i+1)+'번 문제부터 이어서 풀기</button><button class="btn" data-go="quiz:'+i+':'+l+'">처음부터 풀기</button>':'<button class="btn main" data-go="quiz:'+i+':'+l+'">'+label+'</button>';
-  const TIP={syn:'<b>비슷한 말</b>은 뜻이 서로 비슷해서 바꾸어 써도 뜻이 통하는 낱말이에요. ≈ 표시로 나타내요.',ant:'<b>반대말</b>은 뜻이 서로 반대인 낱말이에요. ↔ 표시로 나타내요.',hom:'<b>소리가 같은 말</b>은 소리와 글자는 똑같지만 뜻이 다른 낱말이에요. 문장을 읽어야 어떤 뜻인지 알 수 있어요.',cf:'<b>헷갈리는 말</b>은 소리가 비슷해서 잘못 쓰기 쉬운 낱말이에요. 뜻을 잘 보고 알맞게 골라 써요.'};
+  const TIP={cho:'<b>초성</b>은 글자마다 맨 앞에 오는 자음이에요. ‘사과’는 <b>사</b>의 ㅅ과 <b>과</b>의 ㄱ을 모아 <b>ㅅㄱ</b>이에요. 그림을 보고 초성으로 낱말을 맞혀 봐요!',syn:'<b>비슷한 말</b>은 뜻이 서로 비슷해서 바꾸어 써도 뜻이 통하는 낱말이에요. ≈ 표시로 나타내요.',ant:'<b>반대말</b>은 뜻이 서로 반대인 낱말이에요. ↔ 표시로 나타내요.',hom:'<b>소리가 같은 말</b>은 소리와 글자는 똑같지만 뜻이 다른 낱말이에요. 문장을 읽어야 어떤 뜻인지 알 수 있어요.',cf:'<b>헷갈리는 말</b>은 소리가 비슷해서 잘못 쓰기 쉬운 낱말이에요. 뜻을 잘 보고 알맞게 골라 써요.'};
   let h='<button class="back" data-go="unit:'+i+'">← '+esc(u.title)+'</button><section class="panel"><h2>'+(l+1)+'단계 '+L[0]+'</h2><div class="stkline">'+sticker(u,l,'preview')+'<span>'+(has?KID.name+'가 모은 <b>'+a.name+'</b> 도장이에요. 별을 더 모아 볼까요?':'이 단계를 끝내면 <b>'+a.name+'</b> 도장이 찍혀요.')+'</span></div>', go='';
   if(l===0){ h+='<div class="tip">'+TIP[R]+'</div><div class="hcards" style="grid-template-columns:1fr">'+u.items.map(wdCard).join('')+'</div>'; go=quizBtn('문제 풀기'); }
   else if(l===1){ h+='<p class="lead">'+KID.call+' 배운 낱말로 놀아 봐요.</p><div class="kidlist"><span>🔗 '+(R==='hom'?'문장과 뜻을':R==='cf'?'뜻과 낱말을':'낱말과 짝 낱말을')+' 선으로 잇기</span><span>🐸 알맞은 답을 밟고 징검다리 건너기</span><span>🎨 답에 맞는 색으로 칠하기</span></div>'; go='<button class="btn main" data-go="mact:'+i+':1">놀이 시작</button>'; }
@@ -4214,7 +4249,7 @@ function wdIntro(u,l){
   if(go) h+='<div class="row center" style="margin-top:18px">'+go+'</div>';
   show(h+'</section>',u.color);
 }
-function wdStart(u,l){ const ui=UNITS.indexOf(u); phRun(u,1,[LINE(u),PATH(u),PAINT(u)],'mact:'+ui+':1'); }
+function wdStart(u,l){ const ui=UNITS.indexOf(u); phRun(u,1,u.rel==='cho'||(u.rev&&u.members&&u.members[0]&&u.members[0].rel==='cho')?[LINE(u),PATH(u)]:[LINE(u),PATH(u),PAINT(u)],'mact:'+ui+':1'); }
 /* ---------- 낱말 탐험: 문제 만들기 ---------- */
 function wdQuiz(u,l){
   const I=wdItems(u), R=u.rel, POOL=GRADES[u.g].units.filter(x=>!x.rev).flatMap(x=>x.items);
@@ -4234,6 +4269,15 @@ function wdQuiz(u,l){
     F.pic=(it,s)=>C('그림에 알맞은 문장을 고르세요.','<div class="stimpic">'+s.e+'</div><div class="lead" style="margin:0">'+s.d+'</div>',wdSent(s.s),it.ss.filter(x=>x!==s).map(x=>wdSent(x.s)),s.d+': '+wdSent(s.s));
     F.same=it=>{ const two=pick(it.ss,2), f=wdForm(two[0].s), f2=wdForm(two[1].s), ans=f===f2?f:it.w; return C('두 문장의 □에 똑같이 들어갈 낱말을 고르세요.',sen('① '+blank(two[0].s)+'<br>② '+blank(two[1].s)),ans,ds(ans,POOL.filter(x=>x!==it).map(x=>wdForm(x.ss[0].s)),3),'① '+wdSent(two[0].s)+' ② '+wdSent(two[1].s)); };
     F.basic=it=>it.ss.map(s=>F.sense(it,s)); F.inSent=it=>[...it.ss.map(s=>F.pic(it,s)),F.same(it)]; }
+  else if(R==='cho'){ const words=POOL.map(x=>x.w), chos=[...new Set(POOL.map(x=>x.c))];
+    const pickW=(it,n)=>{ const same=shuffle(POOL.filter(x=>x!==it&&x.c===it.c).map(x=>x.w)), rest=shuffle(words.filter(w=>w!==it.w&&!same.includes(w))); return same.concat(rest).slice(0,n); };
+    const pic=e=>'<div class="stimpic">'+e+'</div>', cbox=c=>'<div class="kword" style="letter-spacing:.3em">'+c+'</div>';
+    F.pic=it=>C('그림을 보고 알맞은 초성을 고르세요.',pic(it.e),it.c,ds(it.c,chos,3),it.w+' → '+it.c);
+    F.word=it=>C('그림과 초성에 맞는 낱말을 고르세요.',pic(it.e)+cbox(it.c),it.w,ds(it.w,words,3),it.c+' → '+it.w);
+    F.first=it=>{ const f=it.c[0]; return C('‘'+it.w+'’의 첫소리 자음을 고르세요.',big(it.w),f,shuffle(CHOBASE.filter(x=>x!==f)).slice(0,3),it.w+'의 첫소리는 '+f); };
+    F.hint=it=>C('초성과 뜻을 보고 낱말을 고르세요.',cbox(it.c)+'<div class="lead" style="margin:0;text-align:center">'+it.d+'</div>',it.w,pickW(it,3),it.c+' · '+it.d+' → '+it.w);
+    F.sent=it=>C('문장 속 초성에 알맞은 낱말을 고르세요.',sen(it.s.replace(/\[([^\]]+)\]/,(m,a)=>'<span class="kblank">'+chChoOf(a)+'</span>')),it.w,pickW(it,3),wdSent(it.s));
+    F.basic=it=>[F.pic(it),F.word(it),F.first(it)]; F.inSent=it=>[F.hint(it),F.sent(it)]; }
   else{ const means=POOL.flatMap(x=>[x.da,x.db]);
     F.pickA=(it,b)=>{ const s=b?it.sb:it.sa; return C('빈칸에 알맞은 말을 고르세요.',sen(blank(s)),wdForm(s),[s.match(/\|([^\]]+)\]/)[1]],wdSent(s)); };
     F.mean=(it,b)=>{ const w=b?it.b:it.a, d=b?it.db:it.da, o=b?it.da:it.db; return C('‘'+w+'’의 뜻을 고르세요.',big(w),d,[o,...ds(d,means.filter(x=>x!==o),1)],w+': '+d); };
@@ -4242,7 +4286,7 @@ function wdQuiz(u,l){
   /* 낱말마다 한 문제씩은 꼭 나오고, 모자라면 남은 문제에서 채워요 */
   const cover=(gen,n)=>{ const per=shuffle(I).map(it=>shuffle(gen(it))), out=per.map(x=>x[0]); const rest=shuffle(per.flatMap(x=>x.slice(1))); while(out.length<n&&rest.length) out.push(rest.pop()); return shuffle(out.slice(0,n)); };
   if(u.rev){ if(l===0) return cover(F.basic,10); if(l===1) return cover(F.inSent,10); return shuffle([...cover(F.basic,6),...cover(F.inSent,6)]); }
-  if(l===0) return cover(F.basic,R==='hom'?7:6);
+  if(l===0) return cover(F.basic,R==='hom'?7:R==='cho'?8:6);
   if(l===3) return cover(F.inSent,8);
   return shuffle([...cover(F.basic,5),...cover(F.inSent,5)]);
 }
@@ -6186,7 +6230,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   const say=k=>(SAY[k]||'생일 축하해, {T}!').replace(/\{T\}/g,T());
   const crew=()=>{ if(typeof BUD==='function'&&typeof BUDS!=='undefined') return Object.keys(SUBJ).filter(k=>BUDS[k]).map(k=>({h:P(56,k),n:BUDS[k].n,w:say(k)}));
     /* 서이: 과목마다 그림 친구 (오늘의 학습에 나오는 친구와 같아요) */
-    const MK2={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
+    const MK2={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',ch:'abc',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
     if(typeof mascot==='function') return Object.keys(MK2).map(k=>({h:P(56,MK2[k]),n:(typeof MAS_NAME!=='undefined'&&MAS_NAME[MK2[k]])||'',w:say(MK2[k])})); return []; };
 
   const css=document.createElement('style');
