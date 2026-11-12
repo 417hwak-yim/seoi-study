@@ -4978,7 +4978,7 @@ function mgPlay(k,sec){
   const save=()=>{ try{ fr.contentWindow.__mgSave&&fr.contentWindow.__mgSave(); }catch(e){} };
   const kill=()=>{ clearInterval(timer); save(); try{ fr.srcdoc=''; fr.src='about:blank'; fr.remove(); }catch(e){} };
   /* 안드로이드: 뒤로 가기 단추를 누르면 공부방이 닫히지 않고 게임만 닫혀요. 다른 앱으로 넘어가면 그 자리에서 저장해요 */
-  const onPop=()=>{ pushed=false; close(); };
+  const onPop=()=>{ pushed=false; if(!ended&&left>1){ if(askOpen){ later(); return; } try{ history.pushState({mg:1},''); pushed=true; }catch(e){} askClose(); return; } close(); };
   const onHide=()=>{ if(document.hidden&&!ended) save(); };
   const close=()=>{ if(closed) return; closed=true; if(!ended) kill(); modal.remove(); document.body.style.overflow=''; document.body.classList.remove('mgon');
     window.removeEventListener('popstate',onPop); document.removeEventListener('visibilitychange',onHide);
@@ -4994,7 +4994,7 @@ function mgPlay(k,sec){
     bgB.hidden=!(c&&hb&&!ended); bgB.textContent=on?'🎵':'🔇'; bgB.setAttribute('aria-pressed',String(on)); };
   pzB.onclick=()=>{ const c=ctl(); try{ c&&c.pause(); }catch(e){} setTimeout(syncCtl,60); };
   bgB.onclick=()=>{ const c=ctl(); try{ c&&c.bgm(); }catch(e){} setTimeout(syncCtl,60); };
-  const tick=()=>{ const now=performance.now(), pz=isPz(); if(on&&!document.hidden&&!pz) left-=Math.min(1,(now-last)/1000); last=now;
+  const tick=()=>{ const now=performance.now(), pz=isPz(); if(on&&!document.hidden&&!pz&&!askOpen) left-=Math.min(1,(now-last)/1000); last=now;
     const s=Math.max(0,Math.ceil(left)); tEl.textContent=(pz?'⏸ ':'')+s+'초'; tEl.classList.toggle('low',s<=10&&!pz); tEl.classList.toggle('pz',pz); tEl.title=pz?'게임을 멈춘 동안 시간도 멈춰요':''; syncCtl();
     if(left<=0&&!ended){ ended=true; kill(); document.getElementById('mg-over').hidden=false; try{ SFX.play('done'); }catch(e){} } };
   const begin=()=>{ if(on) return; on=true; last=performance.now(); };
@@ -5005,7 +5005,22 @@ function mgPlay(k,sec){
   fr.addEventListener('load',()=>{ if(!fr.srcdoc&&!fr.src) return; loaded=true; setTimeout(()=>{ ld.hidden=true; },250); });
   rt.onclick=()=>{ try{ fr.srcdoc=''; }catch(e){} setTimeout(loadIt,50); };
   setTimeout(loadIt,30); last=performance.now(); timer=setInterval(tick,200);
-  document.getElementById('mg-x').onclick=close; document.getElementById('mg-done').onclick=close;
+  /* 2026-11-13: 게임 도중에 ‘그만하기’나 뒤로 가기를 누르면 바로 닫지 않고 먼저 물어요.
+     ‘나중에 이어서’를 고르면 남은 시간이 처음 화면의 ‘게임 시간!’ 단추로 남아요 (같은 날 안에서만, 시간은 쌓이지 않아요). */
+  let askOpen=false, askPz=false;
+  function askClose(){ if(ended||left<=1){ close(); return; } if(askOpen) return; askOpen=true;
+    try{ const c=ctl(); if(c&&c.can()&&!c.paused()){ c.pause(); askPz=true; } }catch(e){}
+    const n=Math.max(1,Math.ceil(left)), d=document.createElement('div'); d.className='mgask';
+    d.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(20,20,30,.6)';
+    d.innerHTML='<div style="width:min(320px,100%);background:#fff;border-radius:18px;padding:20px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35);color:#333"><div style="font-size:40px;line-height:1.1">⏸️</div><b style="display:block;font-size:20px;margin:6px 0">정말 그만할까요?</b><p style="margin:0 0 14px;font-size:15px;line-height:1.5;word-break:keep-all">남은 <b>'+n+'초</b>는 나중에 이어서 할 수 있어요.</p><button type="button" class="btn main" data-a="go" style="width:100%;margin:0 0 8px">▶ 계속하기</button><button type="button" class="btn" data-a="later" style="width:100%;margin:0">나중에 이어서</button></div>';
+    d.onclick=e=>{ const b=e.target.closest('[data-a]'); if(!b) return; if(b.dataset.a==='go') resume(); else later(); };
+    modal.appendChild(d); }
+  function resume(){ askOpen=false; const d=modal.querySelector('.mgask'); if(d) d.remove(); if(askPz){ askPz=false; try{ const c=ctl(); if(c&&c.paused()) c.pause(); }catch(e){} } last=performance.now(); }
+  function later(){ const rest=Math.max(5,Math.ceil(left)); try{ const M=mgState(); M.pend={k,sec:rest,rev:1}; if(M.open&&M.open.indexOf(k)<0) M.open.push(k); persist(); }catch(e){}
+    askOpen=false; close();
+    /* 처음 화면이면 다시 그려서 ‘게임 시간!’ 단추가 바로 보이게 해요 */
+    try{ if(typeof VIEW!=='undefined'&&(VIEW==='start'||VIEW==='home')) route(VIEW); }catch(e){} }
+  document.getElementById('mg-x').onclick=askClose; document.getElementById('mg-done').onclick=close;
 }
 
 /* 어휘 예문: 네모 칸을 누르면 가려진 낱말이 나타나요. 다시 누르면 가려져요 */
