@@ -6493,7 +6493,7 @@ const adj=(x,pi)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{ const y=at(x.r+a,x
 const claimable=pi=>G.cells.filter(x=>x.o===-1&&adj(x,pi));
 /* 2026-11-13: 세 글자 이상 낱말로 차지한 땅은 보너스 +1점 (x.bn) */
 const score=pi=>G.cells.filter(x=>x.o===pi).reduce((s,x)=>s+(x.st?2:1)+(x.bn||0),0);
-const BN=w=>[...w].length>=3?1:0;
+const BN=w=>{ const n=[...w].length; return n>=4?2:n===3?1:0; };   /* 2026-11-13: 세 글자 +1점, 네 글자부터 +2점 */
 function newPat(){ const on=G.cells.map(x=>x.p); let p=G.pool.shift(); while(p&&(on.includes(p)||!(BYP[p]||[]).some(w=>!G.used.includes(w)))) p=G.pool.shift();
   if(!p){ const c=Object.keys(BYP).filter(q=>BYP[q].filter(w=>!G.used.includes(w)).length>=2&&!on.includes(q)); p=c[R(c.length)]; } return p; }
 const left=p=>(BYP[p]||[]).filter(w=>!G.used.includes(w));
@@ -6520,8 +6520,8 @@ function begin(){ if(!G||G.fin) return;
 function next(){ G.turn=G.mode==='owl'?(G.turn===ME?OWL:ME):ME; setTimeout(begin,G.turn===OWL?700:300); }
 function ask(cell){ if(!left(cell.p).length) cell.p=newPat();
   const ans=SH(left(cell.p)).slice(0,3); let seq=[], miss=0, done=false, hl=0;
-  const askHTML='<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 넘으면 보너스 +1점!</b></div></div><div class="ttans" id="ttans"></div>'+keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>';
-  const w=sheet('<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 넘으면 보너스 +1점!</b></div></div><div class="ttans" id="ttans"></div>'
+  const askHTML='<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 +1점, 네 글자 +2점!</b></div></div><div class="ttans" id="ttans"></div>'+keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>';
+  const w=sheet('<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 +1점, 네 글자 +2점!</b></div></div><div class="ttans" id="ttans"></div>'
     +keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>');
   const $=s=>w.querySelector(s);
   const paint=()=>{ const t=compose(seq); $('#ttans').innerHTML=t?[...t].map(x=>'<span>'+x+'</span>').join(''):'<span class="ph">아래 자판으로 써요</span>'; };
@@ -6537,7 +6537,7 @@ function ask(cell){ if(!left(cell.p).length) cell.p=newPat();
     w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 부엉이가 알려 줄게요</p><div class="e">'+(b.e||'💡')+'</div><b>'+ES(a)+'</b>'+(b.d?'<p style="margin:4px 0 0">'+ES(b.d)+'</p>':'')+'<p style="margin:8px 0 0;opacity:.8">'+cell.p+' → '+ES(a)+'. 이 땅은 다음에 다른 초성으로 바뀌어요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="close">알겠어요</button></div>';
     SAY(a); G.asks++; cell.p=newPat(); };
   const win=(word)=>{ done=true; const b=BANK[word]||{}; cell.o=ME; cell.w=word; cell.bn=BN(word); G.used.push(word); G.mine.push(word); G.asks++; if(!miss) G.first++; SFX('done'); SAY(word);
-    w.querySelector('.ttbox').innerHTML='<div class="ttbig"><div class="e">'+(b.e||'🎉')+'</div><b>'+ES(word)+'</b><p style="margin:6px 0 0;font-weight:800">'+(miss?'잘 고쳐서 만들었어요! 내 땅이 됐어요':'딩동댕! 한 번에 맞혔어요 ⭐ 내 땅이 됐어요')+(cell.st?' (⭐ 2점!)':'')+(cell.bn?' · 세 글자 보너스 +1점!':'')+'</p>'+(b.d?'<p style="margin:4px 0 0;opacity:.8">'+ES(b.d)+'</p>':'')+'</div><div class="ttrow"><button type="button" class="ttok" data-a="close">좋아요</button></div>'; };
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig"><div class="e">'+(b.e||'🎉')+'</div><b>'+ES(word)+'</b><p style="margin:6px 0 0;font-weight:800">'+(miss?'잘 고쳐서 만들었어요! 내 땅이 됐어요':'딩동댕! 한 번에 맞혔어요 ⭐ 내 땅이 됐어요')+(cell.st?' (⭐ 2점!)':'')+(cell.bn?' · '+[...word].length+'글자 보너스 +'+cell.bn+'점!':'')+'</p>'+(b.d?'<p style="margin:4px 0 0;opacity:.8">'+ES(b.d)+'</p>':'')+'</div><div class="ttrow"><button type="button" class="ttok" data-a="close">좋아요</button></div>'; };
   const check=()=>{ const word=compose(seq);
     if(!/^[가-힣]+$/.test(word)){ fb(word?'글자를 끝까지 완성해요. (자음 다음에 모음!)':'자판으로 낱말을 써요.'); return; }
     if([...word].length<2){ fb('글자를 두 개 이상 써요.'); return; }
@@ -6572,7 +6572,7 @@ function owlTurn(cs){ draw(); msg('🦉 부엉이가 땅을 고르는 중…');
         msg('🦉 '+cell.p+' → <b style="font-size:1.25em">'+ES(part)+'</b>'+(k<sy.length?' ✍️':''));
         if(k<sy.length) return setTimeout(typeOne,420);
         setTimeout(()=>{ if(!G||G.fin) return; cell.o=OWL; cell.w=ans; cell.bn=BN(ans); G.used.push(ans); SAY(ans); draw();
-          msg('🦉 「<b>'+ES(ans)+'</b>」 '+(BANK[ans]&&BANK[ans].e||'')+' 부엉이 땅이 됐어요.'+(cell.st?' ⭐ 2점':'')+(cell.bn?' · 세 글자 보너스 +1':'')+(BANK[ans]&&BANK[ans].d?'<br><small style="font-weight:700;opacity:.8">💡 낱말을 누르면 뜻이 나와요</small>':''));
+          msg('🦉 「<b>'+ES(ans)+'</b>」 '+(BANK[ans]&&BANK[ans].e||'')+' 부엉이 땅이 됐어요.'+(cell.st?' ⭐ 2점':'')+(cell.bn?' · '+[...ans].length+'글자 보너스 +'+cell.bn:'')+(BANK[ans]&&BANK[ans].d?'<br><small style="font-weight:700;opacity:.8">💡 낱말을 누르면 뜻이 나와요</small>':''));
           G.turn=ME; setTimeout(begin,2000); },600); };
       setTimeout(typeOne,300); },900); },700); }
 function end(){ G.fin=true; try{ delete STATE.tt; SAVE(); }catch(e){} draw(); closeSheet();
@@ -6681,7 +6681,7 @@ function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l
   const card=(id,ic,nm,desc,lock,res)=>'<div class="ttgm '+id+(lock?' lock':'')+'">'+(rec===id?'<span class="ttrec">오늘 이거 어때?</span>':'')+'<h3>'+ic+' '+nm+'</h3><p>'+desc+'</p>'
     +(lock?'<p class="ttlk">🔒 땅따먹기 '+(C.land||0)+' / '+UNLOCK+'판 하면 열려요</p>':'<div class="ttm">'+(res?'<button type="button" data-tt="'+id+':resume" class="res">▶ 하던 판 이어서</button>':'')+'<button type="button" data-tt="'+id+':owl">🦉 부엉이랑</button><button type="button" data-tt="'+id+':solo">'+FACE(22)+' 혼자</button></div>')+'</div>';
   show('<button class="back" data-go="unit:'+ui+'">← '+ES(u.title)+'</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 한글 보드게임</h2><p style="text-align:center;margin:0 0 10px;opacity:.7;font-weight:800">한 판 골라서 놀아요 · 약 10분</p>'
-    +card('land','🗺️','초성 땅따먹기','땅에 적힌 초성으로 낱말을 만들면 내 땅! ⭐ 땅은 2점, 세 글자 넘는 낱말은 +1점.',false,sl)
+    +card('land','🗺️','초성 땅따먹기','땅에 적힌 초성으로 낱말을 만들면 내 땅! ⭐ 땅은 2점, 세 글자 +1점, 네 글자 +2점.',false,sl)
     +card('tile','🔤','초성 글자판 모으기','자음 글자판을 골라 낱말을 만들면 글자판을 가져가요. 1장에 1점!',!open,st)+'</section>',u.color);
   $app.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{ const [g,m]=b.dataset.tt.split(':');
     if(g==='land'){ if(m==='resume') G=JSON.parse(JSON.stringify(sl)); else newGame(u,l,m); G.lv=l; TG=null; play(u,l); }
