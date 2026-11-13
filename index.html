@@ -6439,9 +6439,13 @@ const BANK={};
 CHORDER.forEach(g=>GRADES[g].units.forEach(u=>(u.items||[]).forEach(it=>{ BANK[it.w]={e:it.e,d:it.d}; })));
 CHBANK.split(/\s+/).filter(Boolean).forEach(x=>{ const i=x.indexOf('/'), w=i<0?x:x.slice(0,i), e=i<0?'':x.slice(i+1); if(!BANK[w]) BANK[w]={e,d:''}; else if(!BANK[w].e&&e) BANK[w].e=e; });
 /* 2026-11-13: 부엉이가 쓰는 ‘공부가 되는 두 글자 낱말’과 뜻. 사전에도 들어가서 서이가 써도 맞아요. 땅의 낱말을 누르면 뜻이 나와요 */
-const OWLW='갯벌=바닷물이 빠지면 드러나는 넓은 진흙 땅|등대=밤에 불빛을 비춰 배에게 길을 알려 주는 탑|사막=비가 거의 오지 않아 모래가 많은 넓은 땅|연못=물이 고여 있는 작은 못|단풍=가을에 나뭇잎이 빨갛고 노랗게 물드는 것|우물=땅을 깊이 파서 물을 긷는 곳|폭포=높은 곳에서 물이 쏟아져 내리는 곳|계곡=산과 산 사이로 물이 흐르는 골짜기|해변=바닷가의 모래밭|항구=배가 드나드는 곳|지도=땅의 모양을 줄여서 그린 그림|일기=하루 동안 있었던 일을 적은 글|동화=어린이를 위해 지은 이야기|과학=자연의 비밀을 알아내는 공부|악기=소리를 내어 음악을 연주하는 도구|북극=지구의 맨 위쪽, 아주 추운 곳|남극=지구의 맨 아래쪽, 펭귄이 사는 추운 곳|행성=해 둘레를 도는 큰 별, 지구도 행성이에요|화성=해 둘레를 도는 붉은 행성|위성=행성 둘레를 도는 별, 달은 지구의 위성이에요|우주=별과 행성이 있는 끝없이 넓은 곳|태풍=비와 바람이 아주 세게 부는 날씨|홍수=비가 많이 와서 물이 넘치는 것|가뭄=비가 오래 오지 않아 땅이 메마른 것|이슬=새벽에 풀잎에 맺히는 작은 물방울|서리=추운 아침 풀잎에 하얗게 언 얼음 알갱이|씨앗=심으면 싹이 트는 식물의 알맹이|뿌리=땅속으로 뻗어 물을 빨아들이는 식물의 부분|줄기=잎과 꽃을 받치는 식물의 몸통|꽃잎=꽃을 이루는 한 장 한 장의 잎|곤충=다리가 여섯 개인 작은 동물, 개미와 나비 같은|부리=새의 입, 딱딱하고 뾰족해요|깃털=새의 몸을 덮은 털|비늘=물고기 몸을 덮은 얇은 조각|껍질=과일이나 알의 겉을 싸고 있는 것|둥지=새가 알을 낳고 사는 집|동굴=땅이나 바위 속에 생긴 굴|습지=물이 많아 늘 축축한 땅|초원=풀이 넓게 자란 들판|밀림=나무가 빽빽하게 우거진 숲|언덕=조금 높게 솟은 땅|골목=집들 사이의 좁은 길|시장=여러 가게가 모여 물건을 사고파는 곳|소방=불을 끄고 사람을 구하는 일|경찰=사람들을 지키고 질서를 잡는 사람|의사=아픈 사람을 치료하는 사람|가수=노래를 부르는 사람|작가=책이나 글을 쓰는 사람|농부=논밭에서 곡식과 채소를 기르는 사람|어부=바다에서 물고기를 잡는 사람|목수=나무로 집이나 가구를 만드는 사람|선장=배를 이끄는 사람|기자=새 소식을 알아보고 알리는 사람|배려=다른 사람의 마음을 생각해 주는 것|용기=무서워도 씩씩하게 해내는 마음|약속=앞으로 하기로 서로 정한 것|감사=고마운 마음|양보=자리나 차례를 남에게 먼저 내어 주는 것|정리=흩어진 것을 제자리에 가지런히 두는 것|습관=자꾸 해서 몸에 밴 버릇|질서=차례를 지키는 것|안전=다치거나 위험하지 않은 것|신호=빛이나 소리로 알리는 것|마차=말이 끄는 수레|수레=바퀴를 달아 물건을 나르는 것|저울=무게를 다는 도구|전기=불을 켜고 기계를 움직이는 힘|그늘=햇빛이 가려진 시원한 곳|노을=해가 질 때 하늘이 붉게 물드는 것|새벽=해가 뜨기 바로 전의 이른 아침|계절=봄, 여름, 가을, 겨울|명절=설날, 추석처럼 해마다 기리는 날|추석=송편을 빚고 보름달을 보는 가을 명절|설날=새해 첫날, 세배를 하는 명절|세배=설날에 어른께 드리는 큰절|한복=우리나라의 전통 옷|한옥=우리나라의 전통 집|메주=된장을 만드는 콩 덩어리|떡국=설날에 먹는 떡을 넣은 국|상어=날카로운 이빨을 가진 큰 물고기|해녀=바닷속에 들어가 해산물을 따는 사람|참새=작고 갈색인 흔한 새|제비=봄에 남쪽에서 날아오는 새|철새=계절마다 사는 곳을 옮기는 새|텃밭=집 가까이에서 채소를 기르는 작은 밭|국기=나라를 나타내는 깃발|수도=한 나라의 가장 중심이 되는 도시|나라=사람들이 모여 사는 땅|고래=바다에 사는 아주 큰 동물|모래=아주 잘게 부서진 돌 알갱이|바위=아주 크고 단단한 돌|파도=바닷물이 출렁이며 밀려오는 것|구름=하늘에 떠 있는 작은 물방울 덩어리|번개=비 오는 날 하늘에서 번쩍이는 빛|천둥=번개가 친 뒤 우르릉 하는 큰 소리|화분=흙을 담아 꽃을 기르는 그릇|사슴=뿔이 멋진 숲속 동물|독수리=날카로운 발톱으로 사냥하는 큰 새|박쥐=밤에 날아다니는 동물|두부=콩으로 만든 하얗고 부드러운 음식|김치=배추나 무로 담근 우리 반찬|장갑=손을 따뜻하게 감싸는 것|자석=쇠붙이를 끌어당기는 물건|기둥=지붕을 받치고 서 있는 것|계단=한 칸씩 오르내리는 층층대|벽돌=흙을 구워 만든 집 짓는 돌|우산=비 올 때 펴서 쓰는 것';
+const OWLW='갯벌=바닷물이 빠지면 드러나는 넓은 진흙 땅|등대=밤에 불빛을 비춰 배에게 길을 알려 주는 탑|사막=비가 거의 오지 않아 모래가 많은 넓은 땅|연못=물이 고여 있는 작은 못|단풍=가을에 나뭇잎이 빨갛고 노랗게 물드는 것|우물=땅을 깊이 파서 물을 긷는 곳|폭포=높은 곳에서 물이 쏟아져 내리는 곳|계곡=산과 산 사이로 물이 흐르는 골짜기|해변=바닷가의 모래밭|항구=배가 드나드는 곳|지도=땅의 모양을 줄여서 그린 그림|일기=하루 동안 있었던 일을 적은 글|동화=어린이를 위해 지은 이야기|과학=자연의 비밀을 알아내는 공부|악기=소리를 내어 음악을 연주하는 도구|북극=지구의 맨 위쪽, 아주 추운 곳|남극=지구의 맨 아래쪽, 펭귄이 사는 추운 곳|행성=해 둘레를 도는 큰 별, 지구도 행성이에요|화성=해 둘레를 도는 붉은 행성|위성=행성 둘레를 도는 별, 달은 지구의 위성이에요|우주=별과 행성이 있는 끝없이 넓은 곳|태풍=비와 바람이 아주 세게 부는 날씨|홍수=비가 많이 와서 물이 넘치는 것|가뭄=비가 오래 오지 않아 땅이 메마른 것|이슬=새벽에 풀잎에 맺히는 작은 물방울|서리=추운 아침 풀잎에 하얗게 언 얼음 알갱이|씨앗=심으면 싹이 트는 식물의 알맹이|뿌리=땅속으로 뻗어 물을 빨아들이는 식물의 부분|줄기=잎과 꽃을 받치는 식물의 몸통|꽃잎=꽃을 이루는 한 장 한 장의 잎|곤충=다리가 여섯 개인 작은 동물, 개미와 나비 같은|부리=새의 입, 딱딱하고 뾰족해요|깃털=새의 몸을 덮은 털|비늘=물고기 몸을 덮은 얇은 조각|껍질=과일이나 알의 겉을 싸고 있는 것|둥지=새가 알을 낳고 사는 집|동굴=땅이나 바위 속에 생긴 굴|습지=물이 많아 늘 축축한 땅|초원=풀이 넓게 자란 들판|밀림=나무가 빽빽하게 우거진 숲|언덕=조금 높게 솟은 땅|골목=집들 사이의 좁은 길|시장=여러 가게가 모여 물건을 사고파는 곳|소방=불을 끄고 사람을 구하는 일|경찰=사람들을 지키고 질서를 잡는 사람|의사=아픈 사람을 치료하는 사람|가수=노래를 부르는 사람|작가=책이나 글을 쓰는 사람|농부=논밭에서 곡식과 채소를 기르는 사람|어부=바다에서 물고기를 잡는 사람|목수=나무로 집이나 가구를 만드는 사람|선장=배를 이끄는 사람|기자=새 소식을 알아보고 알리는 사람|배려=다른 사람의 마음을 생각해 주는 것|용기=무서워도 씩씩하게 해내는 마음|약속=앞으로 하기로 서로 정한 것|감사=고마운 마음|양보=자리나 차례를 남에게 먼저 내어 주는 것|정리=흩어진 것을 제자리에 가지런히 두는 것|습관=자꾸 해서 몸에 밴 버릇|질서=차례를 지키는 것|안전=다치거나 위험하지 않은 것|신호=빛이나 소리로 알리는 것|마차=말이 끄는 수레|수레=바퀴를 달아 물건을 나르는 것|저울=무게를 다는 도구|전기=불을 켜고 기계를 움직이는 힘|그늘=햇빛이 가려진 시원한 곳|노을=해가 질 때 하늘이 붉게 물드는 것|새벽=해가 뜨기 바로 전의 이른 아침|계절=봄, 여름, 가을, 겨울|명절=설날, 추석처럼 해마다 기리는 날|추석=송편을 빚고 보름달을 보는 가을 명절|설날=새해 첫날, 세배를 하는 명절|세배=설날에 어른께 드리는 큰절|한복=우리나라의 전통 옷|한옥=우리나라의 전통 집|메주=된장을 만드는 콩 덩어리|떡국=설날에 먹는 떡을 넣은 국|상어=날카로운 이빨을 가진 큰 물고기|해녀=바닷속에 들어가 해산물을 따는 사람|참새=작고 갈색인 흔한 새|제비=봄에 남쪽에서 날아오는 새|철새=계절마다 사는 곳을 옮기는 새|텃밭=집 가까이에서 채소를 기르는 작은 밭|국기=나라를 나타내는 깃발|수도=한 나라의 가장 중심이 되는 도시|나라=사람들이 모여 사는 땅|고래=바다에 사는 아주 큰 동물|모래=아주 잘게 부서진 돌 알갱이|바위=아주 크고 단단한 돌|파도=바닷물이 출렁이며 밀려오는 것|구름=하늘에 떠 있는 작은 물방울 덩어리|번개=비 오는 날 하늘에서 번쩍이는 빛|천둥=번개가 친 뒤 우르릉 하는 큰 소리|화분=흙을 담아 꽃을 기르는 그릇|사슴=뿔이 멋진 숲속 동물|독수리=날카로운 발톱으로 사냥하는 큰 새|박쥐=밤에 날아다니는 동물|두부=콩으로 만든 하얗고 부드러운 음식|김치=배추나 무로 담근 우리 반찬|장갑=손을 따뜻하게 감싸는 것|자석=쇠붙이를 끌어당기는 물건|기둥=지붕을 받치고 서 있는 것|계단=한 칸씩 오르내리는 층층대|벽돌=흙을 구워 만든 집 짓는 돌|우산=비 올 때 펴서 쓰는 것|교실=공부하는 방|체육=몸을 움직여 운동하는 과목|음악=노래하고 악기를 연주하는 과목|미술=그림을 그리고 만드는 과목|숙제=집에서 해 가는 공부|공책=글씨를 쓰는 책|칠판=분필로 글씨를 쓰는 검은 판|책상=앉아서 공부하는 상|달력=날짜와 요일을 적어 둔 것|방학=학교를 쉬는 기간|소풍=다 같이 놀러 가는 날|급식=학교에서 주는 점심|도서=읽는 책|사전=낱말의 뜻을 찾아보는 책|신문=새 소식을 알려 주는 종이|편지=하고 싶은 말을 적어 보내는 글|우표=편지에 붙이는 작은 종이|소포=물건을 싸서 보내는 꾸러미|사진=찍어서 남긴 모습|연극=무대에서 이야기를 보여 주는 것|영화=화면으로 보는 이야기|공연=사람들 앞에서 보여 주는 것|관객=공연을 보는 사람들|가사=노래의 말|악보=음을 적어 놓은 종이|장구=양쪽을 치는 우리 악기|단소=입으로 부는 우리 악기|작품=만들거나 그린 것|전시=여러 사람이 보도록 늘어놓는 것|지구=우리가 사는 별|공기=우리가 숨 쉬는 것|강물=강에 흐르는 물|샘물=땅에서 솟아나는 물|냇물=작은 시내에 흐르는 물|들판=넓게 펼쳐진 평평한 땅|숲속=나무가 우거진 안쪽|열매=나무나 풀에 맺히는 먹는 부분|새싹=막 돋아난 어린싹|잡초=심지 않아도 저절로 자라는 풀|이끼=축축한 곳에 끼는 작은 풀|소라=나사 모양 껍데기를 가진 바다 생물|미역=국에 넣어 먹는 바다 식물|해초=바닷속에 사는 풀|산호=바닷속에 꽃처럼 자라는 것|여우=꾀가 많고 꼬리가 복슬복슬한 동물|늑대=개와 닮고 무리로 사는 동물|거위=오리보다 큰 집새|염소=뿔이 있고 수염이 난 동물|매미=여름에 맴맴 우는 곤충|나비=꽃을 찾아다니는 곤충|벌집=벌이 모여 사는 집|수건=물기를 닦는 천|걸레=바닥을 닦는 천|분리=따로따로 나누는 것|절약=아껴 쓰는 것|저금=돈을 모아 두는 것|용돈=쓰라고 받는 돈|가격=물건의 값|물건=쓰거나 파는 것|손님=가게에 온 사람|주인=가게나 물건의 임자|간판=가게 이름을 적은 판|창고=물건을 넣어 두는 곳|지붕=집의 맨 위를 덮은 것|마루=집 안의 넓은 바닥|다락=지붕 밑 낮은 방|장독=장을 담아 두는 큰 그릇|마을=집들이 모여 있는 곳|이웃=가까이 사는 사람|가족=함께 사는 식구|친척=피가 이어진 집안 사람|조상=옛날 우리 집안 어른|전통=옛날부터 이어 온 것|역사=지난 일의 이야기|문화=사람들이 만들어 온 생활 모습|예절=지켜야 할 바른 몸가짐|인사=만나고 헤어질 때 나누는 말|효도=부모님께 잘하는 것|봉사=남을 도와주는 일|규칙=함께 지키기로 한 약속|투표=손을 들거나 표를 내어 고르는 것|회의=모여서 의논하는 것|발표=여럿 앞에서 말하는 것|토론=서로 생각을 주고받는 것|협동=힘을 모아 함께하는 것|모둠=함께 공부하는 작은 무리|차례=순서|실험=직접 해 보고 알아보는 것|관찰=자세히 살펴보는 것|기록=적어 두는 것|온도=따뜻하고 찬 정도|무게=무겁고 가벼운 정도|길이=길고 짧은 정도|부피=차지하는 자리의 크기|거울=모습을 비춰 보는 것|지층=흙과 돌이 쌓여 생긴 층|화석=돌 속에 남은 옛 생물의 흔적|소금=짠맛이 나는 흰 알갱이|설탕=단맛이 나는 흰 가루|얼음=물이 얼어 굳은 것|증기=물이 끓어 생기는 김|액체=물처럼 흐르는 것|고체=돌처럼 단단한 것|기체=공기처럼 눈에 안 보이는 것|심장=피를 내보내는 몸속 기관|허파=숨을 쉬는 몸속 기관|근육=몸을 움직이게 하는 살|혈액=몸속을 도는 피|체온=몸의 따뜻한 정도|영양=몸을 자라게 하는 힘|건강=몸이 튼튼한 것|휴식=쉬는 것|치아=이|손톱=손가락 끝의 단단한 것|눈썹=눈 위에 난 털|덧셈=더하는 셈|뺄셈=빼는 셈|곱셈=곱하는 셈|분수=하나를 똑같이 나눈 수|소수=점이 있는 수|도형=모양을 나타낸 그림|각도=벌어진 정도|직선=곧게 뻗은 선|곡선=구부러진 선|숫자=수를 나타내는 글자|계산=수를 세고 셈하는 것';
 OWLW.split('|').forEach(x=>{ const [w,d]=x.split('='); if(!w||!d) return; if(BANK[w]){ if(!BANK[w].d) BANK[w].d=d; } else BANK[w]={e:'',d}; });
 const OWLSET=new Set(OWLW.split('|').map(x=>x.split('=')[0]).filter(w=>[...w].length===2));
+/* 2026-11-13: 사전으로 막지 않아요 — 초성이 맞고 글자가 다 완성된 낱말이면 받아 줘요.
+   공부방 사전에 없는 낱말은 아빠가 볼 수 있게 STATE.ttUnk에만 모아요 */
+const known=w=>{ if(!BANK[w]){ try{ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==w).concat(w).slice(-60); SAVE(); }catch(e){} } return true; };
+window.__kd={known};
 const WORDS=Object.keys(BANK).filter(w=>/^[가-힣]+$/.test(w)&&[...w].length>=2);
 const P2=w=>chChoOf(w).slice(0,2);
 const BYP={}; WORDS.forEach(w=>{ (BYP[P2(w)]=BYP[P2(w)]||[]).push(w); });
@@ -6469,13 +6473,20 @@ const NM=()=>(typeof KID!=='undefined'&&KID.name)||'나';
 /* 2026-11-13: 서이 말은 서이 얼굴 사진으로 (사진이 없으면 토끼) */
 const FACE=sz=>(typeof KID!=='undefined'&&KID.photo)?'<img class="ttface" src="'+KID.photo+'" alt="'+ES(NM())+'" style="width:'+(sz||34)+'px;height:'+(sz||34)+'px">':'🐰';
 const keyOf=(u,l)=>u.id+'|'+l;
-function patPool(u){ const th=SH((u.items||[]).map(it=>P2(it.w)).filter(p=>BYP[p]&&BYP[p].length>=2)), rest=SH(Object.keys(BYP).filter(p=>BYP[p].length>=3));
-  return [...new Set([...th,...rest])]; }
+/* 2026-11-13: 판마다 초성이 새로 깔리게 — 주제 초성은 6개만 쓰고 나머지는 사전 전체에서, 바로 전 판에 나온 초성은 뒤로 미뤄요 */
+function patPool(u){ const rec=STATE.ttPrev||[];
+  const th=SH((u.items||[]).map(it=>P2(it.w)).filter(p=>BYP[p]&&BYP[p].length>=2));
+  const thPick=SH(th.filter(p=>!rec.includes(p)).concat(th).slice(0,6));
+  const all=SH(Object.keys(BYP).filter(p=>BYP[p].length>=3));
+  const rest=all.filter(p=>!rec.includes(p)).concat(all);
+  const th2=thPick;
+  return [...new Set([...th2,...rest])]; }
 function newGame(u,l,mode){ const N=mode==='owl'?5:4, pool=patPool(u); let pi=0; const cells=[];
   for(let r=0;r<N;r++) for(let c=0;c<N;c++) cells.push({r,c,p:'',o:-1,w:'',st:false,home:false});
   cells[0].o=ME; cells[0].home=true; if(mode==='owl'){ cells[N*N-1].o=OWL; cells[N*N-1].home=true; }
   cells.forEach(x=>{ if(!x.home) x.p=pool[pi++]; });
   SH(cells.filter(x=>!x.home)).slice(0,mode==='owl'?4:3).forEach(x=>x.st=true);
+  try{ STATE.ttPrev=cells.filter(x=>x.p).map(x=>x.p).slice(0,30); SAVE(); }catch(e){}
   G={k:keyOf(u,l),mode,N,cells,used:[],pool:pool.slice(pi),turn:ME,first:0,asks:0,mine:[],fin:false}; }
 const at=(r,c)=>G.cells.find(x=>x.r===r&&x.c===c);
 const adj=(x,pi)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{ const y=at(x.r+a,x.c+b); return y&&y.o===pi; });
@@ -6508,12 +6519,20 @@ function begin(){ if(!G||G.fin) return;
   store(); draw(); msg(G.asks===0?'반짝이는 땅을 하나 눌러요! 그 초성으로 시작하는 낱말을 만들면 내 땅!':'내 차례! 반짝이는 땅을 골라요.'); }
 function next(){ G.turn=G.mode==='owl'?(G.turn===ME?OWL:ME):ME; setTimeout(begin,G.turn===OWL?700:300); }
 function ask(cell){ if(!left(cell.p).length) cell.p=newPat();
-  const ans=SH(left(cell.p)).slice(0,3); let seq=[], miss=0, done=false;
+  const ans=SH(left(cell.p)).slice(0,3); let seq=[], miss=0, done=false, hl=0;
+  const askHTML='<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 넘으면 보너스 +1점!</b></div></div><div class="ttans" id="ttans"></div>'+keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>';
   const w=sheet('<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도 돼요. <b style="color:#C2255C">세 글자 넘으면 보너스 +1점!</b></div></div><div class="ttans" id="ttans"></div>'
     +keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>');
   const $=s=>w.querySelector(s);
   const paint=()=>{ const t=compose(seq); $('#ttans').innerHTML=t?[...t].map(x=>'<span>'+x+'</span>').join(''):'<span class="ph">아래 자판으로 써요</span>'; };
   const fb=t=>{ $('#ttfb').innerHTML=t; };
+  /* 2026-11-13: 모르겠어요를 누르면 바로 답을 주지 않고 힌트를 하나씩 줘요 */
+  const back=()=>{ seq=[]; w.querySelector('.ttbox').innerHTML=askHTML; paint(); fb(hl?'💡 힌트를 보고 다시 써 봐요!':''); };
+  const hint=(why)=>{ const a=ans[0]||left(cell.p)[0], b=BANK[a]||{}, L=[...a].length; hl++;
+    let body;
+    if(hl===1) body='<div class="e">'+(b.e||'💡')+'</div><p style="margin:6px 0 0;font-weight:800">'+L+'글자 낱말이에요</p>'+(b.d?'<p style="margin:6px 0 0">'+ES(b.d)+'</p>':'<p style="margin:6px 0 0">'+cell.p+'로 시작해요. 그림을 보고 떠올려 봐요!</p>');
+    else body='<div class="e">'+(b.e||'💡')+'</div><p style="margin:4px 0 0;font-size:2rem;font-weight:900;letter-spacing:4px;color:#C2255C">'+[...a].map((c,i)=>i?'○':c).join('')+'</p><p style="margin:6px 0 0;font-weight:800">첫 글자는 「'+[...a][0]+'」예요</p>'+(b.d?'<p style="margin:6px 0 0">'+ES(b.d)+'</p>':'');
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 힌트 '+hl+'</p>'+body+'</div><div class="ttrow"><button type="button" class="ttok" data-a="retry">✏️ 다시 써 볼래요</button>'+(hl<2?'<button type="button" class="ttpass" data-a="pass">💡 힌트 하나 더</button>':'<button type="button" class="ttpass" data-a="give">🙋 답을 알려 주세요</button>')+'</div>'; };
   const reveal=(why)=>{ done=true; const a=ans[0]||left(cell.p)[0], b=BANK[a]||{};
     w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 부엉이가 알려 줄게요</p><div class="e">'+(b.e||'💡')+'</div><b>'+ES(a)+'</b>'+(b.d?'<p style="margin:4px 0 0">'+ES(b.d)+'</p>':'')+'<p style="margin:8px 0 0;opacity:.8">'+cell.p+' → '+ES(a)+'. 이 땅은 다음에 다른 초성으로 바뀌어요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="close">알겠어요</button></div>';
     SAY(a); G.asks++; cell.p=newPat(); };
@@ -6524,17 +6543,19 @@ function ask(cell){ if(!left(cell.p).length) cell.p=newPat();
     if([...word].length<2){ fb('글자를 두 개 이상 써요.'); return; }
     if(G.used.includes(word)){ fb('「'+ES(word)+'」는 이미 나온 낱말이에요. 다른 낱말!'); return; }
     if(P2(word)!==cell.p){ miss++; SFX('no'); const box=$('#ttans')||$('#ttinp'); box.classList.remove('ttshake'); void box.offsetWidth; box.classList.add('ttshake');
-      if(miss>=2) return reveal('「'+ES(word)+'」는 '+chChoOf(word).slice(0,2)+'로 시작해서 아쉬워요.');
+      if(miss>=2) return hint('「'+ES(word)+'」는 '+chChoOf(word).slice(0,2)+'로 시작해서 아쉬워요.');
       fb('「'+ES(word)+'」는 '+chChoOf(word).slice(0,2)+'로 시작해요. '+cell.p+'로 시작하는 낱말을 다시 써 봐요!'); seq=[]; paint(); return; }
-    if(!BANK[word]){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE();
-      fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 아빠한테 알려 둘게요! 다른 낱말도 생각해 볼까?'); return; }
+    if(!known(word)){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE();
+      fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 다른 낱말도 생각해 볼까?'); return; }
     win(word); };
   w.addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t) return;
     if(t.dataset.k&&!done){ if(seq.length<24) seq.push(t.dataset.k); fb(''); paint(); return; }
     const a=t.dataset.a; if(!a) return;
     if(a==='del'){ seq.pop(); paint(); }
     else if(a==='ok') check();
-    else if(a==='pass') reveal('');
+    else if(a==='pass') hint('');
+    else if(a==='retry') back();
+    else if(a==='give') reveal('');
     else if(a==='close'){ closeSheet(); draw(); next(); } });
   paint(); }
 function owlTurn(cs){ draw(); msg('🦉 부엉이가 땅을 고르는 중…');
@@ -6542,7 +6563,8 @@ function owlTurn(cs){ draw(); msg('🦉 부엉이가 땅을 고르는 중…');
   const cell=cs.slice().sort((a,b)=>val(b)-val(a))[0], idx=G.cells.indexOf(cell);
   /* 2026-11-13: 부엉이가 어느 땅을 골라 무슨 낱말을 쓰는지 보이게: 고른 땅이 반짝이고, 그 칸에 한 글자씩 써요 */
   setTimeout(()=>{ if(!G||G.fin) return; draw(cell); msg('🦉 이 땅을 골랐어요 → <b style="font-size:1.2em">'+cell.p+'</b>');
-    setTimeout(()=>{ if(!G||G.fin) return; const L2=SH(left(cell.p)), two=L2.filter(w=>[...w].length===2), good=two.filter(w=>OWLSET.has(w)), mean=two.filter(w=>BANK[w]&&BANK[w].d), ans=(good.length&&Math.random()<.9?good:mean.length&&Math.random()<.9?mean:two.length&&Math.random()<.85?two:L2)[0], ok=ans&&Math.random()<.68;   /* 2026-11-13: 부엉이는 대부분 두 글자 낱말로 (세 글자 보너스는 가끔만) */
+    setTimeout(()=>{ if(!G||G.fin) return; /* 2026-11-13: 부엉이는 두 글자 낱말만 써요 (없으면 통과). 아이가 대부분 이기도록 자주 막혀요 */
+      const two=SH(left(cell.p)).filter(w=>[...w].length===2), good=two.filter(w=>OWLSET.has(w)), mean=two.filter(w=>BANK[w]&&BANK[w].d), ans=(good.length&&Math.random()<.95?good:mean.length?mean:two)[0], ok=ans&&Math.random()<.55;   /* 2026-11-13: 부엉이는 대부분 두 글자 낱말로 (세 글자 보너스는 가끔만) */
       if(!ok){ msg('🦉 '+cell.p+'… 음, 모르겠다! 부엉이는 통과할게.'); setTimeout(()=>{ if(!G||G.fin) return; cell.p=newPat(); draw(); G.turn=ME; setTimeout(begin,900); },1300); return; }
       const sy=[...ans]; let k=0;
       const typeOne=()=>{ if(!G||G.fin) return; k++; const el=document.querySelector('[data-ttc="'+idx+'"]'), part=sy.slice(0,k).join('');
@@ -6588,12 +6610,18 @@ function gpBegin(){ if(!TG||TG.fin) return; gpFill();
   TG.sel=[]; gpStore(); gpDraw(); msg(TG.asks===0?'글자판을 2장 넘게 골라요. 그 초성으로 된 낱말을 쓰면 글자판을 가져가요!':'내 차례! 글자판을 골라요. 길게 만들수록 점수가 커요.'); }
 function gpNext(){ TG.sel=[]; TG.turn=TG.mode==='owl'?(TG.turn===ME?OWL:ME):ME; setTimeout(gpBegin,TG.turn===OWL?600:250); }
 function gpWrite(){ const pick=TG.sel.map(i=>TG.tbl[i].j); let seq=[], miss=0, done=false;
-  const w=sheet('<div class="ttq"><div class="lab">고른 글자판으로 낱말을 써요 (순서는 바꿔도 돼요)</div><div class="gppick">'+TG.sel.map(i=>'<span class="'+(TG.tbl[i].g?'gold':'')+'">'+TG.tbl[i].j+'</span>').join('')+'</div></div><div class="ttans" id="ttans"></div>'
-    +keysHTML()+'<div class="ttrow"><button type="button" class="ttdel" data-a="back">↩ 다시 고르기</button><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>');
+  const askHTML2='<div class="ttq"><div class="lab">고른 글자판으로 낱말을 써요 (순서는 바꿔도 돼요)</div><div class="gppick">'+TG.sel.map(i=>'<span class="'+(TG.tbl[i].g?'gold':'')+'">'+TG.tbl[i].j+'</span>').join('')+'</div></div><div class="ttans" id="ttans"></div>'
+    +keysHTML()+'<div class="ttrow"><button type="button" class="ttdel" data-a="back">↩ 다시 고르기</button><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>';
+  let gl=0; const w=sheet(askHTML2);
   const $=s=>w.querySelector(s), fb=t=>{ $('#ttfb').innerHTML=t; };
   const paint=()=>{ const t=compose(seq); $('#ttans').innerHTML=t?[...t].map(x=>'<span>'+x+'</span>').join(''):'<span class="ph">아래 자판으로 써요</span>'; };
   const exact=()=>WORDS.filter(x=>!TG.used.includes(x)&&mseq(PJ(x),pick));
   const shake=()=>{ const b=$('#ttans'); b.classList.remove('ttshake'); void b.offsetWidth; b.classList.add('ttshake'); };
+  const backG=()=>{ seq=[]; w.querySelector('.ttbox').innerHTML=askHTML2; paint(); fb('💡 힌트를 보고 다시 써 봐요!'); };
+  const hintG=why=>{ const ex=exact(), any=ex.length?ex:gpCan(TG.tbl,4), a=any.length?SH(any)[0]:'', b=BANK[a]||{}; if(!a) return hintEnd(why); gl++;
+    const L=[...a].length, body=gl===1?'<div class="e">'+(b.e||'💡')+'</div><p style="margin:6px 0 0;font-weight:800">'+L+'글자 낱말이에요</p>'+(b.d?'<p style="margin:6px 0 0">'+ES(b.d)+'</p>':'<p style="margin:6px 0 0">고른 글자판을 다시 살펴봐요!</p>')
+      :'<div class="e">'+(b.e||'💡')+'</div><p style="margin:4px 0 0;font-size:2rem;font-weight:900;letter-spacing:4px;color:#C2255C">'+[...a].map((c,i)=>i?'○':c).join('')+'</p><p style="margin:6px 0 0;font-weight:800">첫 글자는 「'+[...a][0]+'」예요</p>'+(b.d?'<p style="margin:6px 0 0">'+ES(b.d)+'</p>':'');
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 힌트 '+gl+'</p>'+body+'</div><div class="ttrow"><button type="button" class="ttok" data-a="retry">✏️ 다시 써 볼래요</button>'+(gl<2?'<button type="button" class="ttpass" data-a="pass">💡 힌트 하나 더</button>':'<button type="button" class="ttpass" data-a="give">🙋 답을 알려 주세요</button>')+'</div>'; };
   const hintEnd=why=>{ done=true; const ex=exact(), any=ex.length?ex:gpCan(TG.tbl,4), a=any.length?SH(any)[0]:'', b=BANK[a]||{}; TG.asks++;
     w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+(a?'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 '+(ex.length?'이 글자판으로는 이런 낱말이 있어요':'이 판에서는 이런 낱말을 만들 수 있었어요')+'</p><div class="e">'+(b.e||'💡')+'</div><b>'+ES(a)+'</b><p style="margin:4px 0 0;opacity:.8">'+PJ(a).join('')+' → '+ES(a)+'</p>':'')+'<p style="margin:8px 0 0;opacity:.8">이번 차례는 넘어가요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="close">알겠어요</button></div>'; if(a) SAY(a); };
   const win=word=>{ done=true; const b=BANK[word]||{}, idx=TG.sel.slice().sort((x,y)=>y-x), pts=idx.reduce((s,i)=>s+(TG.tbl[i].g?2:1),0);
@@ -6603,16 +6631,18 @@ function gpWrite(){ const pick=TG.sel.map(i=>TG.tbl[i].j); let seq=[], miss=0, d
     if(!/^[가-힣]+$/.test(word)){ fb(word?'글자를 끝까지 완성해요. (자음 다음에 모음!)':'자판으로 낱말을 써요.'); return; }
     if(TG.used.includes(word)){ fb('「'+ES(word)+'」는 이미 나온 낱말이에요.'); return; }
     if(!mseq(PJ(word),pick)){ miss++; SFX('no'); shake(); seq=[]; paint();
-      if(miss>=2) return hintEnd('「'+ES(word)+'」의 초성은 '+PJ(word).join('')+'이에요.');
+      if(miss>=2) return hintG('「'+ES(word)+'」의 초성은 '+PJ(word).join('')+'이에요.');
       fb('「'+ES(word)+'」의 초성은 '+PJ(word).join('')+'이에요. 고른 글자판은 '+pick.join('')+'! 다시 써 봐요.'); return; }
-    if(!BANK[word]){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE(); fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 아빠한테 알려 둘게요! 다른 낱말도 생각해 볼까?'); return; }
+    if(!known(word)){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE(); fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 다른 낱말도 생각해 볼까?'); return; }
     win(word); };
   w.addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t) return;
     if(t.dataset.k&&!done){ if(seq.length<24) seq.push(t.dataset.k); fb(''); paint(); return; }
     const a=t.dataset.a; if(!a) return;
     if(a==='del'){ seq.pop(); paint(); }
     else if(a==='ok') check();
-    else if(a==='pass') hintEnd('');
+    else if(a==='pass') hintG('');
+    else if(a==='retry') backG();
+    else if(a==='give') hintEnd('');
     else if(a==='back'){ closeSheet(); gpDraw(); msg('글자판을 다시 골라요.'); }
     else if(a==='close'){ closeSheet(); gpFill(); gpDraw(); gpNext(); } });
   paint(); }
@@ -6623,9 +6653,9 @@ function gpSwap(){ if(!TG.bag.length){ msg('주머니가 비어서 바꿀 수 �
   TG.sel=[]; gpDraw(); msg('🔄 글자판 '+idx.length+'장을 바꿨어요.'+(hint?' 🦉 「'+ES(hint)+'」('+PJ(hint).join('')+')도 만들 수 있었어요!':''));
   TG.turn=TG.mode==='owl'?OWL:ME; setTimeout(gpBegin,2200); }
 function gpOwl(){ gpDraw(); msg('🦉 부엉이가 글자판을 고르는 중…');
-  const can=gpCan(TG.tbl,4), pool=SH(can).sort((a,b)=>Math.abs([...a].length-2)-Math.abs([...b].length-2)+(Math.random()-.5)*1.2), word=pool[0];
+  const can=gpCan(TG.tbl,2).filter(w=>[...w].length===2), pool=SH(can), word=pool[0];   /* 부엉이는 두 글자만 */
   setTimeout(()=>{ if(!TG||TG.fin) return;
-    if(!word||Math.random()<.28){ const n=Math.min(2,TG.bag.length); for(let k=0;k<n;k++){ const i=R(TG.tbl.length), t=TG.tbl[i]; TG.tbl[i]=TG.bag.pop(); TG.bag.unshift(t); }
+    if(!word||Math.random()<.4){ const n=Math.min(2,TG.bag.length); for(let k=0;k<n;k++){ const i=R(TG.tbl.length), t=TG.tbl[i]; TG.tbl[i]=TG.bag.pop(); TG.bag.unshift(t); }
       gpDraw(); msg('🦉 음… 부엉이는 글자판을 바꿀게.'); TG.turn=ME; return setTimeout(gpBegin,1500); }
     const have=TG.tbl.map(t=>t.j), idx=[]; PJ(word).forEach(j=>{ const i=have.findIndex((x,k)=>x===j&&!idx.includes(k)); idx.push(i); });
     gpDraw(idx); msg('🦉 '+PJ(word).join(' ')+' 글자판을 골랐어요…');
