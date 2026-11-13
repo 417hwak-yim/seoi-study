@@ -6538,7 +6538,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   /* 학교 일정 페이지 */
   function listView(){ const U=upcoming(), P=past();
     show('<button class="back" data-go="start">←</button><section class="panel scpage"><h2>🏫 '+NM()+'의 유치원 일정</h2><p class="sclead">유치원 행사와 활동을 미리 보고 준비해요. 일정을 누르면 자세히 볼 수 있어요.</p>'
-      +''+menuCard()+'<h3 class="sch3">📌 다가오는 일정</h3>'+(U.length?U.map(item).join(''):'<p class="sclead">지금은 다가오는 일정이 없어요.</p>')
+      +'<h3 class="sch3">📌 다가오는 일정</h3>'+(U.length?U.map(item).join(''):'<p class="sclead">지금은 다가오는 일정이 없어요.</p>')
       +'<h3 class="sch3">🗓️ 유치원 달력</h3><div class="sccalwrap">'+cal()+'</div>'
       +(P.length?'<details style="margin-top:14px"><summary>📁 지난 일정 '+P.length+'개</summary>'+P.map(item).join('')+'</details>':'')+'</section>',COL);
     bindCal(); }
