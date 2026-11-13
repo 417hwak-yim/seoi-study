@@ -2134,7 +2134,7 @@ KOORDER.forEach(g=>GRADES[g].units.forEach(u=>{ u.speedQ=n=>{ const P=GRADES[u.g
 
 /* ---------- 마무리 평가 단원: 단원 몇 개를 묶어 배운 것을 한꺼번에 확인해요 ---------- */
 const REVGROUP={8:[2,2,2,2,2],72:[2,2,2,2,2],7:[2,2,2,2,2],101:[3,3,3],102:[2,2,2,2,2],103:[2,2,2,2,2],104:[3,2,2,2,2,2],201:[2,3],202:[2,3,2],203:[2],204:[2,2],205:[2,2],206:[2,2,2,3],301:[2,2,2,2,2],302:[2,2,2],303:[2,3],304:[3,3,3],305:[2,2,2,2,2],311:[2,2,2,2,2],312:[2,2,2,2,2],313:[2,2,2,2,2],314:[2,2,2,2,2]};
-const slotsOf=u=>u.rev?[0,1,'s']:SLOTS;
+const slotsOf=u=>u.rev||u.rel==='cho'?[0,1,'s']:SLOTS;
 const REV_LESSONS={hanja:[['뜻과 소리 평가','한자의 뜻과 소리를 확인해요'],['한자어 평가','한자어 읽기와 빈칸을 확인해요']],eng:[['소리와 낱말 평가','듣고 보고 알맞은 낱말을 골라요'],['읽기와 쓰기 평가','낱말을 만들고 문장을 읽어요']],math:[['계산 평가','배운 계산을 숫자판으로 확인해요'],['문장제 평가','글로 된 문제를 풀어요']],ko:[['낱말 뜻 평가','낱말과 뜻을 확인해요'],['낱말 쓰임 평가','문장과 글자 풀이를 확인해요']]};
 /* ================= 영어 동화: 그림책을 읽어 주고, 이야기와 낱말을 퀴즈로 확인해요 =================
    1단계는 이 프로그램을 위해 새로 지은 짧은 그림책, 2단계는 이솝 이야기와 옛이야기를 아이 눈높이에 맞게 새로 쓴 것과 생활 이야기예요.
@@ -2260,38 +2260,39 @@ SUBJ.wd={name:'낱말 탐험',sub:'비슷한 말, 반대말, 소리가 같은 �
 WDORDER.forEach(g=>ALLG.push(g));
 REVGROUP[501]=[2,2]; REVGROUP[502]=[2,2]; REVGROUP[503]=[2,2]; REVGROUP[504]=[2,2];
 REV_LESSONS.wd=[['낱말 평가','낱말과 뜻을 확인해요'],['문장 평가','문장 속 낱말을 확인해요']];
-/* ===== 한글 놀이: 초성 퀴즈 (2026-11-12) =====
-   그림을 보고 초성(글자마다 맨 앞 자음)을 찾고, 초성을 보고 낱말을 맞혀요. ‘낱말 탐험’과 같은 틀(5단계)을 써요. */
+/* ===== 한글 놀이: 초성 땅따먹기 (2026-11-13) =====
+   보드게임 한 판 = 오늘의 한글 놀이 한 번. 땅에 적힌 초성 두 개로 시작하는 낱말을 만들면 그 땅을 차지해요(부엉이랑 대결 / 혼자).
+   맞는 낱말인지는 낱말 사전(CHG 낱말 + CHBANK)으로 확인해요. 사전에 없는 낱말은 STATE.ttUnk에 모아 둬요(아빠가 보고 CHBANK에 더하기).
+   단원마다 1판·2판·마지막 판(slotsOf가 [0,1,'s']). 단원 낱말은 그 판의 땅 초성을 정할 때 먼저 써요. */
 const CHO19=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 const CHOBASE=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 const chChoOf=w=>[...w].map(c=>{ const k=c.charCodeAt(0)-0xAC00; return k>=0&&k<11172?CHO19[Math.floor(k/588)]:c; }).join('');
-const CH_LESSONS=[['그림과 초성','그림을 보고 초성과 첫소리를 찾아요'],['짝 찾기 놀이','선 잇기, 징검다리'],['따라 쓰기','낱말을 또박또박 써요'],['문장 속 초성','초성과 뜻, 문장을 보고 낱말을 찾아요'],['놀이 한마당','게임으로 한 번 더 다져요']];
+const CH_LESSONS=[['보드게임 1판','땅따먹기나 글자판 모으기 한 판'],['보드게임 2판','부엉이랑 또 한 판!']];
 const CHORDER=[];
 const CHG=[
- ['그림 보고 초성','두 글자 낱말의 초성 찾기','#D9480F',[
-  ['과일과 채소','사과:🍎:빨갛고 동그란 과일:아침에 [사과]를 깎아 먹었어요.|포도:🍇:작은 알이 송이송이 달린 보라색 과일:[포도] 한 송이를 씻었어요.|수박:🍉:여름에 먹는 크고 줄무늬 있는 과일:여름에는 시원한 [수박]이 최고예요.|딸기:🍓:씨가 겉에 콕콕 박힌 빨간 과일:[딸기]에 우유를 부어 먹었어요.|오이:🥒:길쭉하고 초록색인 채소:엄마가 [오이]를 송송 썰었어요.|감자:🥔:땅속에서 자라는 동글동글한 채소:[감자]를 삶아서 호호 불어 먹었어요.'],
-  ['동물 친구','사자:🦁:갈기가 멋진 동물의 왕:동물원에서 [사자]가 어흥 울었어요.|오리:🦆:꽥꽥 울며 물 위를 헤엄치는 새:연못에서 [오리]가 헤엄쳐요.|토끼:🐰:귀가 길고 깡충깡충 뛰는 동물:[토끼]가 당근을 오물오물 먹어요.|여우:🦊:꼬리가 복슬복슬한 꾀 많은 동물:동화 속 [여우]는 꾀가 많아요.|하마:🦛:입이 아주 크고 물을 좋아하는 동물:[하마]가 입을 쩍 벌렸어요.|고래:🐳:바다에 사는 아주 큰 동물:[고래]가 물을 뿜어 올렸어요.'],
-  ['우리 집 물건','우산:☂️:비 올 때 쓰는 물건:비가 와서 [우산]을 폈어요.|시계:⏰:시간을 알려 주는 물건:[시계]가 일곱 시를 가리켜요.|연필:✏️:글씨를 쓰는 도구:[연필]을 뾰족하게 깎았어요.|의자:🪑:앉을 때 쓰는 가구:[의자]에 바르게 앉아요.|모자:🧢:머리에 쓰는 것:햇볕이 뜨거워서 [모자]를 썼어요.|안경:👓:눈이 잘 보이게 쓰는 것:할아버지가 [안경]을 쓰고 신문을 읽어요.'],
-  ['맛있는 간식','피자:🍕:동그랗고 치즈가 쭉 늘어나는 음식:[피자] 한 조각을 먹었어요.|우유:🥛:소젖으로 만든 하얀 마실 것:아침마다 [우유]를 한 잔 마셔요.|사탕:🍬:입에서 살살 녹여 먹는 달콤한 것:[사탕]을 먹고 이를 닦았어요.|라면:🍜:꼬불꼬불한 면을 끓여 먹는 음식:[라면]이 뜨거워서 후후 불었어요.|달걀:🥚:닭이 낳은 알:[달걀]을 깨서 프라이를 했어요.|쿠키:🍪:바삭하게 구운 과자:[쿠키]를 우유에 콕 찍어 먹었어요.']]],
- ['초성 탐정','세 글자 낱말, 초성이 닮은 낱말','#7048E8',[
-  ['탈것','기차:🚂:기찻길 위를 달리는 긴 탈것:[기차]가 칙칙폭폭 달려요.|버스:🚌:많은 사람이 함께 타는 큰 차:학교 앞에서 [버스]를 탔어요.|택시:🚕:돈을 내고 가고 싶은 곳까지 타는 차:비가 와서 [택시]를 탔어요.|트럭:🚚:짐을 싣고 다니는 차:[트럭]에 이삿짐을 실었어요.|자전거:🚲:두 바퀴를 발로 굴려 가는 탈것:공원에서 [자전거]를 탔어요.|비행기:✈️:하늘을 나는 탈것:[비행기]를 타고 제주도에 갔어요.'],
-  ['자연과 날씨','구름:☁️:하늘에 떠 있는 하얀 것:하늘에 [구름]이 둥실 떠 있어요.|나무:🌳:땅에 뿌리를 내리고 자라는 큰 식물:[나무] 그늘에서 쉬었어요.|바다:🌊:짠물이 넓게 펼쳐진 곳:여름에 [바다]에서 헤엄쳤어요.|무지개:🌈:비 온 뒤 하늘에 뜨는 일곱 빛깔 띠:비가 그치고 [무지개]가 떴어요.|눈사람:⛄:눈을 뭉쳐 만든 사람:마당에 [눈사람]을 만들었어요.|해바라기:🌻:해를 따라 고개를 돌리는 노란 꽃:[해바라기]가 해를 보고 활짝 폈어요.'],
-  ['닮은 초성 짝','거미:🕷️:다리가 여덟 개이고 줄을 치는 벌레:[거미]가 줄을 쳐서 벌레를 잡아요.|개미:🐜:줄지어 다니며 먹이를 나르는 작은 곤충:[개미]가 과자 부스러기를 날라요.|다리:🌉:강을 건너도록 놓은 길:[다리]를 건너 할머니 댁에 가요.|도로:🛣️:자동차가 다니는 넓은 길:[도로]에 차가 많이 다녀요.|고기:🍖:먹으려고 잡은 짐승의 살:저녁에 [고기]를 구워 먹었어요.|가게:🏪:물건을 파는 곳:[가게]에서 공책을 샀어요.'],
-  ['긴 낱말','고구마:🍠:땅속에서 자라는 달콤한 자주색 뿌리:군 [고구마]가 달콤해요.|바나나:🍌:길쭉하고 노란 과일:원숭이가 [바나나]를 좋아해요.|토마토:🍅:빨갛고 즙이 많은 열매:[토마토]를 잘라 샐러드에 넣었어요.|코끼리:🐘:코가 아주 긴 큰 동물:[코끼리]가 코로 물을 뿜어요.|거북이:🐢:등에 단단한 등딱지가 있는 동물:[거북이]가 느릿느릿 걸어요.|다람쥐:🐿️:도토리를 볼에 가득 넣는 작은 동물:[다람쥐]가 도토리를 모아요.']]]
+ ['한글 보드게임 1','동물 · 음식 · 탈것 · 우리 동네','#D9480F',[
+  ['동물 친구','고슴도치:🦔:등에 뾰족한 가시가 잔뜩 난 작은 동물|캥거루:🦘:배 주머니에 아기를 넣고 껑충껑충 뛰는 동물|펭귄:🐧:날지 못하고 뒤뚱뒤뚱 걷는 추운 곳의 새|기린:🦒:목이 아주 길어서 높은 나뭇잎을 먹는 동물|얼룩말:🦓:검은 줄무늬 옷을 입은 말|악어:🐊:입이 크고 이빨이 뾰족한 물가 동물|문어:🐙:다리가 여덟 개이고 먹물을 뿜는 바다 동물|앵무새:🦜:사람 말을 따라 하는 알록달록한 새|낙타:🐫:등에 혹이 있고 사막을 걷는 동물|너구리:🦝:눈 둘레가 까맣고 꼬리에 줄무늬가 있는 동물|고릴라:🦍:힘이 세고 가슴을 쿵쿵 두드리는 동물|달팽이:🐌:등에 집을 지고 느릿느릿 기어가는 동물|박쥐:🦇:낮에는 거꾸로 매달려 자고 밤에 나는 동물|홍학:🦩:한 다리로 서 있기를 좋아하는 분홍색 새|꿀벌:🐝:꽃에서 꿀을 모으는 부지런한 곤충|공룡:🦕:아주아주 옛날에 살았던 커다란 동물'],
+  ['맛있는 음식','햄버거:🍔:둥근 빵 사이에 고기와 채소를 넣은 음식|샌드위치:🥪:네모난 빵 사이에 햄과 채소를 넣은 음식|핫도그:🌭:길쭉한 빵에 소시지를 끼운 음식|만두:🥟:밀가루 피 속에 고기와 채소를 넣고 빚은 음식|팝콘:🍿:옥수수 알을 튀겨 톡톡 터뜨린 간식|초콜릿:🍫:달콤하고 갈색인 네모난 과자|아이스크림:🍦:차갑고 달콤해서 혀로 핥아 먹는 간식|도넛:🍩:가운데 구멍이 뚫린 동그란 빵|와플:🧇:바둑판 무늬가 있는 바삭한 빵|옥수수:🌽:노란 알이 줄줄이 박힌 곡식|브로콜리:🥦:작은 나무처럼 생긴 초록 채소|당근:🥕:토끼가 좋아하는 주황색 채소|파인애플:🍍:겉은 울퉁불퉁하고 머리에 잎이 난 과일|복숭아:🍑:겉에 보송보송 털이 있는 분홍 과일|체리:🍒:꼭지에 두 알이 대롱대롱 달린 빨간 과일|땅콩:🥜:껍데기를 까서 먹는 고소한 열매'],
+  ['탈것','소방차:🚒:불을 끄러 달려가는 빨간 차|구급차:🚑:아픈 사람을 병원으로 태워 가는 차|경찰차:🚓:경찰관이 타고 다니는 차|헬리콥터:🚁:머리 위 날개를 빙빙 돌려 나는 탈것|오토바이:🏍️:바퀴가 두 개이고 엔진으로 달리는 탈것|지하철:🚇:땅속 길로 다니는 기차|로켓:🚀:우주로 날아가는 탈것|트랙터:🚜:밭을 가는 힘센 농기계|킥보드:🛴:한 발로 땅을 차며 타는 탈것|돛단배:⛵:바람을 받는 돛을 단 배|유람선:🛳️:구경하는 사람들을 태우고 다니는 큰 배|케이블카:🚡:줄에 매달려 산 위로 올라가는 탈것|썰매:🛷:눈 위에서 미끄러지며 타는 탈것|낙하산:🪂:하늘에서 천천히 내려오게 해 주는 큰 천|스케이트보드:🛹:바퀴 달린 판에 올라서 타는 놀이 기구|롤러스케이트:🛼:바퀴 달린 신발'],
+  ['우리 동네','신호등:🚦:빨간불 초록불로 건널 때를 알려 주는 것|정류장:🚏:버스를 기다리는 곳|병원:🏥:아플 때 의사 선생님께 가는 곳|학교:🏫:친구들과 공부하러 가는 곳|은행:🏦:돈을 맡기고 찾는 곳|우체국:🏤:편지와 소포를 보내는 곳|편의점:🏪:밤에도 문을 여는 작은 가게|대관람차:🎡:빙글빙글 돌며 높이 올라가는 놀이 기구|텐트:⛺:캠핑할 때 치는 천막 집|분수:⛲:물이 위로 솟아오르는 곳|공장:🏭:물건을 많이 만드는 큰 건물|우체통:📮:편지를 넣는 빨간 통|주유소:⛽:자동차에 기름을 넣는 곳|미용실:💈:머리를 자르고 다듬는 곳']]],
+ ['한글 보드게임 2','자연 · 생활 물건 · 놀이와 학교 · 긴 낱말','#7048E8',[
+  ['자연과 계절','무지개:🌈:비 온 뒤 하늘에 뜨는 일곱 빛깔 띠|눈사람:⛄:눈을 뭉쳐 만든 사람|해바라기:🌻:해를 따라 고개를 돌리는 노란 꽃|단풍잎:🍁:가을에 빨갛게 물든 잎|도토리:🌰:다람쥐가 좋아하는 동글동글한 열매|번개:⚡:비 오는 날 하늘에서 번쩍이는 빛|화산:🌋:뜨거운 용암이 솟아오르는 산|선인장:🌵:사막에서 자라는 가시 많은 식물|눈송이:❄️:하늘에서 내리는 하얀 눈 한 송이|무당벌레:🐞:빨간 등에 까만 점이 있는 곤충|버섯:🍄:비 온 뒤 숲속에 쏙 나오는 우산 모양의 것|거미줄:🕸️:거미가 친 끈끈한 줄|소나무:🌲:겨울에도 잎이 푸른 바늘잎 나무|튤립:🌷:컵 모양으로 피는 봄꽃|벚꽃:🌸:봄에 분홍빛으로 활짝 피는 꽃|초승달:🌙:손톱처럼 가늘게 휜 달'],
+  ['생활 물건','칫솔:🪥:이를 닦는 솔|비누:🧼:손을 씻을 때 거품을 내는 것|휴지:🧻:둘둘 말린 얇은 종이|거울:🪞:내 얼굴을 비춰 보는 것|빗자루:🧹:바닥을 쓰는 도구|열쇠:🔑:문을 여는 작은 쇠|가위:✂️:종이를 자르는 도구|망치:🔨:못을 박는 도구|장갑:🧤:손을 따뜻하게 감싸는 것|목도리:🧣:목에 둘러 따뜻하게 하는 것|우산:☂️:비 올 때 펴서 쓰는 것|안경:👓:눈이 잘 보이게 쓰는 것|양말:🧦:발에 신는 얇은 것|운동화:👟:뛰어놀 때 신는 신발|텔레비전:📺:만화와 뉴스가 나오는 기계|손전등:🔦:어두운 곳을 비추는 작은 불빛'],
+  ['놀이와 학교','크레파스:🖍️:그림을 그리는 미끌미끌한 색 막대|책가방:🎒:학교 갈 때 메는 가방|풍선:🎈:바람을 불어 넣으면 커지는 것|축구공:⚽:발로 차는 공|농구공:🏀:바구니 골대에 넣는 주황색 공|야구공:⚾:빨간 실밥이 있는 작은 공|피아노:🎹:흰 건반 검은 건반을 누르는 악기|바이올린:🎻:활로 줄을 그어 소리 내는 악기|기타:🎸:줄을 손가락으로 튕기는 악기|트럼펫:🎺:입으로 불어 빵빠레 소리를 내는 악기|퍼즐:🧩:조각을 맞춰 그림을 완성하는 놀이|공책:📓:글씨를 쓰는 책|연필:✏️:깎아서 쓰는 글씨 도구|주사위:🎲:던져서 나온 점의 수를 세는 것|곰인형:🧸:꼭 안고 자는 폭신한 인형|가오리연:🪁:꼬리가 긴 마름모 모양 연'],
+  ['긴 낱말 탐정','크리스마스:🎄:12월 25일, 트리를 꾸미는 날|생일케이크:🎂:생일에 촛불을 꽂아 부는 케이크|스파게티:🍝:긴 면에 소스를 비벼 먹는 음식|산타할아버지:🎅:크리스마스에 선물을 주는 빨간 옷 할아버지|롤러코스터:🎢:높이 올라갔다 쌩 내려오는 놀이 기구|회전목마:🎠:빙글빙글 도는 말 놀이 기구|불꽃놀이:🎆:밤하늘에 펑펑 터지는 불꽃|비행접시:🛸:외계인이 탄다는 둥근 접시 모양 탈것|크루아상:🥐:초승달 모양의 바삭한 빵|프레첼:🥨:리본처럼 꼬아 구운 빵|오징어:🦑:다리가 열 개인 바다 동물|열대어:🐠:따뜻한 바다에 사는 알록달록한 물고기|코끼리:🐘:코가 아주 긴 큰 동물|다람쥐:🐿️:볼에 도토리를 가득 넣는 작은 동물|거북이:🐢:등딱지를 지고 느릿느릿 걷는 동물|돌고래:🐬:똑똑하고 점프를 잘하는 바다 동물']]]
 ];
-CHG.forEach((V,vi)=>{ const g=1001+vi; CHORDER.push(g);
+/* 땅따먹기 낱말 사전 더하기: 낱말 또는 낱말/그림 을 띄어쓰기로 */
+const CHBANK='가방/👜 가지/🍆 감자/🥔 강아지/🐶 개구리/🐸 거미/🕷️ 고구마/🍠 고래/🐳 고양이/🐱 고추/🌶️ 공원 과자 구두/👞 구름/☁️ 국수 그네 그림/🖼️ 기차/🚂 김밥 김치 꽃게/🦀 나무/🌳 나비/🦋 냄비 냉장고 노래 눈썹 다리 달걀/🥚 당나귀 대나무/🎋 도로 돼지/🐷 두부 딸기/🍓 라면/🍜 리본/🎀 마당 마차 만화 메뚜기 모래 모자/🧢 목걸이 무릎 물고기/🐟 미역 바나나/🍌 바다/🌊 바지/👖 반지/💍 배추 버스/🚌 베개 벌레 병아리/🐤 보리 부채 비행기/✈️ 빨래 사과/🍎 사자/🦁 사탕/🍬 상자/📦 새우/🦐 생선 소금/🧂 송아지 수박/🍉 수건 숟가락/🥄 시계/⏰ 신발 아기/👶 아빠 엄마 양파/🧅 여우/🦊 연못 오리/🦆 오이/🥒 우유/🥛 원숭이/🐒 의자/🪑 이불 인형 자동차/🚗 자전거/🚲 장미/🌹 젓가락/🥢 조개 종이 주머니 지구/🌍 지우개 참새 창문 책상 청소기 치마/👗 치즈/🧀 칠판 침대/🛏️ 카메라/📷 코뿔소/🦏 콩나물 토끼/🐰 토마토/🍅 파도 포도/🍇 피자/🍕 하늘 하마/🦛 할머니/👵 할아버지/👴 호랑이/🐯 호박/🎃 화분/🪴 휴대폰/📱 감나무 개나리 고드름 기러기 나팔꽃 노을 도마뱀/🦎 독수리/🦅 동생 두더지 딱따구리 메아리 모기/🦟 미꾸라지 바구니/🧺 바람 방울/🔔 번데기 보석/💎 부엌 비둘기/🕊️ 빗방울 사다리/🪜 사슴/🦌 산책 새싹/🌱 선물/🎁 소풍 손수건 수영장 시소 실내화 아침 안개/🌫️ 앵두 야채 어항 얼음/🧊 열매 오렌지/🍊 옷걸이 우물 운동장 유치원 은하수/🌌 자두 잠자리 전화 제비 주전자/🫖 지렁이/🪱 진흙 참외 채소 청개구리 촛불/🕯️ 축구 컴퓨터/💻 쿠키/🍪 탬버린 태양/☀️ 트럭/🚚 팽이 풀잎 하모니카 해님 허수아비 호수 홍당무 화장실/🚻 황소/🐂 가족 거실 고무줄 공주/👸 구슬 김장 꼬리 나라 낙엽/🍂 냇물 놀이터 누나 눈물 달님 대문 도깨비/👹 도시락/🍱 동화책 마스크/😷 마을 말벌 망원경/🔭 머리띠 먹구름 모닥불/🔥 목욕/🛁 문방구 물감 바퀴 박물관 반딧불 발자국/👣 밤하늘 배꼽 보름달/🌕 볼펜/🖊️ 부엉이/🦉 붕어빵 비옷 빨대 사진 산딸기 색종이 생쥐/🐭 선생님 세탁기 소나기 소방관/🧑‍🚒 손가락 손톱 솜사탕 수족관 스케치북 시냇물 식탁 액자 야구 어린이 엘리베이터 연기 옥상 요리사/🧑‍🍳 우주 이빨 자석/🧲 잠옷 저금통 접시/🍽️ 정원 조약돌 줄넘기 지갑/👛 지붕 짝꿍 찰흙 청소 초인종 친구 카레/🍛 케이크/🍰 코알라/🐨 콧물 탁자 태권도 텃밭 팔찌 포크 피리 필통 하품/🥱 해적/🏴‍☠️ 햄스터/🐹 헬멧/⛑️ 호루라기 화가/🧑‍🎨 가게 가로등 가루 가마솥 가을 간식 갈매기 감기 개미/🐜 거북선 거품 겨울 계단 고개 고무신 고슴도치 곰돌이 공기 과일 교실 구멍 국자 군고구마 귀신/👻 귤껍질 그릇 그림자 기름 기침 길고양이 깃발 까마귀 까치 꽃병 꽃잎 꿀떡 나뭇잎 나침반/🧭 낚시 날개 냉면 너구리 노란색 놀이 눈사람 다람쥐 단추 달력/📅 담요 대추 도서관 도자기 돈가스 동굴 동물원 두꺼비 뒷마당 들판 등대 땅콩 떡국 떡볶이 마법사/🧙 막대기 만두 망아지 머리카락 모래성 목도리 무지개 문어 물병 미끄럼틀 미술관 바닷가 바위/🪨 박수/👏 반바지 발가락 밤송이 방석 배낭 백조/🦢 버스표 벌집 베짱이 별님 병원 보물/💰 복숭아 볼링/🎳 부모님 분필 비밀 빗자루 빵집 뽀뽀 사냥꾼 사탕수수 산타 상어/🦈 새끼줄 색연필 생일 선풍기 설거지 성냥 세수 소라 소시지 손바닥 송편 수레 수염 스웨터 시금치 시장 썰매장 아이스크림 아저씨 아줌마 악기 안경집 애벌레/🐛 야자수/🌴 약국 양동이 어묵/🍢 언니 얼룩소 엉덩이 여름 연꽃/🪷 연필깎이 오두막 오빠 옥수수 올챙이 왕관/👑 요요/🪀 우산 운동화 웃음 이모 이야기 인사 자전거포 장난감 장화/🥾 저녁 전봇대 점심 젤리 조끼 종소리 주사위 줄무늬 지도/🗺️ 지팡이 짜장면 참기름 책장 천둥 체육관 초코우유 카드 캠핑 코끼리 콩국수 크레용 탁구/🏓 토끼풀 통나무 튜브 파란색 팥빙수 편지/✉️ 포도주스 풀밭 풍차 피아노 하루 학원 할로윈 해바라기 해파리 햇살 허리 호떡 호두 화장품 회오리 흙탕물';
+CHG.forEach((V,vi)=>{ const g=1001+vi; CHORDER.push(g); const PALC=['#B8402A','#2C6E8C','#3E7F6F','#7A3E6A'];
   GRADES[g]={name:V[0],han:String(vi+1),step:'한글 놀이 '+(vi+1),sub:V[1],color:V[2],subj:'ch',rel:'cho',units:V[3].map((U,k)=>{
-    const items=U[1].split('|').map(x=>{ const a=x.split(':'); return {rel:'cho',w:a[0],e:a[1],d:a[2],s:a[3],c:chChoOf(a[0])}; });
+    const items=U[1].split('|').map(x=>{ const a=x.split(':'); return {rel:'cho',w:a[0],e:a[1],d:a[2],s:'['+a[0]+']',c:chChoOf(a[0])}; });
     const words=items.map(it=>({w:it.w,d:it.e+' '+it.d}));
     const facts=items.map(it=>({q:it.e+' '+it.c,a:it.w}));
     let sl=items.map(it=>it.c[0]).slice(0,5); sl.push('★');
-    return {id:'ch'+(vi+1)+'-'+(k+1),kind:'wd',rel:'cho',g,sem:2,num:k+1,title:U[0],ko:'초성 낱말 '+items.length+'개',kshow:items.map(it=>it.c).join(' · '),items,words,chars:[],games:['mem','speed','ox'],seals:sl,facts,fact:()=>RP(facts),
-      memf:()=>shuffle(items.map(it=>({q:'<span style="font-size:1.9rem">'+it.e+'</span>',qs:it.e,a:it.w}))).slice(0,6),
-      speedQ:n=>Array.from({length:n},()=>{ const it=RP(items), others=[...new Set(GRADES[g].units.filter(x=>!x.rev).flatMap(x=>x.items).map(x=>x.c).filter(c=>c!==it.c))];
-        return {lab:'그림에 맞는 초성은?',p:'<span style="font-size:3.2rem">'+it.e+'</span>',a:it.c,ch:shuffle([it.c,...shuffle(others).slice(0,2)])}; }) }; })}; });
-SUBJ.ch={name:'한글 놀이',sub:'그림 보고 초성 맞히기, 초성 탐정',mark:'ㄱㄴ',order:CHORDER,color:'#D9480F'};
+    return {id:'tt'+(vi+1)+'-'+(k+1),kind:'wd',rel:'cho',g,sem:2,num:k+1,title:U[0],color:PALC[k%4],ko:'보드게임 3판 · 이 주제 낱말이 많이 나와요',kshow:items.slice(0,5).map(it=>it.c).join(' · '),items,words,chars:[],games:[],seals:sl,facts,fact:()=>RP(facts)}; })}; });
+SUBJ.ch={name:'한글 놀이',sub:'초성 땅따먹기 · 초성 글자판 모으기',mark:'ㄱㄴ',order:CHORDER,color:'#D9480F'};
 CHORDER.forEach(g=>ALLG.push(g));
-REVGROUP[1001]=[2,2]; REVGROUP[1002]=[2,2];
+REVGROUP[1001]=[]; REVGROUP[1002]=[];
 /* ===== 한글 놀이 끝 ===== */
 
 /* ================= 국어독해: ERI 예비 단계(7살)와 1단계(초등 1학년) 수준의 짧은 글을 읽고 문제를 풀어요 =================
@@ -3143,7 +3144,8 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
       if(!nx){ nDone++; cards+='<button class="todaycard done" style="--u:'+S.color+'" data-go="subj:'+k+'">'+mascot(MK[k],40,true)+'<span class="tt"><b>'+S.name+'</b><span class="tl">모두 끝냈어요! 🎉</span></span></button>'; return; }
       const did=!!TD.done[k]; if(did) nDone++; mid=!did&&rmid>=0&&seq[rmid]===nx;
       const G=GRADES[nx.g], u=nx.u, ln=nx.l==='s'?(u.rev?'마무리 평가':'실전 문제'):(u.rev?'평가 '+(nx.l+1)+' ':(nx.l+1)+'단계 ')+LN(u,nx.l)[0];
-      cards+='<button class="todaycard'+(did?' did':'')+'" style="--u:'+S.color+'" data-go="today:'+nx.g+':'+nx.ui+'_'+nx.l+'"'+(did?' aria-label="'+S.name+' '+ln+', 오늘 완료. 누르면 다시 해요"':'')+'>'+mascot(MK[k],40,did)+'<span class="tt"><b>'+S.name+'</b><span class="tw">'+(G.subj==='math'||G.subj==='ko'?G.step+' ':'')+G.name+' · '+u.label+'</span><span class="tl">'+(mid?'이어서: ':'')+ln+'</span></span>'+(did?'<span class="tdone" role="img" aria-label="오늘 완료">완료</span>':'<span class="tgo" aria-hidden="true">▶</span>')+'</button>'; });
+      if(k==='ch'){ cards+='<button class="todaycard tdboard'+(did?' did':'')+'" style="--u:#7C4A1E" data-go="today:'+nx.g+':'+nx.ui+'_'+nx.l+'"'+(did?' aria-label="한글 보드게임, 오늘 완료. 누르면 한 판 더 해요"':'')+'><span class="tgdice" aria-hidden="true">🎲</span><span class="tt"><b>한글 보드게임</b><span class="tl">'+(did?'오늘 한 판 했어요!':'한 판 하기')+'</span></span>'+(did?'<span class="tdone" role="img" aria-label="오늘 완료">완료</span>':'<span class="tgo" aria-hidden="true">▶</span>')+'</button>'; return; }
+cards+='<button class="todaycard'+(did?' did':'')+'" style="--u:'+S.color+'" data-go="today:'+nx.g+':'+nx.ui+'_'+nx.l+'"'+(did?' aria-label="'+S.name+' '+ln+', 오늘 완료. 누르면 다시 해요"':'')+'>'+mascot(MK[k],40,did)+'<span class="tt"><b>'+S.name+'</b><span class="tw">'+(G.subj==='math'||G.subj==='ko'?G.step+' ':'')+G.name+' · '+u.label+'</span><span class="tl">'+(mid?'이어서: ':'')+ln+'</span></span>'+(did?'<span class="tdone" role="img" aria-label="오늘 완료">완료</span>':'<span class="tgo" aria-hidden="true">▶</span>')+'</button>'; });
     if(changed) saveLocal();
     const nAll=TK.length;
     todayBox='<section class="todaybox'+(nDone===nAll?' alldone':'')+'" aria-label="오늘의 학습"><h2>오늘의 학습 <span class="tcount" aria-label="'+nAll+'과목 중 '+nDone+'과목 완료">'+TK.map(k=>'<i class="'+(TD.done[k]||!TD.a[k]?'on':'')+'"></i>').join('')+(subj?'':'<b>'+nDone+' / '+nAll+'</b>')+'</span></h2><p class="lead">'+(nDone===nAll?(subj?'오늘의 '+SUBJ[subj].name+' 학습을 끝냈어요! 🎉 내일 새 단계가 열려요.':'오늘의 학습을 모두 끝냈어요! 🎉 내일 새 단계가 열려요.'):'누르면 바로 시작해요.')+'</p><div class="todaygrid">'+cards+'</div></section>'; }
@@ -4629,7 +4631,7 @@ function resultScreen(u,l,stars,msg,again){
   const isNew=!prog[u.id+'-'+l], a=stickerOf(u,l);
   saveStamp(u,l,stars);
   const ui=UNITS.indexOf(u), last=ui>=UNITS.length-1, sl=slotsOf(u), nx=sl[sl.indexOf(l)+1], next=l==='s'?(last?'home':'unit:'+(ui+1)):nx==='s'?'final:'+ui:'lesson:'+ui+':'+nx;
-  const nextLabel=l==='s'?(last?GN(GRADE)+' 도장판 보기':UNITS[ui+1].rev?'마무리 평가 하러 가기':'다음 '+(GRADES[u.g].uword||'단원')+' 보기'):nx==='s'?(u.rev?'마무리 평가 보기':'실전 문제 풀기'):(u.rev?LN(u,nx)[0]:(nx+1)+'단계 '+LN(u,nx)[0]);
+  const nextLabel=l==='s'?(last?GN(GRADE)+' 도장판 보기':UNITS[ui+1].rev?'마무리 평가 하러 가기':'다음 '+(GRADES[u.g].uword||'단원')+' 보기'):nx==='s'?(u.rev?'마무리 평가 보기':u.rel==='cho'?'마지막 판 하기':'실전 문제 풀기'):(u.rev?LN(u,nx)[0]:(nx+1)+'단계 '+LN(u,nx)[0]);
   show('<section class="panel result"><div class="big" style="margin:8px 0 40px">'+sticker(u,l,'big')+'</div><h2>'+['',KID.ya+', 끝까지 해냈구나!',KID.ya+', 참 잘했어!',KID.full+' 어린이 최고!'][stars]+'</h2><p>'+msg+'<br>'+(a.medal?(isNew?'끝까지 풀어서 <b>'+a.name+'</b>을 받았어요!':'<b>'+a.name+'</b>은 이미 받았어요. 별은 가장 많이 받은 만큼 남아요.'):(isNew?'<b>'+a.name+'</b> 도장이 찍혔어요!':'<b>'+a.name+'</b> 도장은 이미 모았어요. 별은 가장 많이 받은 만큼 남아요.'))+'</p><div class="row center"><button class="btn" data-go="'+again+'">다시 하기</button><button class="btn main" data-go="'+next+'">'+nextLabel+'</button><button class="btn" data-go="unit:'+ui+'">단계 목록</button></div><div class="row center" style="margin-top:14px">'+gameBtn()+'</div><div class="row center" style="margin-top:14px"><button class="btn sun" data-go="start" style="width:100%;max-width:340px">🏠 메인 화면으로 가기</button></div></section>',u.color);
 }
 
@@ -6338,6 +6340,317 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 }
 </script>
 <!-- ===== 생일 이벤트 끝 ===== -->
+<!-- ===== 초성 땅따먹기 시작 ===== -->
+<style>
+.ttw{max-width:440px;margin:0 auto}
+.ttsc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:2px 0 8px}
+.ttpl{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:14px;border:2.5px solid #eee;background:#fff;font-weight:900;min-width:0}
+.ttpl.me{color:#C2255C}.ttpl.ow{color:#7C4A1E;justify-content:flex-end}
+.ttpl.on{border-color:currentColor;box-shadow:0 3px 0 currentColor}
+.ttpl em{font-style:normal;font-size:1.5rem}.ttpl b{font-size:1.35rem}.ttpl small{font-size:.75rem}
+.ttvs{font-weight:900;color:#aaa}
+.ttbd{display:grid;gap:4px;padding:6px;background:#6B4F2A;border-radius:16px;touch-action:manipulation}
+.ttc{position:relative;aspect-ratio:1;border:0;border-radius:10px;background:#F3E7C9;font:inherit;font-weight:900;color:#5A4630;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;line-height:1.05;overflow:hidden;min-width:0}
+.ttc .p{font-size:1.3rem;letter-spacing:.04em}
+.ttc .w{font-size:.68rem;margin-top:2px;white-space:nowrap}
+.ttc .e{font-size:1.45rem}
+.ttc.me{background:#F7A8C4;color:#7a1238}
+.ttc.ow{background:#C9A27A;color:#4a2c10}
+.ttc.st::after{content:'⭐';position:absolute;top:2px;right:3px;font-size:.72rem}
+.ttc.can{box-shadow:inset 0 0 0 3px #2E9E5B;animation:ttpu 1.2s ease-in-out infinite;cursor:pointer}
+.ttc.pick{box-shadow:inset 0 0 0 4px #7C4A1E}
+@keyframes ttpu{50%{box-shadow:inset 0 0 0 5px #8FE0B0}}
+.ttmsg{min-height:2.8em;text-align:center;font-weight:800;margin:8px 0 2px;font-size:1rem}
+.ttsheet{position:fixed;inset:0;background:rgba(40,25,10,.45);z-index:9500;display:flex;align-items:flex-end;justify-content:center}
+.ttbox{background:#FFFBF2;width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:14px 14px calc(16px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;box-sizing:border-box}
+.ttq{text-align:center}
+.ttq .lab{font-weight:800;color:#8a5a1a;font-size:.95rem}
+.ttq .pat{font-size:2.6rem;font-weight:900;letter-spacing:.25em;color:#C2255C;line-height:1.2}
+.ttans{min-height:56px;margin:8px auto;display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
+.ttans span{min-width:44px;height:52px;padding:0 2px;border-radius:10px;background:#fff;border:2.5px solid #C2255C;display:grid;place-items:center;font-size:1.6rem;font-weight:900;box-sizing:border-box}
+.ttans .ph{border:0!important;background:none!important;width:auto!important;min-width:0!important;padding:0!important;white-space:nowrap;font-size:1rem!important;color:#C99AAE}
+.tttray{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 0}
+.tttray button{height:50px;border-radius:12px;border:2px solid #E2B86B;background:#fff;font-size:1.45rem;font-weight:900;box-shadow:0 3px 0 #E2B86B;color:#3a2a1a;padding:0}
+.tttray button:disabled{opacity:.2;box-shadow:none}
+.ttrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.ttrow button{padding:10px 14px;border-radius:14px;border:0;font-weight:900;font-size:1rem}
+.ttok{background:#2E9E5B;color:#fff;box-shadow:0 3px 0 #1d6b3d}
+.ttdel{background:#eee;color:#444}
+.ttpass{background:#FFF0D6;color:#8a5a1a}
+.ttkb{background:#E8F0FF;color:#2C4A7C}
+.ttgm{position:relative;background:#fff;border:2.5px solid #E8D9BC;border-radius:18px;padding:12px 14px;margin:10px 0;box-shadow:0 3px 0 #E8D9BC}
+.ttgm.land{border-color:#2E9E5B;box-shadow:0 3px 0 #2E9E5B}.ttgm.tile{border-color:#5B5BD6;box-shadow:0 3px 0 #5B5BD6}
+.ttgm.lock{border-color:#ccc;box-shadow:0 3px 0 #ccc;background:#F6F6F6}.ttgm.lock h3,.ttgm.lock p{opacity:.6}
+.ttgm h3{margin:0 0 4px;font-size:1.2rem}.ttgm p{margin:0;line-height:1.5}
+.ttgm .ttlk{margin-top:8px;font-weight:800;opacity:1!important}
+.ttm{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ttm button{flex:1;min-width:30%;padding:12px 6px;border-radius:14px;border:0;font-weight:900;font-size:1.02rem;color:#fff;background:#7C4A1E;box-shadow:0 3px 0 #4a2c10}
+.ttm button[data-tt$=":solo"]{background:#C2255C;box-shadow:0 3px 0 #7a1238}
+.ttm button.res{flex-basis:100%;background:#2E9E5B;box-shadow:0 3px 0 #1d6b3d}
+.ttrec{position:absolute;top:-10px;right:12px;background:#F59F00;color:#fff;font-size:.75rem;font-weight:900;padding:2px 8px;border-radius:10px}
+.gpbd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:10px;background:#3F5A8A;border-radius:16px}
+.gpt{position:relative;aspect-ratio:1/1.05;border:0;border-radius:12px;background:#FFFDF6;font-size:2rem;font-weight:900;color:#2B2B2B;box-shadow:0 4px 0 #C9B98F;padding:0;font-family:inherit}
+.gpt.gold{background:#FFE08A;box-shadow:0 4px 0 #D4A017}
+.gpt.gold::after{content:'2점';position:absolute;bottom:3px;right:5px;font-size:.6rem;color:#8a6200}
+.gpt.sel{transform:translateY(-4px);outline:4px solid #C2255C}
+.gpt.owl{outline:4px solid #7C4A1E}
+.gpt i{position:absolute;top:2px;left:5px;font-style:normal;font-size:.75rem;color:#C2255C}
+.gpt:disabled{color:#2B2B2B;opacity:1}
+.gpbag{text-align:center;margin:8px 0 0;font-weight:800;opacity:.8}
+.ttrow button:disabled{opacity:.4}
+.gppick{display:flex;justify-content:center;gap:6px;margin:6px 0}
+.gppick span{width:46px;height:50px;border-radius:10px;background:#FFFDF6;border:2px solid #C9B98F;display:grid;place-items:center;font-size:1.6rem;font-weight:900}
+.gppick span.gold{background:#FFE08A}
+.ttkey{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:6px 0 2px}
+.ttkey button{height:44px;border-radius:10px;border:0;font-size:1.35rem;font-weight:900;padding:0;background:#E7F0FF;color:#1E3A6E;box-shadow:0 3px 0 #A9C1E8;font-family:inherit}
+.ttkey button.dbl{background:#D6E3FA}
+.ttkey button.v{background:#FFE6EE;color:#8A1C46;box-shadow:0 3px 0 #EBB0C4}
+.ttkey button.del{grid-column:span 2;background:#eee;color:#444;box-shadow:0 3px 0 #ccc;font-size:.95rem}
+.ttkey button:active{transform:translateY(2px);box-shadow:none}
+.ttin{width:100%;font-size:1.6rem;padding:8px;border-radius:12px;border:2.5px solid #C2255C;text-align:center;font-weight:900;box-sizing:border-box}
+.ttfb{min-height:1.6em;text-align:center;font-weight:800;margin-top:6px;color:#B4462E}
+.ttshake{animation:ttsh .35s}@keyframes ttsh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.ttbig{text-align:center;padding:6px 0}.ttbig .e{font-size:3rem}.ttbig b{display:block;font-size:2rem;color:#C2255C}
+.ttstart{display:grid;gap:10px;margin-top:14px}
+.ttstart button{padding:16px;border-radius:18px;border:0;font-size:1.15rem;font-weight:900;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.ttstart small{display:block;font-size:.8rem;opacity:.9;margin-top:2px}
+.ttrule{background:#FFF8E6;border:2px solid #EBD3A6;border-radius:14px;padding:10px 12px;margin-top:10px;line-height:1.6}
+.ttrule p{margin:0}
+</style>
+<script>
+(function(){
+if(typeof CHORDER==='undefined'||typeof CHBANK==='undefined') return;
+const R=n=>Math.floor(Math.random()*n);
+const SH=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=R(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const ES=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const SAY=t=>{ try{ if(typeof say==='function') say(t); }catch(e){} };
+const SFX=k=>{ try{ if(typeof sfx==='function') sfx(k); }catch(e){} };
+const SAVE=()=>{ try{ persist(); }catch(e){} };
+/* 낱말 사전 */
+const BANK={};
+CHORDER.forEach(g=>GRADES[g].units.forEach(u=>(u.items||[]).forEach(it=>{ BANK[it.w]={e:it.e,d:it.d}; })));
+CHBANK.split(/\s+/).filter(Boolean).forEach(x=>{ const i=x.indexOf('/'), w=i<0?x:x.slice(0,i), e=i<0?'':x.slice(i+1); if(!BANK[w]) BANK[w]={e,d:''}; else if(!BANK[w].e&&e) BANK[w].e=e; });
+const WORDS=Object.keys(BANK).filter(w=>/^[가-힣]+$/.test(w)&&[...w].length>=2);
+const P2=w=>chChoOf(w).slice(0,2);
+const BYP={}; WORDS.forEach(w=>{ (BYP[P2(w)]=BYP[P2(w)]||[]).push(w); });
+window.__tt={BANK,BYP,WORDS};
+/* 화면 한글 자판: 누른 자모를 모아 글자로 합쳐요 (ㅗ+ㅏ=ㅘ, 받침 ㄹ+ㄱ=ㄺ, 받침 뒤 모음이 오면 받침이 다음 글자로) */
+const HC='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ', HV='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ', HJ=' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+const VC={'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ'};
+const JC={'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ','ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ'};
+const JSP={}; Object.keys(JC).forEach(k=>JSP[JC[k]]=[k[0],k[1]]);
+const isV=j=>HV.includes(j);
+function compose(seq){ let out='', c=null, v=null, t=null;
+  const fl=()=>{ if(c&&v) out+=String.fromCharCode(0xAC00+(HC.indexOf(c)*21+HV.indexOf(v))*28+(t?HJ.indexOf(t):0)); else { if(c) out+=c; if(v) out+=v; } c=v=t=null; };
+  seq.forEach(j=>{ if(!isV(j)){ if(c&&v){ if(!t){ if(HJ.includes(j)) t=j; else { fl(); c=j; } } else if(JC[t+j]) t=JC[t+j]; else { fl(); c=j; } } else { if(c||v) fl(); c=j; } }
+    else { if(c&&v&&t){ let nc; if(JSP[t]){ nc=JSP[t][1]; t=JSP[t][0]; } else { nc=t; t=null; } fl(); c=nc; v=j; }
+      else if(v&&!t&&VC[v+j]) v=VC[v+j];
+      else if(c&&!v) v=j;
+      else { fl(); v=j; } } });
+  fl(); return out; }
+window.__ttCompose=compose;
+const KROWS=[['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ'],['ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'],['ㄲ','ㄸ','ㅃ','ㅆ','ㅉ','⌫'],['ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ'],['ㅠ','ㅡ','ㅣ','ㅐ','ㅔ','ㅒ','ㅖ']];
+const keysHTML=()=>'<div class="ttkey">'+KROWS.flat().map(k=>k==='⌫'?'<button type="button" class="del" data-a="del" aria-label="지우기">⌫ 지우기</button>':'<button type="button" class="'+(isV(k)?'v':'ㄲㄸㅃㅆㅉ'.includes(k)?'dbl':'')+'" data-k="'+k+'">'+k+'</button>').join('')+'</div>';
+let G=null, U=null, SHEET=false;
+const ME=0, OWL=1;
+const NM=()=>(typeof KID!=='undefined'&&KID.name)||'나';
+const keyOf=(u,l)=>u.id+'|'+l;
+function patPool(u){ const th=SH((u.items||[]).map(it=>P2(it.w)).filter(p=>BYP[p]&&BYP[p].length>=2)), rest=SH(Object.keys(BYP).filter(p=>BYP[p].length>=3));
+  return [...new Set([...th,...rest])]; }
+function newGame(u,l,mode){ const N=mode==='owl'?5:4, pool=patPool(u); let pi=0; const cells=[];
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++) cells.push({r,c,p:'',o:-1,w:'',st:false,home:false});
+  cells[0].o=ME; cells[0].home=true; if(mode==='owl'){ cells[N*N-1].o=OWL; cells[N*N-1].home=true; }
+  cells.forEach(x=>{ if(!x.home) x.p=pool[pi++]; });
+  SH(cells.filter(x=>!x.home)).slice(0,mode==='owl'?4:3).forEach(x=>x.st=true);
+  G={k:keyOf(u,l),mode,N,cells,used:[],pool:pool.slice(pi),turn:ME,first:0,asks:0,mine:[],fin:false}; }
+const at=(r,c)=>G.cells.find(x=>x.r===r&&x.c===c);
+const adj=(x,pi)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{ const y=at(x.r+a,x.c+b); return y&&y.o===pi; });
+const claimable=pi=>G.cells.filter(x=>x.o===-1&&adj(x,pi));
+const score=pi=>G.cells.filter(x=>x.o===pi).reduce((s,x)=>s+(x.st?2:1),0);
+function newPat(){ const on=G.cells.map(x=>x.p); let p=G.pool.shift(); while(p&&(on.includes(p)||!(BYP[p]||[]).some(w=>!G.used.includes(w)))) p=G.pool.shift();
+  if(!p){ const c=Object.keys(BYP).filter(q=>BYP[q].filter(w=>!G.used.includes(w)).length>=2&&!on.includes(q)); p=c[R(c.length)]; } return p; }
+const left=p=>(BYP[p]||[]).filter(w=>!G.used.includes(w));
+function store(){ try{ STATE.tt=JSON.parse(JSON.stringify(G)); SAVE(); }catch(e){} }
+/* ---------- 화면 ---------- */
+function msg(t){ const m=document.getElementById('ttmsg'); if(m) m.innerHTML=t; }
+function draw(pick){ const box=document.getElementById('ttg'); if(!box||!G) return;
+  const can=G.turn===ME&&!G.fin&&!SHEET?claimable(ME):[];
+  const sc='<div class="ttsc"><div class="ttpl me'+(G.turn===ME?' on':'')+'"><em>🐰</em><span><small>'+ES(NM())+'</small><br><b>'+score(ME)+'</b>점</span></div>'
+    +(G.mode==='owl'?'<span class="ttvs">VS</span><div class="ttpl ow'+(G.turn===OWL?' on':'')+'"><span style="text-align:right"><small>부엉이</small><br><b>'+score(OWL)+'</b>점</span><em>🦉</em></div>':'<span></span><div class="ttpl ow" style="justify-content:center"><span style="text-align:center"><small>남은 땅</small><br><b>'+G.cells.filter(x=>x.o===-1).length+'</b>칸</span></div>')+'</div>';
+  const cells=G.cells.map((x,i)=>{ const b=x.w&&BANK[x.w]?BANK[x.w]:null;
+    let inner=x.home?'<span class="e">'+(x.o===ME?'🐰':'🦉')+'</span><span class="w">'+(x.o===ME?'내 집':'부엉이 집')+'</span>':x.o>=0?(b&&b.e?'<span class="e">'+b.e+'</span>':'')+'<span class="w">'+ES(x.w)+'</span>':'<span class="p">'+x.p+'</span>';
+    return '<button type="button" class="ttc'+(x.o===ME?' me':x.o===OWL?' ow':'')+(x.st?' st':'')+(can.includes(x)?' can':'')+(pick===x?' pick':'')+'" data-ttc="'+i+'"'+(can.includes(x)?'':' tabindex="-1"')+' aria-label="'+(x.o===-1?x.p+' 땅':x.w||'집')+'">'+inner+'</button>'; }).join('');
+  box.innerHTML=sc+'<div class="ttbd" style="grid-template-columns:repeat('+G.N+',minmax(0,1fr))">'+cells+'</div><p class="ttmsg" id="ttmsg"></p>'; }
+function sheet(html){ closeSheet(); const w=document.createElement('div'); w.className='ttsheet'; w.innerHTML='<div class="ttbox">'+html+'</div>'; document.body.appendChild(w); SHEET=true; return w; }
+function closeSheet(){ document.querySelectorAll('.ttsheet').forEach(x=>x.remove()); SHEET=false; }
+/* ---------- 차례 ---------- */
+function begin(){ if(!G||G.fin) return;
+  const c0=claimable(ME), c1=G.mode==='owl'?claimable(OWL):[];
+  if(!c0.length&&!c1.length) return end();
+  if(G.turn===OWL){ if(!c1.length){ G.turn=ME; return begin(); } return owlTurn(c1); }
+  if(!c0.length){ draw(); msg('🐰 '+ES(NM())+'는 더 넓힐 땅이 없어요. 부엉이 차례!'); G.turn=OWL; return setTimeout(begin,1300); }
+  store(); draw(); msg(G.asks===0?'반짝이는 땅을 하나 눌러요! 그 초성으로 시작하는 낱말을 만들면 내 땅!':'내 차례! 반짝이는 땅을 골라요.'); }
+function next(){ G.turn=G.mode==='owl'?(G.turn===ME?OWL:ME):ME; setTimeout(begin,G.turn===OWL?700:300); }
+function ask(cell){ if(!left(cell.p).length) cell.p=newPat();
+  const ans=SH(left(cell.p)).slice(0,3); let seq=[], miss=0, done=false;
+  const w=sheet('<div class="ttq"><div class="lab">첫 두 글자의 초성이 이거예요</div><div class="pat">'+cell.p+'</div><div style="font-size:.85rem;opacity:.75">'+(cell.st?'⭐ 2점 땅! ':'')+'두 글자도, 세 글자도, 네 글자도 돼요</div></div><div class="ttans" id="ttans"></div>'
+    +keysHTML()+'<div class="ttrow"><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>');
+  const $=s=>w.querySelector(s);
+  const paint=()=>{ const t=compose(seq); $('#ttans').innerHTML=t?[...t].map(x=>'<span>'+x+'</span>').join(''):'<span class="ph">아래 자판으로 써요</span>'; };
+  const fb=t=>{ $('#ttfb').innerHTML=t; };
+  const reveal=(why)=>{ done=true; const a=ans[0]||left(cell.p)[0], b=BANK[a]||{};
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 부엉이가 알려 줄게요</p><div class="e">'+(b.e||'💡')+'</div><b>'+ES(a)+'</b>'+(b.d?'<p style="margin:4px 0 0">'+ES(b.d)+'</p>':'')+'<p style="margin:8px 0 0;opacity:.8">'+cell.p+' → '+ES(a)+'. 이 땅은 다음에 다른 초성으로 바뀌어요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="close">알겠어요</button></div>';
+    SAY(a); G.asks++; cell.p=newPat(); };
+  const win=(word)=>{ done=true; const b=BANK[word]||{}; cell.o=ME; cell.w=word; G.used.push(word); G.mine.push(word); G.asks++; if(!miss) G.first++; SFX('done'); SAY(word);
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig"><div class="e">'+(b.e||'🎉')+'</div><b>'+ES(word)+'</b><p style="margin:6px 0 0;font-weight:800">'+(miss?'잘 고쳐서 만들었어요! 내 땅이 됐어요':'딩동댕! 한 번에 맞혔어요 ⭐ 내 땅이 됐어요')+(cell.st?' (⭐ 2점!)':'')+'</p>'+(b.d?'<p style="margin:4px 0 0;opacity:.8">'+ES(b.d)+'</p>':'')+'</div><div class="ttrow"><button type="button" class="ttok" data-a="close">좋아요</button></div>'; };
+  const check=()=>{ const word=compose(seq);
+    if(!/^[가-힣]+$/.test(word)){ fb(word?'글자를 끝까지 완성해요. (자음 다음에 모음!)':'자판으로 낱말을 써요.'); return; }
+    if([...word].length<2){ fb('글자를 두 개 이상 써요.'); return; }
+    if(G.used.includes(word)){ fb('「'+ES(word)+'」는 이미 나온 낱말이에요. 다른 낱말!'); return; }
+    if(P2(word)!==cell.p){ miss++; SFX('no'); const box=$('#ttans')||$('#ttinp'); box.classList.remove('ttshake'); void box.offsetWidth; box.classList.add('ttshake');
+      if(miss>=2) return reveal('「'+ES(word)+'」는 '+chChoOf(word).slice(0,2)+'로 시작해서 아쉬워요.');
+      fb('「'+ES(word)+'」는 '+chChoOf(word).slice(0,2)+'로 시작해요. '+cell.p+'로 시작하는 낱말을 다시 써 봐요!'); seq=[]; paint(); return; }
+    if(!BANK[word]){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE();
+      fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 아빠한테 알려 둘게요! 다른 낱말도 생각해 볼까?'); return; }
+    win(word); };
+  w.addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t) return;
+    if(t.dataset.k&&!done){ if(seq.length<24) seq.push(t.dataset.k); fb(''); paint(); return; }
+    const a=t.dataset.a; if(!a) return;
+    if(a==='del'){ seq.pop(); paint(); }
+    else if(a==='ok') check();
+    else if(a==='pass') reveal('');
+    else if(a==='close'){ closeSheet(); draw(); next(); } });
+  paint(); }
+function owlTurn(cs){ draw(); msg('🦉 부엉이가 땅을 고르는 중…');
+  const val=x=>(x.st?3:0)+(adj(x,ME)?1.5:0)+claimable(OWL).length*0+Math.random()*2;
+  const cell=cs.slice().sort((a,b)=>val(b)-val(a))[0];
+  setTimeout(()=>{ if(!G||G.fin) return; draw(cell); msg('🦉 「'+cell.p+'」 땅을 골랐어요. 음…');
+    setTimeout(()=>{ if(!G||G.fin) return; const ans=SH(left(cell.p))[0], ok=ans&&Math.random()<.8;
+      if(ok){ cell.o=OWL; cell.w=ans; G.used.push(ans); SAY(ans); draw(); msg('🦉 「<b>'+ES(ans)+'</b>」! '+(BANK[ans]&&BANK[ans].e||'')+' 부엉이 땅이 됐어요.'+(cell.st?' (⭐ 2점)':'')); }
+      else{ cell.p=newPat(); draw(); msg('🦉 음… 모르겠다! 부엉이는 통과할게.'); }
+      G.turn=ME; setTimeout(begin,1700); },1300); },800); }
+function cntDone(game){ const C=STATE.ttCnt=STATE.ttCnt||{land:0,tile:0,seq:[]}; C[game]=(C[game]||0)+1; C.seq=(C.seq||[]).concat(game).slice(-6); SAVE(); }
+const chips=a=>a.map(x=>'<span style="display:inline-block;margin:2px 3px;padding:2px 8px;border-radius:10px;background:#FCE4EC">'+((BANK[x]||{}).e||'')+' '+ES(x)+'</span>').join('');
+function end(){ G.fin=true; try{ delete STATE.tt; SAVE(); }catch(e){} draw(); closeSheet();
+  const a=score(ME), b=score(OWL), r=G.asks?G.first/G.asks:0, st=r>=.75?3:r>=.5?2:1;
+  const head=G.mode==='owl'?(a>b?'🏆 '+ES(NM())+' 승리!':a<b?'🦉 이번 판은 부엉이 승리!':'🤝 비겼어요!'):'🎉 땅을 다 채웠어요!';
+  const line=G.mode==='owl'?ES(NM())+' '+a+'점 : 부엉이 '+b+'점':'낱말 '+G.mine.length+'개로 땅을 채웠어요';
+  const w=sheet('<div class="ttbig"><b style="font-size:1.7rem">'+head+'</b><p style="margin:6px 0;font-weight:800">'+line+'</p><p style="margin:0">'+chips(G.mine)+'</p><p style="margin:8px 0 0;opacity:.8">'+G.asks+'번 중 '+G.first+'번 한 번에 맞혔어요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="done">도장 받기</button></div>');
+  w.querySelector('[data-a="done"]').onclick=()=>{ closeSheet(); cntDone('land');
+    resultScreen(U,G.lv,st,(G.mode==='owl'?(a>b?'부엉이를 이겼어요! ':a<b?'부엉이에게 졌지만 끝까지 해냈어요! ':'부엉이와 비겼어요! '):'혼자서 땅을 다 채웠어요! ')+'낱말 '+G.mine.length+'개로 땅을 차지하고, '+G.asks+'번 중 '+G.first+'번을 한 번에 맞혔어요.'); }; }
+/* ---------- 🔤 초성 글자판 모으기 ----------
+   자음 글자판 12장이 펼쳐져 있어요. 2~5장을 고르고, 그 초성으로 된 낱말을 쓰면 글자판을 가져가요(1장 1점, 금색 2점). */
+let TG=null;
+const PJ=w=>[...chChoOf(w)];
+const msub=(need,have)=>{ const h=have.slice(); for(const j of need){ const i=h.indexOf(j); if(i<0) return false; h.splice(i,1); } return true; };
+const mseq=(a,b)=>a.length===b.length&&msub(a,b);
+const gpCan=(tbl,maxN)=>{ const have=tbl.map(t=>t.j); return WORDS.filter(w=>!TG.used.includes(w)&&[...w].length<=maxN&&msub(PJ(w),have)); };
+function gpNew(u,l,mode){ const theme=SH((u.items||[]).map(x=>x.w).filter(w=>BANK[w]&&[...w].length<=4)), other=SH(WORDS.filter(w=>[...w].length<=4));
+  const target=mode==='owl'?42:34, bag=[]; let i=0; const src=[...theme.slice(0,8),...other];
+  while(bag.length<target&&i<src.length) PJ(src[i++]).forEach(j=>bag.push({j,g:0}));
+  const B=SH(bag); SH(B.map((_,k)=>k)).slice(0,4).forEach(k=>B[k].g=1);
+  TG={k:keyOf(u,l),game:'tile',mode,lv:l,bag:B,tbl:[],used:[],sc:[0,0],mine:[],turn:ME,first:0,asks:0,fin:false,sel:[]}; G=null; gpFill(); }
+function gpFill(){ while(TG.tbl.length<12&&TG.bag.length) TG.tbl.push(TG.bag.pop());
+  let n=0; while(!gpCan(TG.tbl,5).length&&TG.bag.length&&n++<10){ const k=R(TG.tbl.length); TG.bag.unshift(TG.tbl[k]); TG.tbl[k]=TG.bag.pop(); } }
+function gpStore(){ try{ STATE.tg=JSON.parse(JSON.stringify(TG)); SAVE(); }catch(e){} }
+function gpDraw(owlSel){ const box=document.getElementById('ttg'); if(!box||!TG) return; const my=TG.turn===ME&&!TG.fin&&!SHEET;
+  const sc='<div class="ttsc"><div class="ttpl me'+(TG.turn===ME?' on':'')+'"><em>🐰</em><span><small>'+ES(NM())+'</small><br><b>'+TG.sc[0]+'</b>점</span></div>'
+    +(TG.mode==='owl'?'<span class="ttvs">VS</span><div class="ttpl ow'+(TG.turn===OWL?' on':'')+'"><span style="text-align:right"><small>부엉이</small><br><b>'+TG.sc[1]+'</b>점</span><em>🦉</em></div>':'<span></span><div class="ttpl ow" style="justify-content:center"><span style="text-align:center"><small>최고 기록</small><br><b>'+(STATE.ttBest||0)+'</b>점</span></div>')+'</div>';
+  const tiles=TG.tbl.map((t,i)=>{ const o=TG.sel.indexOf(i); return '<button type="button" class="gpt'+(t.g?' gold':'')+(o>=0?' sel':'')+((owlSel||[]).includes(i)?' owl':'')+'" data-gp="'+i+'"'+(my?'':' disabled')+'>'+t.j+(o>=0?'<i>'+(o+1)+'</i>':'')+'</button>'; }).join('');
+  box.innerHTML=sc+'<div class="gpbd">'+tiles+'</div><p class="gpbag">👜 주머니에 글자판 <b>'+TG.bag.length+'</b>장</p>'
+    +'<div class="ttrow"><button type="button" class="ttok" data-gpa="write"'+(my&&TG.sel.length>=2?'':' disabled')+'>✍️ 낱말 쓰기'+(TG.sel.length?' ('+TG.sel.length+'장)':'')+'</button></div>'
+    +'<div class="ttrow"><button type="button" class="ttdel" data-gpa="clear"'+(my&&TG.sel.length?'':' disabled')+'>↺ 다시 고르기</button><button type="button" class="ttpass" data-gpa="swap"'+(my?'':' disabled')+'>🔄 바꾸기</button></div><p class="ttmsg" id="ttmsg"></p>'; }
+function gpBegin(){ if(!TG||TG.fin) return; gpFill();
+  if(!TG.tbl.length||(!gpCan(TG.tbl,5).length&&!TG.bag.length)) return gpEnd();
+  if(TG.turn===OWL) return gpOwl();
+  TG.sel=[]; gpStore(); gpDraw(); msg(TG.asks===0?'글자판을 2장 넘게 골라요. 그 초성으로 된 낱말을 쓰면 글자판을 가져가요!':'내 차례! 글자판을 골라요. 길게 만들수록 점수가 커요.'); }
+function gpNext(){ TG.sel=[]; TG.turn=TG.mode==='owl'?(TG.turn===ME?OWL:ME):ME; setTimeout(gpBegin,TG.turn===OWL?600:250); }
+function gpWrite(){ const pick=TG.sel.map(i=>TG.tbl[i].j); let seq=[], miss=0, done=false;
+  const w=sheet('<div class="ttq"><div class="lab">고른 글자판으로 낱말을 써요 (순서는 바꿔도 돼요)</div><div class="gppick">'+TG.sel.map(i=>'<span class="'+(TG.tbl[i].g?'gold':'')+'">'+TG.tbl[i].j+'</span>').join('')+'</div></div><div class="ttans" id="ttans"></div>'
+    +keysHTML()+'<div class="ttrow"><button type="button" class="ttdel" data-a="back">↩ 다시 고르기</button><button type="button" class="ttpass" data-a="pass">🤔 모르겠어요</button><button type="button" class="ttok" data-a="ok">✔ 이 낱말로!</button></div><div class="ttfb" id="ttfb"></div>');
+  const $=s=>w.querySelector(s), fb=t=>{ $('#ttfb').innerHTML=t; };
+  const paint=()=>{ const t=compose(seq); $('#ttans').innerHTML=t?[...t].map(x=>'<span>'+x+'</span>').join(''):'<span class="ph">아래 자판으로 써요</span>'; };
+  const exact=()=>WORDS.filter(x=>!TG.used.includes(x)&&mseq(PJ(x),pick));
+  const shake=()=>{ const b=$('#ttans'); b.classList.remove('ttshake'); void b.offsetWidth; b.classList.add('ttshake'); };
+  const hintEnd=why=>{ done=true; const ex=exact(), any=ex.length?ex:gpCan(TG.tbl,4), a=any.length?SH(any)[0]:'', b=BANK[a]||{}; TG.asks++;
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig">'+(why?'<p style="margin:0 0 6px;font-weight:800">'+why+'</p>':'')+(a?'<p style="margin:0;font-weight:800;color:#7C4A1E">🦉 '+(ex.length?'이 글자판으로는 이런 낱말이 있어요':'이 판에서는 이런 낱말을 만들 수 있었어요')+'</p><div class="e">'+(b.e||'💡')+'</div><b>'+ES(a)+'</b><p style="margin:4px 0 0;opacity:.8">'+PJ(a).join('')+' → '+ES(a)+'</p>':'')+'<p style="margin:8px 0 0;opacity:.8">이번 차례는 넘어가요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="close">알겠어요</button></div>'; if(a) SAY(a); };
+  const win=word=>{ done=true; const b=BANK[word]||{}, idx=TG.sel.slice().sort((x,y)=>y-x), pts=idx.reduce((s,i)=>s+(TG.tbl[i].g?2:1),0);
+    idx.forEach(i=>TG.tbl.splice(i,1)); TG.sc[0]+=pts; TG.used.push(word); TG.mine.push(word); TG.asks++; if(!miss) TG.first++; SFX('done'); SAY(word);
+    w.querySelector('.ttbox').innerHTML='<div class="ttbig"><div class="e">'+(b.e||'🎉')+'</div><b>'+ES(word)+'</b><p style="margin:6px 0 0;font-weight:800">글자판 '+pick.length+'장 가져가요! +'+pts+'점'+(miss?'':' ⭐ 한 번에!')+'</p>'+(b.d?'<p style="margin:4px 0 0;opacity:.8">'+ES(b.d)+'</p>':'')+'</div><div class="ttrow"><button type="button" class="ttok" data-a="close">좋아요</button></div>'; };
+  const check=()=>{ const word=compose(seq);
+    if(!/^[가-힣]+$/.test(word)){ fb(word?'글자를 끝까지 완성해요. (자음 다음에 모음!)':'자판으로 낱말을 써요.'); return; }
+    if(TG.used.includes(word)){ fb('「'+ES(word)+'」는 이미 나온 낱말이에요.'); return; }
+    if(!mseq(PJ(word),pick)){ miss++; SFX('no'); shake(); seq=[]; paint();
+      if(miss>=2) return hintEnd('「'+ES(word)+'」의 초성은 '+PJ(word).join('')+'이에요.');
+      fb('「'+ES(word)+'」의 초성은 '+PJ(word).join('')+'이에요. 고른 글자판은 '+pick.join('')+'! 다시 써 봐요.'); return; }
+    if(!BANK[word]){ STATE.ttUnk=(STATE.ttUnk||[]).filter(x=>x!==word).concat(word).slice(-60); SAVE(); fb('음… 「'+ES(word)+'」는 공부방 낱말 사전에 없어요. 아빠한테 알려 둘게요! 다른 낱말도 생각해 볼까?'); return; }
+    win(word); };
+  w.addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t) return;
+    if(t.dataset.k&&!done){ if(seq.length<24) seq.push(t.dataset.k); fb(''); paint(); return; }
+    const a=t.dataset.a; if(!a) return;
+    if(a==='del'){ seq.pop(); paint(); }
+    else if(a==='ok') check();
+    else if(a==='pass') hintEnd('');
+    else if(a==='back'){ closeSheet(); gpDraw(); msg('글자판을 다시 골라요.'); }
+    else if(a==='close'){ closeSheet(); gpFill(); gpDraw(); gpNext(); } });
+  paint(); }
+function gpSwap(){ if(!TG.bag.length){ msg('주머니가 비어서 바꿀 수 없어요. 낱말을 만들어 봐요!'); return; }
+  const before=gpCan(TG.tbl,4), hint=before.length?SH(before)[0]:'';
+  const idx=(TG.sel.length?TG.sel.slice(0,3):SH(TG.tbl.map((_,i)=>i)).slice(0,2)).sort((a,b)=>b-a);
+  idx.forEach(i=>{ if(TG.bag.length){ const t=TG.tbl[i]; TG.tbl[i]=TG.bag.pop(); TG.bag.unshift(t); } });
+  TG.sel=[]; gpDraw(); msg('🔄 글자판 '+idx.length+'장을 바꿨어요.'+(hint?' 🦉 「'+ES(hint)+'」('+PJ(hint).join('')+')도 만들 수 있었어요!':''));
+  TG.turn=TG.mode==='owl'?OWL:ME; setTimeout(gpBegin,2200); }
+function gpOwl(){ gpDraw(); msg('🦉 부엉이가 글자판을 고르는 중…');
+  const can=gpCan(TG.tbl,4), pool=SH(can).sort((a,b)=>Math.abs([...a].length-2.6)-Math.abs([...b].length-2.6)+(Math.random()-.5)*1.2), word=pool[0];
+  setTimeout(()=>{ if(!TG||TG.fin) return;
+    if(!word||Math.random()<.15){ const n=Math.min(2,TG.bag.length); for(let k=0;k<n;k++){ const i=R(TG.tbl.length), t=TG.tbl[i]; TG.tbl[i]=TG.bag.pop(); TG.bag.unshift(t); }
+      gpDraw(); msg('🦉 음… 부엉이는 글자판을 바꿀게.'); TG.turn=ME; return setTimeout(gpBegin,1500); }
+    const have=TG.tbl.map(t=>t.j), idx=[]; PJ(word).forEach(j=>{ const i=have.findIndex((x,k)=>x===j&&!idx.includes(k)); idx.push(i); });
+    gpDraw(idx); msg('🦉 '+PJ(word).join(' ')+' 글자판을 골랐어요…');
+    setTimeout(()=>{ if(!TG||TG.fin) return; const pts=idx.reduce((s,i)=>s+(TG.tbl[i].g?2:1),0); idx.sort((a,b)=>b-a).forEach(i=>TG.tbl.splice(i,1)); TG.sc[1]+=pts; TG.used.push(word); SAY(word); gpFill(); gpDraw();
+      msg('🦉 「<b>'+ES(word)+'</b>」 '+((BANK[word]||{}).e||'')+' 글자판 '+idx.length+'장 가져가요! +'+pts+'점'); TG.turn=ME; setTimeout(gpBegin,1900); },1400); },800); }
+function gpEnd(){ TG.fin=true; try{ delete STATE.tg; SAVE(); }catch(e){} gpDraw(); closeSheet();
+  const a=TG.sc[0], b=TG.sc[1], r=TG.asks?TG.first/TG.asks:0, st=r>=.75?3:r>=.5?2:1, best=STATE.ttBest||0, nb=TG.mode!=='owl'&&a>best;
+  if(nb){ STATE.ttBest=a; SAVE(); }
+  const head=TG.mode==='owl'?(a>b?'🏆 '+ES(NM())+' 승리!':a<b?'🦉 이번 판은 부엉이 승리!':'🤝 비겼어요!'):(nb?'🎉 새 최고 기록!':'🎉 글자판 모으기 끝!');
+  const line=TG.mode==='owl'?ES(NM())+' '+a+'점 : 부엉이 '+b+'점':a+'점'+(nb?'':' (최고 '+best+'점)');
+  const w=sheet('<div class="ttbig"><b style="font-size:1.7rem">'+head+'</b><p style="margin:6px 0;font-weight:800">'+line+'</p><p style="margin:0">'+chips(TG.mine)+'</p><p style="margin:8px 0 0;opacity:.8">'+TG.asks+'번 중 '+TG.first+'번 한 번에 맞혔어요.</p></div><div class="ttrow"><button type="button" class="ttok" data-a="done">도장 받기</button></div>');
+  w.querySelector('[data-a="done"]').onclick=()=>{ closeSheet(); cntDone('tile');
+    resultScreen(U,TG.lv,st,(TG.mode==='owl'?(a>b?'부엉이를 이겼어요! ':a<b?'부엉이에게 졌지만 끝까지 해냈어요! ':'부엉이와 비겼어요! '):'글자판 '+a+'점을 모았어요! ')+'낱말 '+TG.mine.length+'개를 만들고, '+TG.asks+'번 중 '+TG.first+'번을 한 번에 맞혔어요.'); }; }
+document.addEventListener('click',e=>{ if(!TG||TG.fin||SHEET||TG.turn!==ME||!document.getElementById('ttg')) return;
+  const t=e.target.closest&&e.target.closest('[data-gp],[data-gpa]'); if(!t||t.disabled) return;
+  if(t.dataset.gp!=null){ const i=+t.dataset.gp, o=TG.sel.indexOf(i); if(o>=0) TG.sel.splice(o,1); else if(TG.sel.length<5) TG.sel.push(i); gpDraw(); msg(TG.sel.length<2?'글자판을 2장 넘게 골라요.':'고른 글자판: '+TG.sel.map(k=>TG.tbl[k].j).join(' ')+' → ✍️ 낱말 쓰기!'); return; }
+  const a=t.dataset.gpa; if(a==='write') gpWrite(); else if(a==='clear'){ TG.sel=[]; gpDraw(); } else if(a==='swap') gpSwap(); });
+/* ---------- 보드게임 고르기 ---------- */
+const UNLOCK=5;
+function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l), C=STATE.ttCnt||{land:0,tile:0,seq:[]}, open=(C.land||0)>=UNLOCK;
+  const sl=STATE.tt&&STATE.tt.k===k&&!STATE.tt.fin?STATE.tt:null, st=STATE.tg&&STATE.tg.k===k&&!STATE.tg.fin?STATE.tg:null;
+  const s3=(C.seq||[]).slice(-3), rec=open&&s3.length===3&&s3.every(x=>x===s3[0])?(s3[0]==='land'?'tile':'land'):'';
+  const card=(id,ic,nm,desc,lock,res)=>'<div class="ttgm '+id+(lock?' lock':'')+'">'+(rec===id?'<span class="ttrec">오늘 이거 어때?</span>':'')+'<h3>'+ic+' '+nm+'</h3><p>'+desc+'</p>'
+    +(lock?'<p class="ttlk">🔒 땅따먹기 '+(C.land||0)+' / '+UNLOCK+'판 하면 열려요</p>':'<div class="ttm">'+(res?'<button type="button" data-tt="'+id+':resume" class="res">▶ 하던 판 이어서</button>':'')+'<button type="button" data-tt="'+id+':owl">🦉 부엉이랑</button><button type="button" data-tt="'+id+':solo">🐰 혼자</button></div>')+'</div>';
+  show('<button class="back" data-go="unit:'+ui+'">← '+ES(u.title)+'</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 한글 보드게임</h2><p style="text-align:center;margin:0 0 10px;opacity:.7;font-weight:800">한 판 골라서 놀아요 · 약 10분</p>'
+    +card('land','🗺️','초성 땅따먹기','땅에 적힌 초성으로 낱말을 만들면 내 땅! ⭐ 땅은 2점.',false,sl)
+    +card('tile','🔤','초성 글자판 모으기','자음 글자판을 골라 낱말을 만들면 글자판을 가져가요. 1장에 1점!',!open,st)+'</section>',u.color);
+  $app.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{ const [g,m]=b.dataset.tt.split(':');
+    if(g==='land'){ if(m==='resume') G=JSON.parse(JSON.stringify(sl)); else newGame(u,l,m); G.lv=l; TG=null; play(u,l); }
+    else{ if(m==='resume') TG=JSON.parse(JSON.stringify(st)); else gpNew(u,l,m); TG.lv=l; G=null; play(u,l,true); } });
+  if(open&&!C.shown){ C.shown=1; STATE.ttCnt=C; SAVE(); const w=sheet('<div class="ttbig"><div class="e">🔓</div><b style="font-size:1.6rem">새 보드게임이 열렸어요!</b><p style="margin:8px 0 0;font-weight:800">🔤 초성 글자판 모으기</p><p style="margin:4px 0 0">이제 '+ES(NM())+'가 자음을 직접 골라서 낱말을 만들 수 있어요. 길게 만들수록 점수가 커요!</p></div><div class="ttrow"><button type="button" class="ttok" data-a="x">해 볼래요!</button></div>'); w.querySelector('[data-a="x"]').onclick=closeSheet; } }
+function play(u,l,tile){ U=u; const ui=UNITS.indexOf(u);
+  show('<button class="back" data-go="lesson:'+ui+':'+(l==='s'?0:l)+'">← 그만하기</button><section class="panel ttw" id="ttg"></section>',u.color);
+  { const bk=$app.querySelector('.topnav .back'); if(bk&&l==='s') bk.dataset.go='final:'+ui; }
+  if(tile){ gpDraw(); gpBegin(); } else { draw(); begin(); } }
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-ttc]'); if(!b||!G||TG||G.fin||SHEET||G.turn!==ME) return; const x=G.cells[+b.dataset.ttc]; if(!x||!claimable(ME).includes(x)) return; draw(x); ask(x); });
+window.addEventListener('popstate',()=>closeSheet());
+/* 한글 놀이 단원은 모두 땅따먹기로 */
+const isTT=u=>u&&!u.rev&&u.rel==='cho'&&CHORDER.includes(u.g);
+{ const _li=lessonIntro; lessonIntro=function(u,l){ closeSheet(); if(isTT(u)) return ttIntro(u,l); return _li.apply(this,arguments); };
+  const _sf=startFinal; startFinal=function(u){ closeSheet(); if(isTT(u)) return ttIntro(u,'s'); return _sf.apply(this,arguments); };
+  const _uv=unitView; unitView=function(u){ closeSheet(); const r=_uv.apply(this,arguments); if(isTT(u)){ const b=$app.querySelector('[data-go^="final:"]'); if(b){ const s=b.querySelector('span>b'); if(s) s.textContent='보드게임 마지막 판'; const t=b.querySelector('span>span'); if(t) t.textContent='이 주제 마지막 한 판!'; } } return r; }; }
+window.__ttDebug=()=>G; window.__tgDebug=()=>TG;
+})();
+</script>
+<!-- ===== 초성 땅따먹기 끝 ===== -->
+
 <!-- ===== 유치원 일정 시작 ===== -->
 <script>
 /* ===== 유치원 일정 (서이, 2026-11-13) — 채이 ‘학교 일정’과 같은 틀 =====
@@ -7139,7 +7452,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
    3) 과목마다 걸리는 시간(약 몇 분)과 남은 시간을 보여 줘요. */
 (function () {
   const SEOI = (typeof KID !== 'undefined') && /서이/.test(KID.name || '');
-  const MIN = SEOI ? { '영어 파닉스': 5, '한자': 5, '수학': 7, '어휘': 5, '영어 동화': 5, '낱말 탐험': 4, '국어독해': 7, '슬기로운 생활': 4, '음악': 4, '미술': 4 }   /* 2026-11-12: 실제 문제 수에 맞춘 어림 시간 */
+  const MIN = SEOI ? { '영어 파닉스': 5, '한자': 5, '수학': 7, '어휘': 5, '영어 동화': 5, '낱말 탐험': 4, '국어독해': 7, '슬기로운 생활': 4, '음악': 4, '미술': 4, '한글 보드게임': 10 }   /* 2026-11-12: 실제 문제 수에 맞춘 어림 시간 */
     : { '국어': 7, '국어독해': 8, '수학': 7, '과학': 6, '사회': 6, '한국사': 7, '영어': 6, '영어독해': 8, '영어듣기': 6, '영어 문법': 5, '한자': 5, '도덕': 7, '영어 단어': 6, '생각 교실': 6, '최상위 수학': 8, '아빠와 복습': 8 };
   const DEF = SEOI ? 4 : 5;
   const nameOf = c => { const b = c.querySelector('.tt b'); return b ? b.textContent.trim() : ''; };
@@ -8894,6 +9207,12 @@ details[open]:not(.subjfold)>summary::after{transform:rotate(180deg)}
 </script>
 <style>
 /* 지금 할 공부 카드: 번호 동그라미는 빼고, 과목 옆에 작은 글씨로 단원, 학습 내용 옆에 걸리는 시간 */
+
+/* 한글 보드게임 줄 (2026-11-13): 오늘의 학습 목록·지금 할 공부 카드에서 보드게임처럼 */
+#app .todaycard.tdboard .tgdice{font-size:2rem;line-height:1;width:40px;text-align:center}
+#app .tdnowcard.tdboard .tl::before{content:"🦉 부엉이가 기다려요";order:9;font-size:.8rem;color:#7C4A1E;font-weight:800;flex-basis:100%}
+#app .tdnowcard.tdboard{background:linear-gradient(135deg,#F3E2BF,#E6C98F)!important;border-color:#7C4A1E!important}
+#app .tdnowcard.tdboard .tgdice{font-size:2.3rem}
 #app .tdnowcard .tnum{display:none!important}
 #app .tdnowcard{grid-template-columns:auto minmax(0,1fr) auto!important}
 #app .tdnowcard .tt{display:block!important;min-width:0}
