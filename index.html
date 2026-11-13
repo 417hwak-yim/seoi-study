@@ -3118,7 +3118,7 @@ const scene=s=>'<span class="inksun" aria-hidden="true"></span>'+(s==='winter'?w
   let todayBox='';
   /* 오늘의 학습은 그날 처음 정해진 단계가 자정까지 그대로 있어요. 끝내면 ‘완료’로 보이고, 자정이 지나면 그다음 단계로 바뀌어요.
      오늘 못 끝낸 단계는 내일도 그대로 오늘의 학습으로 나와요. */
-  { const TK=subj?[subj]:Object.keys(SUBJ), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',ch:'abc',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
+  { const TK=subj?[subj]:Object.keys(SUBJ).filter(k=>k!=='ch'), tk=dkey(new Date()), MK={eng:'bird',hanja:'brush',math:'calc',ko:'book',story:'abc',wd:'pencil',ch:'abc',rd:'drop',sg:'bloom',mu:'keys',ar:'paint'};
     LASTDAY=tk;
     if(!STATE.td||STATE.td.d!==tk||!STATE.td.a){ const old=STATE.td; STATE.td={d:tk,a:{},done:{}};
       /* 어제 못 끝낸 단계는 오늘의 학습으로 그대로 넘어와요 */
@@ -6386,6 +6386,9 @@ const BDSIB={call:'채이 언니',m:10,d:18};
 .ttdel{background:#eee;color:#444}
 .ttpass{background:#FFF0D6;color:#8a5a1a}
 .ttkb{background:#E8F0FF;color:#2C4A7C}
+.bgfunb{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;width:100%;margin:10px 0 2px;padding:10px 12px;border:0;border-radius:14px;background:linear-gradient(135deg,#D9480F,#F59F00);color:#fff;font-family:inherit;font-weight:900;font-size:1.05rem;box-shadow:0 4px 0 #9c3409}
+.bgfunb span{font-size:.85rem;opacity:.92;font-weight:800}
+.bgfunlock{margin:8px 0 0;font-size:.85rem;color:#5b6378;text-align:center;font-weight:800}
 .ttgm{position:relative;background:#fff;border:2.5px solid #E8D9BC;border-radius:18px;padding:12px 14px;margin:10px 0;box-shadow:0 3px 0 #E8D9BC}
 .ttgm.land{border-color:#2E9E5B;box-shadow:0 3px 0 #2E9E5B}.ttgm.tile{border-color:#5B5BD6;box-shadow:0 3px 0 #5B5BD6}
 .ttgm.lock{border-color:#ccc;box-shadow:0 3px 0 #ccc;background:#F6F6F6}.ttgm.lock h3,.ttgm.lock p{opacity:.6}
@@ -6575,6 +6578,9 @@ function owlTurn(cs){ draw(); msg('🦉 부엉이가 땅을 고르는 중…');
           msg('🦉 「<b>'+ES(ans)+'</b>」 '+(BANK[ans]&&BANK[ans].e||'')+' 부엉이 땅이 됐어요.'+(cell.st?' ⭐ 2점':'')+(cell.bn?' · '+[...ans].length+'글자 보너스 +'+cell.bn:'')+(BANK[ans]&&BANK[ans].d?'<br><small style="font-weight:700;opacity:.8">💡 낱말을 누르면 뜻이 나와요</small>':''));
           G.turn=ME; setTimeout(begin,2000); },600); };
       setTimeout(typeOne,300); },900); },700); }
+/* 2026-11-13: 판이 끝날 때 쓰는 두 가지 — 모은 낱말 보여 주기, 어떤 보드게임을 몇 판 했는지 세기 (빠져 있어서 결과 화면이 멈췄어요) */
+const chips=a=>(a||[]).map(x=>'<span style="display:inline-block;margin:2px 3px;padding:2px 8px;border-radius:10px;background:#FCE4EC">'+((BANK[x]||{}).e||'')+' '+ES(x)+'</span>').join('');
+function cntDone(game){ try{ const C=STATE.ttCnt=STATE.ttCnt||{land:0,tile:0,seq:[]}; C[game]=(C[game]||0)+1; C.seq=(C.seq||[]).concat(game).slice(-6); SAVE(); }catch(e){} }
 function end(){ G.fin=true; try{ delete STATE.tt; SAVE(); }catch(e){} draw(); closeSheet();
   const a=score(ME), b=score(OWL), r=G.asks?G.first/G.asks:0, st=r>=.75?3:r>=.5?2:1;
   const head=G.mode==='owl'?(a>b?'🏆 '+ES(NM())+' 승리!':a<b?'🦉 이번 판은 부엉이 승리!':'🤝 비겼어요!'):'🎉 땅을 다 채웠어요!';
@@ -6673,6 +6679,9 @@ document.addEventListener('click',e=>{ if(!TG||TG.fin||SHEET||TG.turn!==ME||!doc
   const t=e.target.closest&&e.target.closest('[data-gp],[data-gpa]'); if(!t||t.disabled) return;
   if(t.dataset.gp!=null){ const i=+t.dataset.gp, o=TG.sel.indexOf(i); if(o>=0) TG.sel.splice(o,1); else if(TG.sel.length<5) TG.sel.push(i); gpDraw(); msg(TG.sel.length<2?'글자판을 2장 넘게 골라요.':'고른 글자판: '+TG.sel.map(k=>TG.tbl[k].j).join(' ')+' → ✍️ 낱말 쓰기!'); return; }
   const a=t.dataset.gpa; if(a==='write') gpWrite(); else if(a==='clear'){ TG.sel=[]; gpDraw(); } else if(a==='swap') gpSwap(); });
+/* 보드게임은 학습이 아니라서 도장·공부 달력·오늘의 학습에 넣지 않아요 (바깥 resultScreen을 쓰지 않고 여기서 따로 보여 줘요) */
+function resultScreen(u,l,st,msg){ closeSheet();
+  show('<button class="back" data-go="start">←</button><section class="panel ttw" style="text-align:center"><div style="font-size:3.2rem">'+'⭐'.repeat(Math.max(1,st))+'</div><h2>'+NM()+', 재미있었지?</h2><p style="line-height:1.6">'+msg+'</p><div class="ttrow" style="margin-top:14px"><button type="button" class="ttok" data-go="bgfun">🎲 한 판 더</button><button type="button" class="ttdel" data-go="start">🏠 메인 화면</button></div></section>','#D9480F'); }
 /* ---------- 보드게임 고르기 ---------- */
 const UNLOCK=5;
 function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l), C=STATE.ttCnt||{land:0,tile:0,seq:[]}, open=(C.land||0)>=UNLOCK;
@@ -6680,7 +6689,7 @@ function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l
   const s3=(C.seq||[]).slice(-3), rec=open&&s3.length===3&&s3.every(x=>x===s3[0])?(s3[0]==='land'?'tile':'land'):'';
   const card=(id,ic,nm,desc,lock,res)=>'<div class="ttgm '+id+(lock?' lock':'')+'">'+(rec===id?'<span class="ttrec">오늘 이거 어때?</span>':'')+'<h3>'+ic+' '+nm+'</h3><p>'+desc+'</p>'
     +(lock?'<p class="ttlk">🔒 땅따먹기 '+(C.land||0)+' / '+UNLOCK+'판 하면 열려요</p>':'<div class="ttm">'+(res?'<button type="button" data-tt="'+id+':resume" class="res">▶ 하던 판 이어서</button>':'')+'<button type="button" data-tt="'+id+':owl">🦉 부엉이랑</button><button type="button" data-tt="'+id+':solo">'+FACE(22)+' 혼자</button></div>')+'</div>';
-  show('<button class="back" data-go="unit:'+ui+'">← '+ES(u.title)+'</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 한글 보드게임</h2><p style="text-align:center;margin:0 0 10px;opacity:.7;font-weight:800">한 판 골라서 놀아요 · 약 10분</p>'
+  show('<button class="back" data-go="bgfun">← 주제 고르기</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 한글 보드게임</h2><p style="text-align:center;margin:0 0 10px;opacity:.7;font-weight:800">한 판 골라서 놀아요 · 약 10분</p>'
     +card('land','🗺️','초성 땅따먹기','땅에 적힌 초성으로 낱말을 만들면 내 땅! ⭐ 땅은 2점, 세 글자 +1점, 네 글자 +2점.',false,sl)
     +card('tile','🔤','초성 글자판 모으기','자음 글자판을 골라 낱말을 만들면 글자판을 가져가요. 1장에 1점!',!open,st)+'</section>',u.color);
   $app.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{ const [g,m]=b.dataset.tt.split(':');
@@ -6688,7 +6697,7 @@ function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l
     else{ if(m==='resume') TG=JSON.parse(JSON.stringify(st)); else gpNew(u,l,m); TG.lv=l; G=null; play(u,l,true); } });
   if(open&&!C.shown){ C.shown=1; STATE.ttCnt=C; SAVE(); const w=sheet('<div class="ttbig"><div class="e">🔓</div><b style="font-size:1.6rem">새 보드게임이 열렸어요!</b><p style="margin:8px 0 0;font-weight:800">🔤 초성 글자판 모으기</p><p style="margin:4px 0 0">이제 '+ES(NM())+'가 자음을 직접 골라서 낱말을 만들 수 있어요. 길게 만들수록 점수가 커요!</p></div><div class="ttrow"><button type="button" class="ttok" data-a="x">해 볼래요!</button></div>'); w.querySelector('[data-a="x"]').onclick=closeSheet; } }
 function play(u,l,tile){ U=u; const ui=UNITS.indexOf(u);
-  show('<button class="back" data-go="lesson:'+ui+':'+(l==='s'?0:l)+'">← 그만하기</button><section class="panel ttw" id="ttg"></section>',u.color);
+  show('<button class="back" data-go="bgfun">← 그만하기</button><section class="panel ttw" id="ttg"></section>',u.color);
   { const bk=$app.querySelector('.topnav .back'); if(bk&&l==='s') bk.dataset.go='final:'+ui; }
   if(tile){ gpDraw(); gpBegin(); } else { draw(); begin(); } }
 document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-ttc]'); if(!b||!G||TG||G.fin||SHEET||G.turn!==ME) return; const x=G.cells[+b.dataset.ttc]; if(!x||!claimable(ME).includes(x)) return; draw(x); ask(x); });
@@ -6707,6 +6716,17 @@ const isTT=u=>u&&!u.rev&&u.rel==='cho'&&CHORDER.includes(u.g);
   const _sf=startFinal; startFinal=function(u){ closeSheet(); if(isTT(u)) return ttIntro(u,'s'); return _sf.apply(this,arguments); };
   const _uv=unitView; unitView=function(u){ closeSheet(); const r=_uv.apply(this,arguments); if(isTT(u)){ const b=$app.querySelector('[data-go^="final:"]'); if(b){ const s=b.querySelector('span>b'); if(s) s.textContent='보드게임 마지막 판'; const t=b.querySelector('span>span'); if(t) t.textContent='이 주제 마지막 한 판!'; } } return r; }; }
 window.__ttDebug=()=>G; window.__tgDebug=()=>TG;
+/* 처음 화면 진행 상자: 오늘의 학습을 다 하면 재미로 하는 보드게임 단추가 열려요 */
+function bgHook(){ const pr=document.querySelector('#app .tdprog'); if(!pr||pr.dataset.bgf) return; pr.dataset.bgf=1;
+  const v=pr.querySelector('.tpval'), m=v&&v.textContent.match(/(\d+)\s*\/\s*(\d+)/); if(!m) return; const done=+m[1], tot=+m[2];
+  if(tot&&done>=tot) pr.insertAdjacentHTML('beforeend','<button type="button" class="bgfunb" data-go="bgfun">🎲 한글 보드게임 한 판! <span>부엉이가 기다려요 🦉</span></button>');
+  else pr.insertAdjacentHTML('beforeend','<p class="bgfunlock">🔒 오늘의 학습을 다 하면 🎲 한글 보드게임이 열려요</p>'); }
+try{ new MutationObserver(bgHook).observe(document.getElementById('app'),{childList:true,subtree:true}); }catch(e){} bgHook();
+function funMenu(){ closeSheet();
+  show('<button class="back" data-go="start">←</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 한글 보드게임</h2><p style="text-align:center;margin:0 0 8px;opacity:.75;font-weight:800">공부가 아니라 그냥 재미로 하는 놀이예요</p>'+funUnits().map((u,i)=>'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun="'+i+'"><h3>'+u.items[0].e+' '+ES(u.title)+'</h3><p>'+u.items.slice(0,4).map(x=>x.w).join(' · ')+' …</p></button>').join('')+'</section>','#D9480F');
+  $app.querySelectorAll('[data-fun]').forEach(b=>b.onclick=()=>{ const u=funUnits()[+b.dataset.fun]; try{ setGrade(u.g); }catch(e){} ttIntro(u,0); }); }
+const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel==='cho'));
+{ const _ri=routeInner; routeInner=function(v,a,b){ if(v==='bgfun'){ VIEW='bgfun'; return funMenu(); } return _ri.apply(this,arguments); }; }
 })();
 </script>
 <!-- ===== 초성 땅따먹기 끝 ===== -->
