@@ -11090,7 +11090,7 @@ PX.push('#9ED8F5', '#5DB4E8', '#2E7D4F', '#A8DC7A', '#F6C9A0', '#6B3E26', '#F2D4
   const LAB=[['[data-ln]','오늘 급식'],['[data-fd]','분수 식당'],['[data-ec]','영어 카페'],['[data-bk]','서이 빵집'],['[data-ts]','토토네 가게']];
   function tag(){
     document.querySelectorAll('.moodrow').forEach(row=>{
-      if(!row.querySelector('#lnmini')&&window.__school&&window.__school.hasMenu&&window.__school.hasMenu()){ const mt=row.querySelector('.moodtgl'); const b='<button type="button" class="trrv" id="lnmini" data-ln="1" aria-label="오늘의 급식 보기"><span class="ic">🍚</span></button>'; if(mt) mt.insertAdjacentHTML('afterend',b); else row.insertAdjacentHTML('beforeend',b); }
+      if(!row.querySelector('#lnmini')&&window.__school&&window.__school.hasMenu&&window.__school.hasMenu()){ const mt=row.querySelector('.moodtgl'); const b='<button type="button" class="trrv" id="lnmini" data-ln="1" aria-label="오늘의 급식 보기"><span class="ic">🍚</span></button>'; if(mt) mt.insertAdjacentHTML('beforebegin',b); else row.insertAdjacentHTML('beforeend',b); } { const mt2=row.querySelector(':scope>.moodtgl'), ln=row.querySelector(':scope>#lnmini'); if(mt2&&ln&&(mt2.compareDocumentPosition(ln)&Node.DOCUMENT_POSITION_FOLLOWING)) row.insertBefore(ln,mt2); }
       const n=[...row.children].filter(e=>(e.classList.contains('trrv')||e.classList.contains('moodtgl'))&&getComputedStyle(e).display!=='none').length; row.style.setProperty('--qn',Math.max(4,n)); row.classList.toggle('q5',n>=5); });
     document.querySelectorAll('.moodrow>.trrv').forEach(b=>{
     let lab=''; for(const [q,n] of LAB) if(b.matches(q)){ lab=n; break; }
