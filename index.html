@@ -2932,7 +2932,7 @@ function show(html,color){
   /* 맨 위 길잡이: 이전 화면 단추 옆에 메인 화면 단추를 함께 보여 줘요 */
   { const f=$app.firstElementChild;
     if(f&&f.matches('button.back')){ const nav=document.createElement('nav'); nav.className='topnav'; nav.setAttribute('aria-label','화면 이동'); $app.insertBefore(nav,f); nav.appendChild(f);
-      if(f.dataset.go!=='start'){ f.setAttribute('aria-label','이전 학습: '+f.textContent.replace('← ','')); f.textContent='← 이전 학습'; }
+      if(f.dataset.go!=='start'&&!/^bg/.test(f.dataset.go||'')){ f.setAttribute('aria-label','이전 학습: '+f.textContent.replace('← ','')); f.textContent='← 이전 학습'; }   /* 보드게임 화면은 원래 글자 그대로 (학습이 아니에요) */
       if(f.dataset.go!=='start') nav.insertAdjacentHTML('beforeend','<button class="back tohome" data-go="start">🏠 메인 화면</button>'); }
     else if(f&&!f.matches('.starttop,.topnav')&&!$app.querySelector('.starttop')){ $app.insertAdjacentHTML('afterbegin','<nav class="topnav" aria-label="화면 이동"><button class="back" id="nav-prev">← 이전 학습</button><button class="back tohome" data-go="start">🏠 메인 화면</button></nav>'); document.getElementById('nav-prev').onclick=()=>{ const u=typeof Q!=='undefined'&&Q&&Q.u?UNITS.indexOf(Q.u):-1; if(u>=0) route('unit',u); else route('start'); }; } }
 }
@@ -6681,7 +6681,7 @@ document.addEventListener('click',e=>{ if(!TG||TG.fin||SHEET||TG.turn!==ME||!doc
   const a=t.dataset.gpa; if(a==='write') gpWrite(); else if(a==='clear'){ TG.sel=[]; gpDraw(); } else if(a==='swap') gpSwap(); });
 /* 보드게임은 학습이 아니라서 도장·공부 달력·오늘의 학습에 넣지 않아요 (바깥 resultScreen을 쓰지 않고 여기서 따로 보여 줘요) */
 function resultScreen(u,l,st,msg){ closeSheet();
-  show('<button class="back" data-go="start">←</button><section class="panel ttw" style="text-align:center"><div style="font-size:3.2rem">'+'⭐'.repeat(Math.max(1,st))+'</div><h2>'+NM()+', 재미있었지?</h2><p style="line-height:1.6">'+msg+'</p><div class="ttrow" style="margin-top:14px"><button type="button" class="ttok" data-go="bgfun">🎲 한 판 더</button><button type="button" class="ttdel" data-go="start">🏠 메인 화면</button></div></section>','#D9480F'); }
+  show('<button class="back" data-go="start">🏠 메인 화면으로 나가기</button><section class="panel ttw" style="text-align:center"><div style="font-size:3.2rem">'+'⭐'.repeat(Math.max(1,st))+'</div><h2>'+NM()+', 재미있었지?</h2><p style="line-height:1.6">'+msg+'</p><div class="ttrow" style="margin-top:14px"><button type="button" class="ttok" data-go="bgfun">🎲 한 판 더</button><button type="button" class="ttdel" data-go="start">🏠 메인 화면</button></div></section>','#D9480F'); }
 /* ---------- 보드게임 고르기 ---------- */
 const UNLOCK=5;
 function ttIntro(u,l){ U=u; closeSheet(); const ui=UNITS.indexOf(u), k=keyOf(u,l), C=STATE.ttCnt||{land:0,tile:0,seq:[]}, open=(C.land||0)>=UNLOCK;
@@ -6832,7 +6832,7 @@ const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel===
       +'<button type="button" class="scok" style="background:#B7791F;box-shadow:0 3px 0 #7a4f12;margin-top:10px" data-go="school:menu">🍽️ 이번 달 식단 보기</button></div>'; }
   let MTAB=null;
   function menuView(){ const ks=Object.keys(MENU); if(!MTAB||!MENU[MTAB]) MTAB=mkinds()[0]||ks[0]; const M=MENU[MTAB], t=today(), keys=Object.keys(M.d).sort();
-    let h='<button class="back" data-go="school">←</button><section class="panel scpage"><h2>🍽️ '+NM()+'의 '+MPLACE+' 식단</h2>';
+    let h='<button class="back" data-go="school">← 일정 보기</button><section class="panel scpage"><h2>🍽️ '+NM()+'의 '+MPLACE+' 식단</h2>';
     if(ks.length>1) h+='<div style="display:grid;grid-template-columns:repeat('+ks.length+',1fr);gap:8px;margin:6px 0 12px">'+ks.map(k=>'<button type="button" class="scok'+(k===MTAB?'':' undo')+'" style="margin:0" data-mtab="'+k+'">'+MKIND[k][0]+' '+MKIND[k][1]+'</button>').join('')+'</div>';
     if(!keys.length) h+='<div class="scbox" style="text-align:center"><div style="font-size:2.4rem">'+MKIND[MTAB][0]+'</div><b>'+MKIND[MTAB][1]+' 식단이 곧 올라와요!</b><p style="margin:4px 0 0;opacity:.75">식단표가 오면 여기에 날마다 보여요.</p></div>';
     else { h+='<p class="sclead">'+E(M.title)+' · '+(+keys[0].slice(5,7))+'월</p>';
@@ -6929,7 +6929,7 @@ const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel===
 
   /* 학교 일정 페이지 */
   function listView(){ const U=upcoming(), P=past();
-    show('<button class="back" data-go="start">←</button><section class="panel scpage"><h2>🏫 '+NM()+'의 유치원 일정</h2><p class="sclead">유치원 행사와 활동을 미리 보고 준비해요. 일정을 누르면 자세히 볼 수 있어요.</p>'
+    show('<button class="back" data-go="start">🏠 메인 화면으로 나가기</button><section class="panel scpage"><h2>🏫 '+NM()+'의 유치원 일정</h2><p class="sclead">유치원 행사와 활동을 미리 보고 준비해요. 일정을 누르면 자세히 볼 수 있어요.</p>'
       +'<h3 class="sch3">📌 다가오는 일정</h3>'+(U.length?U.map(item).join(''):'<p class="sclead">지금은 다가오는 일정이 없어요.</p>')
       +'<h3 class="sch3">🗓️ 유치원 달력</h3><div class="sccalwrap">'+cal()+'</div>'
       +(P.length?'<details style="margin-top:14px"><summary>📁 지난 일정 '+P.length+'개</summary>'+P.map(item).join('')+'</details>':'')+'</section>',COL);
@@ -6937,7 +6937,7 @@ const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel===
 
   /* 일정 페이지 */
   function eventView(id){ const N=SCHOOL.find(x=>x.id===id); if(!N) return listView(); const st=SN(N.id), s=stat(N), v=k=>E(st[k]||'');
-    let h='<button class="back" data-go="school">←</button><section class="panel scpage"><h2>'+N.icon+' '+E(N.title)+'</h2><p class="sclead">'+tag(N)+' '+E(N.cat)+(N.range?' · '+md(N.range[0])+' ~ '+md(N.range[1]):'')+'</p>'
+    let h='<button class="back" data-go="school">← 일정 보기</button><section class="panel scpage"><h2>'+N.icon+' '+E(N.title)+'</h2><p class="sclead">'+tag(N)+' '+E(N.cat)+(N.range?' · '+md(N.range[0])+' ~ '+md(N.range[1]):'')+'</p>'
      +'<div class="scmine">📌 '+md(N.date)+(N.end?' ~ '+md(N.end):'')+' <span class="scbdg '+s.k+'" style="margin-left:4px">'+s.badge+'</span>'+(N.note?'<br><span style="font-weight:700;font-size:.92rem">'+E(N.note)+'</span>':'')+'</div>';
     if(N.place||N.time||N.who) h+='<div class="scbox">'+(N.sub?'<div class="scbig">'+E(N.sub)+'</div>':'')+'<div class="scinfo">'+(N.time?'<div>언제?<b>'+E(N.time)+'</b></div>':'')+(N.place?'<div>어디서?<b>'+E(N.place)+'</b></div>':'')+(N.who?'<div>누가?<b>'+E(N.who)+'</b></div>':'')+'</div></div>';
     if(N.prep) h+='<div class="scbox"><h3>🎒 준비물</h3><p style="margin:0">'+E(N.prep)+'</p></div>';
