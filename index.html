@@ -6474,6 +6474,7 @@ const BDSIB={call:'채이 언니',m:10,d:18};
   const css=document.createElement('style');
   css.textContent=
    '.scban{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:12px 0;padding:10px 14px;text-align:left;font:inherit;color:#3b2a1a;background:#FFF6E3;border:2.5px solid #E2B86B;border-radius:16px;box-shadow:0 3px 0 #E2B86B;touch-action:manipulation}'
+  +'.scban.sm{padding:7px 12px;gap:8px;margin:8px 0;border-width:2px;box-shadow:0 2px 0 #E2B86B}.scban.sm .sci{font-size:1.35rem}#app .scban .scone .sclb{display:inline!important;white-space:nowrap!important;text-wrap:nowrap!important}#app .scban .scone{display:block!important;min-width:0;white-space:nowrap!important;text-wrap:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:.95rem!important;font-weight:800!important;line-height:1.3!important}#app .scban .scone small{display:inline!important;font-size:.74rem;color:#B4462E;font-weight:800;margin-right:6px}'
   +'.scban:active{transform:translateY(2px);box-shadow:0 1px 0 #E2B86B}.scban .sci{font-size:1.9rem;line-height:1}.scban .sck{display:block;font-size:.78rem;font-weight:800;color:#B4462E}.scban b{display:block;font-size:1rem;line-height:1.35;word-break:keep-all}.scban .scl{font-size:.85rem}'
   +'.scbdg{font-size:.8rem;font-weight:800;color:#fff;background:#D9534F;border-radius:999px;padding:3px 10px;white-space:nowrap}.scbdg.done{background:#2E8B57}.scbdg.today{background:#E8590C;animation:scpul 1.2s infinite}.scbdg.past{background:#9a8f80}.scbdg.extra{background:#B7791F}.scbdg.far{background:#8a7a66}@keyframes scpul{50%{transform:scale(1.08)}}'
   +'.scpage{color:#3b2a1a}.scpage h2{margin:0 0 4px}.sclead{margin:0 0 12px;opacity:.8;word-break:keep-all}.sch3{font-size:1.02rem;margin:18px 0 8px}'
@@ -6513,10 +6514,10 @@ const BDSIB={call:'채이 언니',m:10,d:18};
     return '<button class="scitem'+(hasAct(N)?' hasact':'')+'" data-go="school:'+N.id+'"><span class="scdate" style="--c:'+c+'">'+(d.getMonth()+1)+'/'+d.getDate()+'<small>'+WD[d.getDay()]+'요일</small></span><span>'+tag(N)+'<b>'+N.icon+' '+E(N.title)+'</b><small>'+E(N.cat)+(N.place?' · '+E(N.place):'')+(N.also?' · 못 가면 '+mdS(N.also):'')+'</small></span><span class="scbdg '+s.k+'">'+s.badge+'</span></button>'; };
 
   /* 처음 화면 줄: 가장 가까운 일정 (없으면 학교 일정 보기) */
-  function banner(){ const U=upcoming(), N=U[0];
-    if(!N) return '<button class="scban" data-go="school"><span class="sci">🏫</span><span><span class="sck">유치원 일정</span><b>유치원 일정 보기</b><span class="scl">지금은 다가오는 일정이 없어요</span></span><span class="scbdg far">›</span></button>';
-    const s=stat(N), far=days(today(),N.date)>14&&s.k==='soon', more=U.length>1?' · 다가오는 일정 '+U.length+'개':'';
-    return '<button class="scban" data-go="school"><span class="sci">🏫</span><span><span class="sck">유치원 일정'+more+'</span><b>'+N.icon+' '+E(N.title)+'</b><span class="scl">'+md(N.date)+(N.place?' · '+E(N.place):'')+(hasAct(N)?' · ✏️ 활동 있어요':'')+'</span>'+todayLine()+'</span><span class="scbdg '+(far?'far':s.k)+'">'+s.badge+'</span></button>'; }
+  function banner(){ const U=upcoming(), N=U[0], LB='유치원 일정';
+    if(!N) return '<button class="scban sm" data-go="school"><span class="sci">🏫</span><span class="scone"><b class="sclb" style="display:inline;color:#B4462E;font-size:.82rem;margin-right:5px;white-space:nowrap">'+LB+':</b>보기</span><span class="scbdg far">›</span></button>';
+    const s=stat(N), far=days(today(),N.date)>14&&s.k==='soon';
+    return '<button class="scban sm" data-go="school" aria-label="'+LB+' 보기"><span class="sci">🏫</span><span class="scone"><b class="sclb" style="display:inline;color:#B4462E;font-size:.82rem;margin-right:5px;white-space:nowrap">'+LB+':</b>'+mdS(N.date)+' '+N.icon+' '+E(N.title)+'</span><span class="scbdg '+(far?'far':s.k)+'">'+s.badge+'</span></button>'; }
 
   /* 학교 달력 */
   let CM=null, CSEL=null;
