@@ -6719,16 +6719,180 @@ window.__ttDebug=()=>G; window.__tgDebug=()=>TG;
 /* 처음 화면 진행 상자: 오늘의 학습을 다 하면 재미로 하는 보드게임 단추가 열려요 */
 function bgHook(){ const pr=document.querySelector('#app .tdprog'); if(!pr||pr.dataset.bgf) return; pr.dataset.bgf=1;
   const v=pr.querySelector('.tpval'), m=v&&v.textContent.match(/(\d+)\s*\/\s*(\d+)/); if(!m) return; const done=+m[1], tot=+m[2];
-  if(tot&&done>=tot) pr.insertAdjacentHTML('beforeend','<button type="button" class="bgfunb" data-go="bgfun">🎲 한글 보드게임 한 판! <span>부엉이가 기다려요 🦉</span></button>');
-  else pr.insertAdjacentHTML('beforeend','<p class="bgfunlock">🔒 오늘의 학습을 다 하면 🎲 한글 보드게임이 열려요</p>'); }
+  if(tot&&done>=tot) pr.insertAdjacentHTML('beforeend','<button type="button" class="bgfunb" data-go="bgfun">🎲 보드게임 한 판! <span>부엉이가 기다려요 🦉</span></button>');
+  else pr.insertAdjacentHTML('beforeend','<p class="bgfunlock">🔒 오늘의 학습을 다 하면 🎲 보드게임이 열려요</p>'); }
 try{ new MutationObserver(bgHook).observe(document.getElementById('app'),{childList:true,subtree:true}); }catch(e){} bgHook();
 /* 2026-11-13: 주제 고르기 없이 바로 게임 고르는 화면으로 (주제는 아무거나 골라요) */
-function funMenu(){ closeSheet(); const us=funUnits(); if(!us.length) return route('start'); const u=us[Math.floor(Math.random()*us.length)]; try{ setGrade(u.g); }catch(e){} ttIntro(u,0); }
+/* 보드게임 두 가지 고르기 (한글 보드게임 · 쿠키 틀 퍼즐) */
+function funMenu(){ closeSheet();
+  show('<button class="back" data-go="start">🏠 메인 화면으로 나가기</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 보드게임</h2><p style="text-align:center;margin:0 0 8px;opacity:.75;font-weight:800">공부가 아니라 그냥 재미로 하는 놀이예요</p>'
+   +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="word"><h3>🔤 한글 보드게임</h3><p>초성 땅따먹기와 글자판 모으기! 부엉이와 낱말로 겨뤄요.</p></button>'
+   +'<button type="button" class="ttgm tile" style="width:100%;text-align:left" data-fun2="ck"><h3>🧩 쿠키 틀 퍼즐</h3><p>조각을 톡 눌러 돌리고 꾹 눌러 뒤집어, 쿠키 틀을 빈틈없이 채워요.</p></button></section>','#D9480F');
+  $app.querySelectorAll('[data-fun2]').forEach(b=>b.onclick=()=>{ if(b.dataset.fun2==='ck') return route('ck');
+    const us=funUnits(); if(!us.length) return route('start'); const u=us[Math.floor(Math.random()*us.length)]; try{ setGrade(u.g); }catch(e){} ttIntro(u,0); }); }
 const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel==='cho'));
 { const _ri=routeInner; routeInner=function(v,a,b){ if(v==='bgfun'){ VIEW='bgfun'; return funMenu(); } if(v==='bgagain'){ VIEW='bgfun'; return U?ttIntro(U,0):funMenu(); } return _ri.apply(this,arguments); }; }
 })();
 </script>
 <!-- ===== 초성 땅따먹기 끝 ===== -->
+<!-- ===== 쿠키 틀 퍼즐 (2026-11-14) 시작 ===== -->
+<style>
+/* 쿠키 틀 퍼즐: 공부방 안에서만 쓰는 꾸밈 (ck- 안에서만) */
+#ckwrap{max-width:480px;margin:0 auto}
+
+:root{--ink:#1B2750;--soft:#5b6378;--me:#C2255C;--owl:#7C4A1E}
+*{box-sizing:border-box}
+html,body{margin:0;background:#FFF4E6;color:var(--ink);font-family:system-ui,-apple-system,'Noto Sans KR','Malgun Gothic',sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+#app{max-width:480px;margin:0 auto;padding:10px 10px 30px}
+h1{font-size:1.3rem;text-align:center;margin:4px 0 8px}
+.sc{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px}
+.pl{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:14px;border:2.5px solid #e5e7eb;background:#fff;font-weight:900;min-width:0}
+.pl.me{color:var(--me)}.pl.ow{color:var(--owl);justify-content:flex-end}
+.pl b{font-size:1.25rem}.pl small{font-size:.72rem}
+.msg{min-height:2.6em;text-align:center;font-weight:800;margin:8px 0;line-height:1.4}
+.btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.btns button{padding:10px 14px;border-radius:14px;border:0;font-weight:900;font-size:.98rem;background:#eef2ff;color:#1e3a8a;font-family:inherit}
+.btns button.go{background:#2E9E5B;color:#fff;box-shadow:0 3px 0 #1d6b3d}.btns button:disabled{opacity:.4}
+.sheet{position:fixed;inset:0;background:rgba(20,20,40,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.box{background:#fff;width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:16px 16px 22px;max-height:92vh;overflow:auto;text-align:center}
+.box h3{margin:4px 0 8px}.box p{line-height:1.55;margin:6px 0;text-align:left}
+.demo{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#F7F2E8;border-radius:16px;padding:12px 8px;margin:8px 0;min-height:90px}
+.demo .cap{flex-basis:100%;font-size:.85rem;font-weight:800;color:var(--soft)}.demo .ar{font-size:1.4rem;font-weight:900;color:var(--owl)}
+.pg{font-size:.8rem;opacity:.6;font-weight:800}
+.hl{animation:hp .7s ease-in-out infinite alternate}@keyframes hp{from{box-shadow:0 0 0 2px #C2255C}to{box-shadow:0 0 0 5px #F59F00}}
+.shake{animation:sk .35s}@keyframes sk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* 이 게임 */
+.timer{height:14px;border-radius:999px;background:#f1e3cc;overflow:hidden;margin:4px 0 2px;border:2px solid #E2B86B}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,#F59F00,#E8590C);transition:width .25s linear}
+.owlbar{font-size:.8rem;font-weight:800;color:var(--owl);text-align:center;margin:2px 0 6px}
+.bd{display:grid;gap:3px;justify-content:center;margin:8px auto;padding:10px;background:#F3D9A8;border-radius:18px;width:max-content;max-width:100%}
+.bc{width:var(--c);height:var(--c);border-radius:6px}
+.bc.in{background:#FFF8EC;border:2px dashed #D5A35A;cursor:pointer}
+.bc.f{border:0;box-shadow:inset 0 -3px 0 #0002;cursor:pointer}
+.tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
+.pc{display:grid;gap:2px;grid-auto-rows:16px;align-content:start;align-self:center;padding:6px;border-radius:12px;background:#fff;border:2.5px solid #E5D3B3;cursor:pointer}
+.pc.sel{border-color:#C2255C;box-shadow:0 0 0 3px #F8C6D6}
+.pc i{width:16px;height:16px;border-radius:4px}
+.gems{font-size:1rem;letter-spacing:1px}
+.pc.drag{position:fixed;z-index:80;transform:translate(-50%,-50%) scale(1.15);opacity:.92;pointer-events:none;box-shadow:0 8px 18px #0004;border-color:#C2255C}
+.bc.in.hover{background:#DCFCE7;box-shadow:inset 0 0 0 3px #2E9E5B}
+.pc{touch-action:none}
+.tip2{text-align:center;font-size:.82rem;color:var(--soft);margin:6px 0 0;line-height:1.5}
+
+</style>
+<script>
+(function(){
+/* 공부방 보드게임 방에서 여는 🧩 쿠키 틀 퍼즐. 학습이 아니라 재미로 하는 놀이예요(도장·달력에 안 들어가요). */
+const CKQ=s=>document.querySelector(s==='#app'?'#ckapp':s);
+
+/* ===== 🧩 쿠키 틀 퍼즐 =====
+   쿠키 틀(빈칸 모양)을 주어진 조각으로 빈틈없이 채워요. 모래시계가 다 떨어지기 전에!
+   조각을 눌러 고르고 ⟳ 돌리기 / ⇋ 뒤집기 한 뒤, 틀 칸을 누르면 그 자리에 들어가요. 틀에 놓은 조각을 누르면 다시 빠져요.
+   부엉이도 같은 틀을 풀어요. 먼저 다 채우면 💎 2개, 늦어도 시간 안에 채우면 🔹 1개. 6판 뒤 보석이 많은 쪽이 이겨요. */
+const $=s=>document.querySelector(s), R=n=>Math.floor(Math.random()*n), SH=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=R(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+let TOK=0; const later=(f,ms)=>{ const t=TOK; setTimeout(()=>{ if(t===TOK) f(); },ms); };
+function sheet(h){ closeSheet(); const w=document.createElement('div'); w.className='sheet'; w.innerHTML='<div class="box">'+h+'</div>'; document.body.appendChild(w); return w; }
+function closeSheet(){ document.querySelectorAll('.sheet').forEach(x=>x.remove()); }
+function tut(title,steps,done){ let k=0; const w=sheet(''), box=w.querySelector('.box');
+  const paint=()=>{ const s=steps[k]; box.innerHTML='<p class="pg" style="text-align:center">'+title+' · 이렇게 해요 '+(k+1)+' / '+steps.length+'</p><h3>'+s.t+'</h3><div class="demo">'+s.h+'</div><p>'+s.p+'</p><div class="btns">'+(k?'<button data-t="prev">← 이전</button>':'<button data-t="skip">바로 시작</button>')+(k<steps.length-1?'<button class="go" data-t="next">다음 →</button>':'<button class="go" data-t="go">시작!</button>')+'</div>'; };
+  box.onclick=e=>{ const b=e.target.closest('[data-t]'); if(!b) return; const t=b.dataset.t; if(t==='next') k++; else if(t==='prev') k--; else { closeSheet(); return done(); } paint(); }; paint(); }
+const msg=t=>{ const m=CKQ('#msg'); if(m) m.innerHTML=t; };
+
+const SHAPES={I3:[[0,0],[0,1],[0,2]],L3:[[0,0],[1,0],[1,1]],O4:[[0,0],[0,1],[1,0],[1,1]],I4:[[0,0],[0,1],[0,2],[0,3]],L4:[[0,0],[1,0],[2,0],[2,1]],T4:[[0,0],[0,1],[0,2],[1,1]],S4:[[0,1],[0,2],[1,0],[1,1]],P5:[[0,0],[0,1],[1,0],[1,1],[2,0]],L5:[[0,0],[1,0],[2,0],[3,0],[3,1]],U5:[[0,0],[0,2],[1,0],[1,1],[1,2]]};
+const COLS=['#E8590C','#1C7ED6','#2B8A3E','#AE3EC9','#F59F00'];
+const norm=cs=>{ const r=Math.min(...cs.map(c=>c[0])), c=Math.min(...cs.map(c=>c[1])); return cs.map(([a,b])=>[a-r,b-c]).sort((x,y)=>x[0]-y[0]||x[1]-y[1]); };
+const rot=cs=>norm(cs.map(([r,c])=>[c,-r])), flip=cs=>norm(cs.map(([r,c])=>[r,-c]));
+const K=(r,c)=>r+','+c;
+/* 틀 만들기: 조각을 붙여 가며 모양을 만들어요 (그래서 언제나 풀 수 있어요) */
+function makePuzzle(lv){ const pool=lv?['I3','L3','O4','I4','L4','T4','S4','P5','L5','U5']:['I3','L3','O4','I4','L4','T4'], n=lv?4:3;
+  for(let tries=0;tries<200;tries++){ const occ=new Set(), pcs=[]; let ok=true;
+    for(let k=0;k<n&&ok;k++){ const nm=pool[R(pool.length)]; let placed=false;
+      for(let t=0;t<300&&!placed;t++){ let s=norm(SHAPES[nm]); for(let q=R(4);q>0;q--) s=rot(s); if(R(2)) s=flip(s);
+        let dr=0,dc=0; if(occ.size){ const cells=[...occ].map(x=>x.split(',').map(Number)), base=cells[R(cells.length)], d=[[0,1],[1,0],[0,-1],[-1,0]][R(4)], an=s[R(s.length)]; dr=base[0]+d[0]-an[0]; dc=base[1]+d[1]-an[1]; }
+        const abs=s.map(([r,c])=>[r+dr,c+dc]); if(abs.some(([r,c])=>occ.has(K(r,c)))) continue;
+        if(occ.size&&!abs.some(([r,c])=>[[0,1],[1,0],[0,-1],[-1,0]].some(([a,b])=>occ.has(K(r+a,c+b))))) continue;
+        abs.forEach(([r,c])=>occ.add(K(r,c))); pcs.push(nm); placed=true; }
+      if(!placed) ok=false; }
+    if(!ok) continue; const cells=norm([...occ].map(x=>x.split(',').map(Number))), H=Math.max(...cells.map(c=>c[0]))+1, W=Math.max(...cells.map(c=>c[1]))+1;
+    if(H>6||W>6) continue; return {cells,H,W,pcs:SH(pcs).map((nm,i)=>({nm,s:norm(SHAPES[nm]),col:COLS[i],at:null}))}; }
+  return makePuzzle(lv); }
+let G=null, P=null, timer=null;
+function newGame(lv){ G={lv,round:0,gem:[0,0],fin:false}; nextRound(); }
+function nextRound(){ G.round++; if(G.round>6) return finish(); P=makePuzzle(G.lv); P.sel=null; P.t0=Date.now(); P.lim=G.lv?75000:100000; P.done=[false,false]; P.owlAt=P.lim*(G.lv?.42+Math.random()*.45:.55+Math.random()*.5);
+  P.fill={}; render(); msg('🍪 '+G.round+'번째 틀! 조각을 골라 틀을 채워요.'); clearInterval(timer); timer=setInterval(tick,250); }
+function tick(){ if(!P) return; const el=Date.now()-P.t0, bar=CKQ('.timer i'); if(bar) bar.style.width=Math.max(0,100-el/P.lim*100)+'%';
+  if(!P.done[1]&&el>=P.owlAt){ P.done[1]=true; if(!P.done[0]){ G.gem[1]+=2; P.owlFirst=true; } else G.gem[1]+=1; const ob=CKQ('.owlbar'); if(ob) ob.textContent='🦉 부엉이가 다 채웠어요!'; render(true); if(!P.done[0]) msg('🦉 부엉이가 먼저 채웠어요! 그래도 시간 안에 채우면 🔹 1개!'); }
+  if(el>=P.lim){ clearInterval(timer); if(!P.done[0]) { msg('⏳ 시간이 다 됐어요. 이번 틀은 여기까지!'); later(roundEnd,1400); } } }
+function roundEnd(){ clearInterval(timer); if(G.round>=6) return finish(); nextRound(); }
+function cellOwner(r,c){ return P.fill[K(r,c)]; }
+function render(keepMsg){ const a=CKQ('#app'), om=keepMsg&&CKQ('#msg')?CKQ('#msg').innerHTML:'', cs=Math.min(44,Math.floor(300/Math.max(P.W,P.H))), inS=new Set(P.cells.map(([r,c])=>K(r,c)));
+  let bd=''; for(let r=0;r<P.H;r++) for(let c=0;c<P.W;c++){ const k=K(r,c); if(!inS.has(k)){ bd+='<i class="bc"></i>'; continue; } const o=P.fill[k]; bd+=o!=null?'<i class="bc f" data-r="'+r+'" data-c="'+c+'" style="background:'+P.pcs[o].col+'"></i>':'<i class="bc in" data-r="'+r+'" data-c="'+c+'"></i>'; }
+  const pc=(p,i)=>{ const W=Math.max(...p.s.map(c=>c[1]))+1, H=Math.max(...p.s.map(c=>c[0]))+1, S=new Set(p.s.map(([r,c])=>K(r,c))); let h=''; for(let r=0;r<H;r++) for(let c=0;c<W;c++) h+='<i style="background:'+(S.has(K(r,c))?p.col:'transparent')+'"></i>'; return '<div class="pc'+(P.sel===i?' sel':'')+'" data-p="'+i+'" style="grid-template-columns:repeat('+W+',16px)">'+h+'</div>'; };
+  a.innerHTML='<h1>🧩 쿠키 틀 퍼즐 <small style="font-size:.8rem;opacity:.6">'+G.round+' / 6판</small></h1><div class="sc"><div class="pl me">🙂<span><small>나</small><br><b class="gems">💎×'+G.gem[0]+'</b></span></div><span></span><div class="pl ow"><span style="text-align:right"><small>부엉이</small><br><b class="gems">💎×'+G.gem[1]+'</b></span>🦉</div></div>'
+   +'<div class="timer"><i style="width:'+Math.max(0,100-(Date.now()-P.t0)/P.lim*100)+'%"></i></div><p class="owlbar">'+(P.done[1]?'🦉 부엉이가 다 채웠어요!':'🦉 부엉이도 같은 틀을 푸는 중… 🤔')+'</p>'
+   +'<div class="bd" style="--c:'+cs+'px;grid-template-columns:repeat('+P.W+','+cs+'px)">'+bd+'</div>'
+   +'<p class="tip2">조각을 <b>톡</b> 누르면 돌아가고, <b>꾹</b> 누르면 뒤집혀요. 끌어다 틀에 놓아도 돼요!</p><div class="btns"><button data-a="rot"'+(P.sel==null?' disabled':'')+'>⟳ 돌리기</button><button data-a="flip"'+(P.sel==null?' disabled':'')+'>⇋ 뒤집기</button><button data-a="help">❓</button></div>'
+   +'<div class="tray">'+P.pcs.map((p,i)=>p.at?'':pc(p,i)).join('')+'</div><p class="msg" id="msg">'+om+'</p>'; }
+function tryPlace(i,r,c){ const p=P.pcs[i], inS=new Set(P.cells.map(([a,b])=>K(a,b)));
+  for(const [ar,ac] of p.s){ const abs=p.s.map(([a,b])=>[a-ar+r,b-ac+c]); if(abs.every(([a,b])=>inS.has(K(a,b))&&P.fill[K(a,b)]==null)){ abs.forEach(([a,b])=>P.fill[K(a,b)]=i); p.at=abs; return true; } } return false; }
+function solved(){ return P.cells.every(([r,c])=>P.fill[K(r,c)]!=null); }
+document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sheet')) return; const pce=e.target.closest('[data-p]'), cell=e.target.closest('.bc'), b=e.target.closest('[data-a]');
+  if(b){ if(b.dataset.a==='help'){ clearInterval(timer); const ps=Date.now(); return tut('🧩 쿠키 틀 퍼즐',TUT,()=>{ P.t0+=Date.now()-ps; if(!P.done[0]) timer=setInterval(tick,250); render(true); }); }   /* 설명을 보는 동안은 모래시계가 멈춰요 */
+    if(P.sel==null) return; const p=P.pcs[P.sel]; p.s=b.dataset.a==='rot'?rot(p.s):flip(p.s); render(true); return; }
+  if(P.done[0]) return;
+  if(pce) return;   /* 조각은 아래 손가락 동작으로 다뤄요 */
+  if(cell&&cell.dataset.r!=null){ const r=+cell.dataset.r, c=+cell.dataset.c, o=P.fill[K(r,c)];
+    if(o!=null){ P.pcs[o].at.forEach(([a,b])=>delete P.fill[K(a,b)]); P.pcs[o].at=null; P.sel=o; render(true); msg('조각을 뺐어요. 다시 놓아 봐요.'); return; }
+    if(P.sel==null){ msg('먼저 아래 조각을 골라요.'); return; }
+    if(tryPlace(P.sel,r,c)){ P.sel=null; render(true); afterPlace(cell); }
+    else { cell.classList.add('shake'); msg('여기엔 안 들어가요. 돌리거나 뒤집어 볼까요?'); } } });
+/* 2026-11-14: 손가락으로 조각 다루기 — 톡 누르면 90도 회전, 꾹 누르면 뒤집기, 끌어다 틀에 놓기 */
+(function(){ let st=null, ghost=null, longT=null, moved=false, flipped=false;
+  const pieceEl=e=>e.target.closest&&e.target.closest('[data-p]');
+  const clear=()=>{ clearTimeout(longT); if(ghost){ ghost.remove(); ghost=null; } st=null; moved=false; flipped=false; };
+  document.addEventListener('pointerdown',e=>{ if(!P||G.fin||P.done[0]||document.querySelector('.sheet')) return; const el=pieceEl(e); if(!el) return;
+    const i=+el.dataset.p; P.sel=i; render(true); st={i,x:e.clientX,y:e.clientY,el:document.querySelector('[data-p="'+i+'"]')}; moved=false; flipped=false;
+    longT=setTimeout(()=>{ if(!st) return; const p=P.pcs[st.i]; p.s=flip(p.s); flipped=true; try{ navigator.vibrate&&navigator.vibrate(25); }catch(_){}
+      render(true); msg('⇋ 뒤집었어요!'); },480); },true);
+  document.addEventListener('pointermove',e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y;
+    if(!moved&&Math.hypot(dx,dy)>9){ moved=true; clearTimeout(longT);
+      const src=document.querySelector('[data-p="'+st.i+'"]'); if(src){ ghost=src.cloneNode(true); ghost.className='pc drag'; document.body.appendChild(ghost); } }
+    if(moved&&ghost){ ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
+      document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover'));
+      if(ghost) ghost.style.display='none'; const under=document.elementFromPoint(e.clientX,e.clientY); if(ghost) ghost.style.display='';
+      const cell=under&&under.closest&&under.closest('.bc.in'); if(cell) cell.classList.add('hover'); } },true);
+  document.addEventListener('pointerup',e=>{ if(!st) return; const i=st.i;
+    if(moved){ if(ghost) ghost.style.display='none'; const under=document.elementFromPoint(e.clientX,e.clientY); if(ghost) ghost.style.display='';
+      const cell=under&&under.closest&&under.closest('.bc'); clear(); document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover'));
+      if(cell&&cell.dataset.r!=null){ const r=+cell.dataset.r, c=+cell.dataset.c;
+        if(P.fill[K(r,c)]!=null){ msg('거기엔 이미 조각이 있어요.'); render(true); return; }
+        if(tryPlace(i,r,c)){ P.sel=null; render(true); afterPlace(cell); }
+        else { msg('여기엔 안 들어가요. 톡 눌러 돌리거나 꾹 눌러 뒤집어 봐요.'); render(true); } }
+      else { render(true); msg('틀 안에 놓아 주세요.'); } return; }
+    clearTimeout(longT); const wasFlip=flipped; clear();
+    if(!wasFlip){ const p=P.pcs[i]; p.s=rot(p.s); P.sel=i; render(true); msg('⟳ 돌렸어요! 틀에 끌어다 놓거나 빈칸을 눌러요.'); } },true);
+  document.addEventListener('pointercancel',()=>{ clear(); document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover')); },true);
+})();
+function afterPlace(cell){ if(solved()){ P.done[0]=true; const first=!P.done[1]; G.gem[0]+=first?2:1; render(true); msg(first?'🎉 내가 먼저 다 채웠어요! 💎💎':'👍 다 채웠어요! 🔹 1개'); clearInterval(timer); later(roundEnd,1800); }
+  else msg('딱 맞아요! 다음 조각도 골라요.'); }
+function finish(){ clearInterval(timer); G.fin=true; const a=G.gem[0], b=G.gem[1];
+  const w=sheet('<div style="font-size:3rem">'+(a>b?'🏆':a<b?'🦉':'🤝')+'</div><h3>'+(a>b?'내가 이겼어요!':a<b?'부엉이가 이겼어요!':'비겼어요!')+'</h3><p style="text-align:center;font-weight:800">보석 나 '+a+'개 : 부엉이 '+b+'개</p><div class="btns"><button class="go" data-x="1">한 판 더!</button></div>');
+  w.querySelector('[data-x]').onclick=()=>{ closeSheet(); start(); }; }
+const mini=(cells,col,cls)=>{ const W=Math.max(...cells.map(c=>c[1]))+1, H=Math.max(...cells.map(c=>c[0]))+1, S=new Set(cells.map(([r,c])=>K(r,c))); let h=''; for(let r=0;r<H;r++) for(let c=0;c<W;c++) h+='<i style="background:'+(S.has(K(r,c))?col:'transparent')+'"></i>'; return '<div class="pc '+(cls||'')+'" style="grid-template-columns:repeat('+W+',16px)">'+h+'</div>'; };
+const TUT=[
+ {t:'① 쿠키 틀을 채워요',h:mini([[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]],'#FFF8EC')+'<span class="ar">←</span>'+mini(SHAPES.I3,'#E8590C')+mini(SHAPES.I3,'#1C7ED6')+'<span class="cap">점선 칸이 쿠키 틀이에요. 아래 조각을 모두 써서 빈틈없이 채워요.</span>',p:'조각은 남김없이 다 써야 해요. 틀 밖으로 나가면 안 돼요.'},
+ {t:'② 돌리고 뒤집어요',h:mini(SHAPES.L3,'#2B8A3E','hl')+'<span class="ar">⟳</span>'+mini(rot(SHAPES.L3),'#2B8A3E')+'<span class="ar">⇋</span>'+mini(flip(rot(SHAPES.L3)),'#2B8A3E')+'<span class="cap">조각을 눌러 고른 뒤 ⟳ 돌리기, ⇋ 뒤집기로 모양을 바꿔요.</span>',p:'틀의 빈칸을 누르면 그 자리에 쏙 들어가요. 틀에 놓은 조각을 다시 누르면 빠져요.'},
+ {t:'③ 부엉이와 빨리 채우기 시합',h:'<span style="font-size:1.6rem">⏳</span><span style="font-weight:800">먼저 💎💎 · 늦어도 시간 안에 🔹</span><span class="cap">부엉이도 같은 틀을 풀어요. 6판 동안 보석을 더 많이 모으면 승리!</span>',p:'모래시계가 다 떨어지면 그 판은 끝나요. 큰 조각부터 자리를 정하면 쉬워요.'}];
+function start(){ TOK++; clearInterval(timer); closeSheet(); newGame(0); clearInterval(timer); render();   /* 2026-11-14: 고르는 창 뒤에 판을 미리 보여 줘요 (모래시계는 아직 멈춰 있어요) */
+  const w=sheet('<div style="font-size:2.6rem">🧩</div><h3>쿠키 틀 퍼즐</h3><p style="text-align:center">조각으로 쿠키 틀을 빈틈없이 채워요!</p><div class="btns"><button data-m="0">🐣 쉬운 판 (조각 3개)</button><button class="go" data-m="1">🦁 어려운 판 (조각 4개)</button></div>');
+  w.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ closeSheet(); newGame(+b.dataset.m); clearInterval(timer); const ps=Date.now(); tut('🧩 쿠키 틀 퍼즐',TUT,()=>{ P.t0+=Date.now()-ps; timer=setInterval(tick,250); render(true); }); }); }
+
+window.__cookie=function(){ VIEW='ck'; show('<button class="back" data-go="bgfun">← 보드게임 고르기</button><section class="panel" id="ckwrap"><div id="ckapp"></div></section>','#E8590C'); TOK++; try{ clearInterval(timer); }catch(e){} start(); };
+{ const _ri=routeInner; routeInner=function(v,a,b){ if(v==='ck'){ if(canSpeak) try{ speechSynthesis.cancel(); }catch(e){} return window.__cookie(); } try{ clearInterval(timer); G&&(G.fin=1); }catch(e){} closeSheet(); return _ri.apply(this,arguments); }; }
+})();
+</script>
+<!-- ===== 쿠키 틀 퍼즐 끝 ===== -->
+
 
 <!-- ===== 유치원 일정 시작 ===== -->
 <script>
