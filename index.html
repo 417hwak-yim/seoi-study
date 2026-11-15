@@ -6744,6 +6744,13 @@ const isTT=u=>u&&!u.rev&&u.rel==='cho'&&CHORDER.includes(u.g);
   const _uv=unitView; unitView=function(u){ closeSheet(); const r=_uv.apply(this,arguments); if(isTT(u)){ const b=$app.querySelector('[data-go^="final:"]'); if(b){ const s=b.querySelector('span>b'); if(s) s.textContent='보드게임 마지막 판'; const t=b.querySelector('span>span'); if(t) t.textContent='이 주제 마지막 한 판!'; } } return r; }; }
 window.__ttDebug=()=>G; window.__tgDebug=()=>TG;
 /* 처음 화면 진행 상자: 오늘의 학습을 다 하면 재미로 하는 보드게임 단추가 열려요 */
+/* 2026-11-15: 보드게임은 종류마다 하루에 한 번만 열려요 */
+const BGTK=()=>dkey(new Date());
+const BGNM={word:'🔤 한글 보드게임',sky:'⚙️ 하늘 기계섬 잇기',ck:'🧩 쿠키 틀 퍼즐'};
+function bgDone(){ const P=STATE.bgPlay; return (P&&P.d===BGTK()&&Array.isArray(P.list))?P.list:[]; }
+function bgMark(k){ if(!k) return; let P=STATE.bgPlay; if(!P||P.d!==BGTK()) P=STATE.bgPlay={d:BGTK(),list:[]};
+  if(P.list.indexOf(k)<0){ P.list.push(k); try{ SAVE(); }catch(e){} } }
+try{ window.__bgDone=bgDone; window.__bgMark=bgMark; window.__bgNM=BGNM; }catch(e){}
 function bgHook(){ const pr=document.querySelector('#app .tdprog'); if(!pr||pr.dataset.bgf) return; pr.dataset.bgf=1;
   const v=pr.querySelector('.tpval'), m=v&&v.textContent.match(/(\d+)\s*\/\s*(\d+)/); if(!m) return; const done=+m[1], tot=+m[2];
   if(tot&&done>=tot) pr.insertAdjacentHTML('beforeend','<button type="button" class="bgfunb" data-go="bgfun">🎲 보드게임 한 판! <span>부엉이가 기다려요 🦉</span></button>');
@@ -6755,7 +6762,13 @@ function funMenu(){ closeSheet();
   show('<button class="back" data-go="start">🏠 메인 화면으로 나가기</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 보드게임</h2><p style="text-align:center;margin:0 0 8px;opacity:.75;font-weight:800">공부가 아니라 그냥 재미로 하는 놀이예요</p>'
    +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="word"><h3>🔤 한글 보드게임</h3><p>초성 땅따먹기와 글자판 모으기! 부엉이와 낱말로 겨뤄요.</p></button>'
    +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="sky"><h3>⚙️ 하늘 기계섬 잇기</h3><p>구름 위 기계 섬 타일을 돌려서 이어 붙여요. 길은 길끼리, 톱니 구역은 구역끼리!</p></button><button type="button" class="ttgm tile" style="width:100%;text-align:left" data-fun2="ck"><h3>🧩 쿠키 틀 퍼즐</h3><p>조각을 톡 눌러 돌리고 꾹 눌러 뒤집어, 쿠키 틀을 빈틈없이 채워요.</p></button></section>','#D9480F');
-  $app.querySelectorAll('[data-fun2]').forEach(b=>b.onclick=()=>{ if(b.dataset.fun2==='sky') return bgFrame('sky',()=>route('bgfun')); if(b.dataset.fun2==='ck') return route('ck');
+  { const did=bgDone();
+    $app.querySelectorAll('[data-fun2]').forEach(b=>{ const k=b.dataset.fun2;
+      if(did.indexOf(k)>=0){ b.disabled=true; b.style.opacity='.55'; b.insertAdjacentHTML('beforeend','<p style="margin:4px 0 0;font-weight:800;color:#2E8B57">✅ 오늘은 다 했어요 · 내일 또 만나요</p>'); } }); }
+  $app.querySelectorAll('[data-fun2]').forEach(b=>b.onclick=()=>{ const k=b.dataset.fun2;
+    if(bgDone().indexOf(k)>=0){ try{ toast(BGNM[k]+'은 오늘 이미 했어요. 내일 또 만나요!'); }catch(e){} return; }
+    if(k!=='ck') bgMark(k);   /* 쿠키 틀 퍼즐은 그쪽 길에서 적어요 (두 번 적히면 바로 막혀요) */
+    if(k==='sky') return bgFrame('sky',()=>route('bgfun')); if(k==='ck') return route('ck');
     const us=funUnits(); if(!us.length) return route('start'); const u=us[Math.floor(Math.random()*us.length)]; try{ setGrade(u.g); }catch(e){} ttIntro(u,0); }); }
 const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel==='cho'));
 { const _ri=routeInner; routeInner=function(v,a,b){ if(v==='bgfun'){ VIEW='bgfun'; return funMenu(); } if(v==='bgagain'){ VIEW='bgfun'; return U?ttIntro(U,0):funMenu(); } return _ri.apply(this,arguments); }; }
@@ -6915,7 +6928,7 @@ function start(){ TOK++; clearInterval(timer); closeSheet(); newGame(0); clearIn
   w.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ closeSheet(); newGame(+b.dataset.m); clearInterval(timer); const ps=Date.now(); tut('🧩 쿠키 틀 퍼즐',TUT,()=>{ P.t0+=Date.now()-ps; timer=setInterval(tick,250); render(true); }); }); }
 
 window.__cookie=function(){ VIEW='ck'; show('<button class="back" data-go="bgfun">← 보드게임 고르기</button><section class="panel" id="ckwrap"><div id="ckapp"></div></section>','#E8590C'); TOK++; try{ clearInterval(timer); }catch(e){} start(); };
-{ const _ri=routeInner; routeInner=function(v,a,b){ if(v==='ck'){ if(canSpeak) try{ speechSynthesis.cancel(); }catch(e){} return window.__cookie(); } try{ clearInterval(timer); G&&(G.fin=1); }catch(e){} closeSheet(); return _ri.apply(this,arguments); }; }
+{ const _ri=routeInner; routeInner=function(v,a,b){ if(v==='ck'){ if(window.__bgDone&&window.__bgDone().indexOf('ck')>=0){ try{ toast(window.__bgNM.ck+'은 오늘 이미 했어요. 내일 또 만나요!'); }catch(e){} return route('bgfun'); } try{ window.__bgMark&&window.__bgMark('ck'); }catch(e){} if(canSpeak) try{ speechSynthesis.cancel(); }catch(e){} return window.__cookie(); } try{ clearInterval(timer); G&&(G.fin=1); }catch(e){} closeSheet(); return _ri.apply(this,arguments); }; }
 })();
 </script>
 <!-- ===== 쿠키 틀 퍼즐 끝 ===== -->
@@ -10327,7 +10340,11 @@ details .row > .btn,details .row > label.btn{white-space:normal!important;word-b
       try { persist(); } catch (e) {}
       const now = done.indexOf(false), html = '<section class="bdlbox" id="bdlbox"><h2>🎒 일요일 보따리</h2><p class="lead">' + (all ? '🎉 <b>보따리를 다 풀었어요!</b> 오늘의 소품을 모았어요. 이번 주 활약 리포트를 부모님께 보여 드려요!' : '오늘은 새 진도 없이, 이번 주(월~토)에 배운 것을 과목마다 복습해요. 약했던 곳이 먼저 나와요. 다 풀면 오늘의 소품을 모아요. 게임은 내가 골라요! 🎮') + '</p>'
         + '<div class="bdlbar"><i style="width:' + (P.length ? Math.round(nDone / P.length * 100) : 100) + '%"></i></div>'
-        + '<div class="bdlgrid">' + P.map((p, i) => '<button type="button" class="bdlcard' + (done[i] ? ' did' : i === now ? ' now' : '') + '" data-go="' + goOf(p) + '"><span class="ic">' + p.ic + '</span><span><b>' + (i + 1) + '. ' + p.t + '</b><small>' + subOf(p) + (p.min ? ' · ⏱ 약 ' + p.min + '분' : '') + '</small></span>' + (done[i] ? '<span class="ck">완료</span>' : '') + '</button>').join('') + '</div></section>';
+        + '<div class="bdlgrid">' + P.map((p, i) => '<button type="button" class="bdlcard' + (done[i] ? ' did' : i === now ? ' now' : '') + '" data-go="' + goOf(p) + '"><span class="ic">' + p.ic + '</span><span><b>' + (i + 1) + '. ' + p.t + '</b><small>' + subOf(p) + (p.min ? ' · ⏱ 약 ' + p.min + '분' : '') + '</small></span>' + (done[i] ? '<span class="ck">완료</span>' : '') + '</button>').join('') + '</div>'
+        /* 2026-11-15: 보따리를 하는 날에는 오늘의 학습 상자가 없어서 보드게임 단추가 사라졌어요. 보따리 상자 안에 넣어요 */
+        + (all ? '<button type="button" class="bgfunb" data-go="bgfun" style="margin-top:10px">🎲 보드게임 한 판! <span>부엉이가 기다려요 🦉</span></button>'
+               : '<p class="bgfunlock">🔒 보따리를 다 풀면 🎲 보드게임이 열려요</p>')
+        + '</section>';
       const old = document.getElementById('bdlbox'); if (old && old.dataset.src === html) return;   /* 내용이 같으면 다시 그리지 않아요 (떨림 방지) */
       window.__bdlSrc = html;
       if (old) old.outerHTML = html; else (app.querySelector('.tdprog') || home).insertAdjacentHTML('afterend', html);
