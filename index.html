@@ -6824,6 +6824,9 @@ h1{font-size:1.3rem;text-align:center;margin:4px 0 8px}
 .gems{font-size:1rem;letter-spacing:1px}
 .pc.drag{position:fixed;z-index:80;transform:translate(-50%,-50%) scale(1.15);opacity:.92;pointer-events:none;box-shadow:0 8px 18px #0004;border-color:#C2255C}
 .bc.in.hover{background:#DCFCE7;box-shadow:inset 0 0 0 3px #2E9E5B}
+/* 2026-11-15: 조각을 들고 있을 때 들어갈 칸 전체를 미리 보여 줘요 */
+.bc.pre{background:#DCFCE7;box-shadow:inset 0 0 0 3px #2E9E5B}
+.bc.no{background:#FEE2E2;box-shadow:inset 0 0 0 3px #DC2626}
 .pc{touch-action:none}
 .tip2{text-align:center;font-size:.82rem;color:var(--soft);margin:6px 0 0;line-height:1.5}
 
@@ -6883,6 +6886,22 @@ function render(keepMsg){ const a=CKQ('#app'), om=keepMsg&&CKQ('#msg')?CKQ('#msg
    +'<div class="tray">'+P.pcs.map((p,i)=>p.at?'':pc(p,i)).join('')+'</div><p class="msg" id="msg">'+om+'</p>'; }
 function tryPlace(i,r,c){ const p=P.pcs[i], inS=new Set(P.cells.map(([a,b])=>K(a,b)));
   for(const [ar,ac] of p.s){ const abs=p.s.map(([a,b])=>[a-ar+r,b-ac+c]); if(abs.every(([a,b])=>inS.has(K(a,b))&&P.fill[K(a,b)]==null)){ abs.forEach(([a,b])=>P.fill[K(a,b)]=i); p.at=abs; return true; } } return false; }
+/* 조각이 들어갈 자리를 미리 계산해요 (실제로 놓는 규칙과 똑같이) */
+function ckFit(i,r,c){ const p=P.pcs[i], inS=new Set(P.cells.map(([a,b])=>K(a,b)));
+  for(const [ar,ac] of p.s){ const abs=p.s.map(([a,b])=>[a-ar+r,b-ac+c]);
+    if(abs.every(([a,b])=>inS.has(K(a,b))&&P.fill[K(a,b)]==null)) return {abs,ok:true}; }
+  const [ar,ac]=p.s[0]; return {abs:p.s.map(([a,b])=>[a-ar+r,b-ac+c]),ok:false}; }
+function ckClearPre(){ document.querySelectorAll('.bc.pre,.bc.no').forEach(x=>x.classList.remove('pre','no')); }
+function ckPre(i,r,c){ ckClearPre(); if(i==null||r==null||!P||!P.pcs[i]) return;
+  const {abs,ok}=ckFit(i,r,c);
+  abs.forEach(([a,b])=>{ const el=document.querySelector('.bc[data-r="'+a+'"][data-c="'+b+'"]'); if(el) el.classList.add(ok?'pre':'no'); }); }
+
+/* 조각을 고른 뒤(끌지 않고) 칸 위에 손/마우스를 올려도 미리 보여 줘요 */
+document.addEventListener('pointerover',e=>{ try{ if(!P||P.sel==null) return;
+  const cell=e.target.closest&&e.target.closest('.bc');
+  if(cell&&cell.dataset.r!=null) ckPre(P.sel,+cell.dataset.r,+cell.dataset.c); }catch(_){} },true);
+document.addEventListener('pointerout',e=>{ try{ const b=e.target.closest&&e.target.closest('.bd');
+  if(b&&!b.contains(e.relatedTarget)) ckClearPre(); }catch(_){} },true);
 function solved(){ return P.cells.every(([r,c])=>P.fill[K(r,c)]!=null); }
 document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sheet')) return; const pce=e.target.closest('[data-p]'), cell=e.target.closest('.bc'), b=e.target.closest('[data-a]');
   if(b){ if(b.dataset.a==='help'){ clearInterval(timer); const ps=Date.now(); return tut('🧩 쿠키 틀 퍼즐',TUT,()=>{ P.t0+=Date.now()-ps; if(!P.done[0]) timer=setInterval(tick,250); render(true); }); }   /* 설명을 보는 동안은 모래시계가 멈춰요 */
@@ -6908,10 +6927,11 @@ document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sh
     if(moved&&ghost){ ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
       document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover'));
       if(ghost) ghost.style.display='none'; const under=document.elementFromPoint(e.clientX,e.clientY); if(ghost) ghost.style.display='';
-      const cell=under&&under.closest&&under.closest('.bc.in'); if(cell) cell.classList.add('hover'); } },true);
+      const cell=under&&under.closest&&under.closest('.bc');
+      if(cell&&cell.dataset.r!=null) ckPre(st.i,+cell.dataset.r,+cell.dataset.c); else ckClearPre(); } },true);
   document.addEventListener('pointerup',e=>{ if(!st) return; const i=st.i;
     if(moved){ if(ghost) ghost.style.display='none'; const under=document.elementFromPoint(e.clientX,e.clientY); if(ghost) ghost.style.display='';
-      const cell=under&&under.closest&&under.closest('.bc'); clear(); document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover'));
+      const cell=under&&under.closest&&under.closest('.bc'); clear(); ckClearPre(); document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover'));
       if(cell&&cell.dataset.r!=null){ const r=+cell.dataset.r, c=+cell.dataset.c;
         if(P.fill[K(r,c)]!=null){ msg('거기엔 이미 조각이 있어요.'); render(true); return; }
         if(tryPlace(i,r,c)){ P.sel=null; render(true); afterPlace(cell); }
