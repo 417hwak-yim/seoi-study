@@ -6773,7 +6773,7 @@ function funMenu(){ closeSheet();
 const funUnits=()=>CHORDER.flatMap(g=>GRADES[g].units.filter(u=>!u.rev&&u.rel==='cho'));
 /* 2026-11-15: 점검하는 동안 보드게임은 보물 미로 탐험과 한글 보드게임만 보여요.
    (게임 코드는 그대로 남아 있어서 BGREST 목록만 비우면 다시 나와요) */
-const BGREST=window.__bgRest=['sky','ck'];
+const BGREST=window.__bgRest=['sky'];   /* 2026-11-15: 쿠키 틀 퍼즐 다시 열기 */
 { const _f=funMenu; funMenu=function(){ const r=_f.apply(this,arguments);
     try{ $app.querySelectorAll('[data-fun2]').forEach(x=>{ if(BGREST.indexOf(x.dataset.fun2)>=0) x.remove(); }); }catch(e){}
     return r; }; }
