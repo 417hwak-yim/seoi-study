@@ -2791,12 +2791,29 @@ const KID={full:'서이', name:'서이', call:'서이 어린이!', ya:'서이야
 /* 기록 저장: 이 기기(localStorage)에 저장하고, claude.ai 에서 로그인해 열면 계정에도 저장해요 */
 const SAVE_KEY='seoi-hanja-save';
 let STATE={stamps:{},best:{},days:{},resume:null,t:0}, VIEW='home';
-try{ const o=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(o&&o.stamps) STATE=Object.assign(STATE,o);
-  else{ const old=JSON.parse(localStorage.getItem('seoi-none')||'null'); if(old) STATE.stamps=old; } }catch(e){}
+/* 2026-11-17: 기록이 갑자기 사라지는 일을 막아요.
+   ① 저장을 두 곳(본 기록·예비 기록)에 해요  ② 켤 때 더 많이 들어 있는 쪽을 써요
+   ③ 브라우저가 저장 공간을 지우지 않도록 '계속 보관'을 요청해요  ④ 저장이 막히면 화면에 알려 줘요 */
+const BAK_KEY=SAVE_KEY+'-bak';
+try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+function lsGet0(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsParse0(k){ try{ return JSON.parse(lsGet0(k)||'null'); }catch(e){ return null; } }
+function saveScore0(o){ if(!o||!o.stamps) return -1; return Object.keys(o.stamps).length*1e6+Object.keys(o.days||{}).length*1e3+Math.min(999,(o.t||0)/1e9); }
+(function(){ const a=lsParse0(SAVE_KEY), b=lsParse0(BAK_KEY), p=saveScore0(b)>saveScore0(a)?b:a;
+  if(p&&p.stamps){ STATE=Object.assign(STATE,p); return; }
+  try{ const old=JSON.parse(lsGet0('seoi-none')||'null'); if(old) STATE.stamps=old; }catch(e){} })();
 STATE.stamps=STATE.stamps||{}; STATE.best=STATE.best||{}; STATE.days=STATE.days||{}; STATE.dsub=STATE.dsub||{};
 const prog=STATE.stamps;
 let cloudRef=null, cloudBusy=false, cloudDirty=false, cloudState='checking';
-function saveLocal(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify(STATE))}catch(e){} }
+function saveLocal(){ const s=JSON.stringify(STATE); let ok=false;
+  try{ localStorage.setItem(SAVE_KEY,s); ok=true; }catch(e){}
+  try{ localStorage.setItem(BAK_KEY,s); ok=true; }catch(e){}
+  if(!ok) saveWarn0(); }
+let saveWarned0=false;
+function saveWarn0(){ if(saveWarned0) return; saveWarned0=true;
+  try{ const d=document.createElement('div'); d.textContent='⚠️ 기록을 저장하지 못했어요. 어른에게 보여 주세요.';
+    d.style.cssText='position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:99999;background:#B91C1C;color:#fff;padding:12px 14px;border-radius:12px;font-size:15px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.3)';
+    d.onclick=()=>d.remove(); document.body.appendChild(d); }catch(e){} }
 function sig(){ return JSON.stringify([STATE.stamps,STATE.best,STATE.days,STATE.last||0,STATE.mood||0,(STATE.reads||[]).map(r=>r.id+(r.nt||'')),STATE.resume&&[STATE.resume.uid,STATE.resume.l,STATE.resume.i]]); }
 function readRemote(snap){ try{ const d=snap&&snap.exists?snap.data():null; return d&&d.json?JSON.parse(d.json):null; }catch(e){ return null; } }
 /* 계정 저장: 먼저 계정에 있는 기록을 읽어 합친 뒤에 써서, 다른 기기에서 모은 도장을 지우지 않아요 */
@@ -11746,5 +11763,98 @@ PX.push('#9ED8F5', '#5DB4E8', '#2E7D4F', '#A8DC7A', '#F6C9A0', '#6B3E26', '#F2D4
 })();
 </script>
 <!-- ===== 처음 화면 작은 단추 줄 정리 끝 ===== -->
+<!-- ===== 어른용: 오늘 기록 되살리기 (2026-11-17) ===== -->
+<script>
+/* 기록이 사라졌을 때, 주소 끝에 #오늘되살리기 를 붙여 열면
+   오늘의 학습을 모두 '완료'로 치고 달력·이달의 보물도 오늘 것을 넣어 줘요.
+   이미 있는 기록은 건드리지 않고, 없는 것만 채워요. */
+(function(){
+  const PAD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const RAW=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  function unitOf(uid){ let f=null; try{ Object.keys(GRADES).some(g=>{ const u=(GRADES[g].units||[]).find(x=>x.id===uid); if(u){ f=u; return true; } return false; }); }catch(e){} return f; }
+  function run(){ const t=new Date(), K=PAD(t), R=RAW(t); const log=[];
+    try{ if(typeof start==='function') start(); }catch(e){}
+    try{ const A=(STATE.td&&STATE.td.d===K&&STATE.td.a)||{};
+      Object.keys(A).forEach(sk=>{ const x=A[sk]; if(!x) return; const u=unitOf(x.uid); if(!u) return;
+        if(!STATE.stamps[x.uid+'-'+x.l]){ try{ saveStamp(u,x.l,3); log.push((SUBJ[sk]&&SUBJ[sk].name)||sk); }catch(e){} }
+        STATE.td.done=STATE.td.done||{}; STATE.td.done[sk]=1; }); }catch(e){}
+    try{ if(STATE.phrvDay!==R){ STATE.phrvDay=R; log.push('파닉스 복습'); } }catch(e){}
+    try{ STATE.clk=STATE.clk||{lv:1,best:{}}; if(STATE.clk.day!==R){ STATE.clk.day=R; log.push('시계 보기'); } }catch(e){}
+    try{ const T=STATE.batToday; if(T&&T.d===K){ if(!T.done){ T.done=true; log.push('받침·조사 놀이'); } }
+         else { STATE.batToday={d:K,kind:'bat',lv:(T&&T.lv)||0,done:true}; log.push('받침·조사 놀이'); } }catch(e){}
+    try{ if(!STATE.days[K]){ STATE.days[K]=1; } }catch(e){}
+    try{ if(window.__rrFin&&STATE.rrfin!==K){ window.__rrFin(); log.push('마무리 복습'); } }catch(e){}
+    try{ STATE.full=STATE.full||{}; STATE.full[K]=1; delete STATE.fullHeld; }catch(e){}
+    try{ STATE.tr=STATE.tr||{days:{},seen:{}}; STATE.tr.days=STATE.tr.days||{}; if(!STATE.tr.days[R]){ STATE.tr.days[R]=1; log.push('이달의 보물'); } }catch(e){}
+    try{ persist(); }catch(e){}
+    return log; }
+  window.__fixToday=run;
+  function panel(){
+    const t=new Date(), d=(t.getMonth()+1)+'월 '+t.getDate()+'일';
+    const w=document.createElement('div');
+    w.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:18px';
+    w.innerHTML='<div style="background:#FFF8EE;color:#2B2118;border-radius:16px;max-width:340px;width:100%;padding:18px;font-family:\'Malgun Gothic\',sans-serif;line-height:1.6">'
+      +'<b style="font-size:18px">🛟 오늘 기록 되살리기</b>'
+      +'<p style="font-size:14px">'+d+' 오늘의 학습을 <b>모두 완료</b>로 치고, 달력과 이달의 보물도 오늘 것을 넣어요. 이미 있는 기록은 그대로예요.</p>'
+      +'<div style="display:flex;gap:8px;margin-top:12px"><button id="fxgo" style="flex:1;padding:12px;border-radius:10px;border:0;background:#0F7B4F;color:#fff;font-size:15px">되살리기</button>'
+      +'<button id="fxno" style="flex:1;padding:12px;border-radius:10px;border:1px solid #D8C8B0;background:#fff;font-size:15px">그만두기</button></div>'
+      +'<div id="fxlog" style="font-size:13px;margin-top:10px"></div></div>';
+    document.body.appendChild(w);
+    w.querySelector('#fxno').onclick=()=>{ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} w.remove(); };
+    w.querySelector('#fxgo').onclick=()=>{ const log=run();
+      w.querySelector('#fxlog').innerHTML='✅ 되살렸어요: '+(log.length?log.join(' · '):'이미 다 되어 있었어요')+'<br>잠시 뒤 처음 화면으로 가요.';
+      setTimeout(()=>{ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); },1600); };
+  }
+  function check(){ try{ const h=decodeURIComponent(location.hash||''); if(/오늘되살리기|fixtoday/i.test(h)) setTimeout(panel,600); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',check); else check();
+  window.addEventListener('hashchange',check);
+})();
+</script>
+<!-- ===== 오늘 기록 되살리기 끝 ===== -->
+<!-- ===== 기록 예비 보관 (2026-11-17): 브라우저 저장칸이 지워져도 되살려요 ===== -->
+<script>
+/* localStorage 는 저장칸이 작고(5MB쯤) 크롬이 공간이 부족하면 통째로 비우기도 해요.
+   그래서 같은 기록을 IndexedDB(저장칸이 훨씬 큰 곳)에도 한 벌 더 넣어 두고,
+   앱을 켤 때 기록이 비어 있거나 더 적으면 거기서 되살려요. */
+(function(){
+  if(typeof SAVE_KEY==='undefined'||!window.indexedDB) return;
+  const DBN='studyroom-backup', ST='rec'; let db=null;
+  const open=()=>new Promise((res,rej)=>{ try{ const r=indexedDB.open(DBN,1);
+    r.onupgradeneeded=()=>{ try{ r.result.createObjectStore(ST); }catch(e){} };
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } });
+  async function put(v){ try{ db=db||await open(); await new Promise((res,rej)=>{ const t=db.transaction(ST,'readwrite'); t.objectStore(ST).put(v,SAVE_KEY); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} }
+  async function get(){ try{ db=db||await open(); return await new Promise((res,rej)=>{ const t=db.transaction(ST,'readonly'), q=t.objectStore(ST).get(SAVE_KEY); q.onsuccess=()=>res(q.result||null); q.onerror=()=>rej(q.error); }); }catch(e){ return null; } }
+  let tm=null; const _sl=saveLocal;
+  saveLocal=function(){ const r=_sl.apply(this,arguments);
+    if(!tm) tm=setTimeout(()=>{ tm=null; try{ put(JSON.stringify(STATE)); }catch(e){} },3000);
+    return r; };
+  const score=x=>Object.keys((x&&x.stamps)||{}).length*1e6+Object.keys((x&&x.days)||{}).length*1e3+Math.min(999,((x&&x.t)||0)/1e9);
+  function toast(t){ try{ const d=document.createElement('div'); d.textContent=t;
+    d.style.cssText='position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:99999;background:#0F7B4F;color:#fff;padding:12px 14px;border-radius:12px;font-size:15px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.3)';
+    d.onclick=()=>d.remove(); document.body.appendChild(d); setTimeout(()=>d.remove(),8000); }catch(e){} }
+  setTimeout(async()=>{
+    const raw=await get();
+    if(!raw){ try{ put(JSON.stringify(STATE)); }catch(e){} return; }
+    let o=null; try{ o=JSON.parse(raw); }catch(e){}
+    if(!o||!o.stamps){ try{ put(JSON.stringify(STATE)); }catch(e){} return; }
+    if(score(o)<=score(STATE)) return;
+    try{
+      mergeState(o);
+      if(o.tr){ STATE.tr=STATE.tr||{days:{},seen:{}}; STATE.tr.days=Object.assign({},o.tr.days||{},STATE.tr.days||{});
+        STATE.tr.seen=Object.assign({},o.tr.seen||{},STATE.tr.seen||{});
+        if(o.tr.ord&&!STATE.tr.ord) STATE.tr.ord=o.tr.ord; if(o.tr.sp&&!STATE.tr.sp) STATE.tr.sp=o.tr.sp; }
+      if(o.full) STATE.full=Object.assign({},o.full,STATE.full||{});
+      ['rrfin','phrvDay'].forEach(k=>{ if(!STATE[k]&&o[k]) STATE[k]=o[k]; });
+      if(o.clk){ STATE.clk=STATE.clk||o.clk; if(!STATE.clk.day&&o.clk.day) STATE.clk.day=o.clk.day; }
+      if(o.batToday&&!STATE.batToday) STATE.batToday=o.batToday;
+      if(o.td&&o.td.a&&(!STATE.td||!STATE.td.a||String(o.td.d)>=String(STATE.td.d))) STATE.td=o.td;
+      saveLocal();
+      try{ refreshView(); }catch(e){}
+      toast('🛟 기록을 예비 보관함에서 되살렸어요.');
+    }catch(e){}
+  },1500);
+})();
+</script>
+<!-- ===== 기록 예비 보관 끝 ===== -->
 </body>
 </html>
