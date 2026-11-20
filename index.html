@@ -3687,22 +3687,33 @@ function phIntro(u,l){
 }
 
 /* ---------- 영어 파닉스: 문제 만들기 ---------- */
+/* 2026-11-20: 그림 보기가 모자랄 때 쓸 전체 낱말 꾸러미 */
+function allPicWords(){ if(window.__allPicWords) return window.__allPicWords; const a=[], seen={};
+  try{ Object.keys(GRADES).forEach(g=>(GRADES[g].units||[]).forEach(u=>(u.words||[]).forEach(x=>{ if(x&&x.p&&!x.nopic&&!seen[x.en]){ seen[x.en]=1; a.push(x); } }))); }catch(e){}
+  return (window.__allPicWords=a); }
 function phQuiz(u,l){
   const W=u.words, PW=W.filter(w=>w.p), lv1=u.lv===1, EN=t=>'<span class="en">'+t+'</span>';
+  /* 2026-11-20: 그림 보기는 서로 닮지 않은 것만 모아요 */
+  const picOpts=(c,pool,n)=>{ n=n||3; const got=[c.p], ds=[];
+    const add=L=>L.forEach(x=>{ if(x!==c&&ds.length<n&&x.p&&x.ko!==c.ko&&x.en!==c.en&&!got.some(v=>__picClash(v,x.p))){ got.push(x.p); ds.push(x); } });
+    add(shuffle(pool));
+    /* 같은 단원에 안 닮은 그림이 모자라면 다른 단원 낱말에서 빌려 와요 */
+    if(ds.length<n) add(shuffle(allPicWords()));
+    return shuffle([c,...ds]); };
   const opts=(c,pool,val,n)=>{ const seen=new Set([val(c)]), ds=[]; shuffle(pool).forEach(x=>{ if(x!==c&&ds.length<(n||3)&&!seen.has(val(x))){ seen.add(val(x)); ds.push(x); } }); return shuffle([c,...ds]); };
   const stimPic=w=>'<div class="stimpic">'+w.p+'</div><div class="lead" style="margin:0">'+w.ko+'</div>';
   const keyOf=w=>{ const ks=u.keys.map(k=>k[0]).filter(k=>lv1?w.en[0]===k:w.en.includes(k)); return ks.sort((a,b)=>b.length-a.length)[0]; };
   const T={
     picWord:w=>({t:'c',inst:'그림에 알맞은 낱말을 고르세요.',stim:stimPic(w),ch:opts(w,W,x=>x.en).map(x=>({h:EN(x.en),ok:x===w})),ex:w.en+' : '+w.ko,sayAns:w.en}),
     listenWord:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 낱말을 고르세요.',listen:w.en,ch:opts(w,W,x=>x.en).map(x=>({h:EN(x.en),ok:x===w})),ex:w.en+' : '+w.ko}:T.picWord(w),
-    wordPic:w=>({t:'c',inst:'낱말에 알맞은 그림을 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}),
+    wordPic:w=>({t:'c',inst:'낱말에 알맞은 그림을 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:picOpts(w,PW).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}),
     upper:k=>({t:'c',inst:'큰 글자와 짝이 되는 작은 글자를 고르세요.',stim:'<div class="line en big2">'+k.toUpperCase()+'</div>',ch:opts(k,'abcdefghijklmnopqrstuvwxyz'.split(''),x=>x).map(x=>({h:EN(x),ok:x===k})),ex:k.toUpperCase()+' '+k}),
     first:w=>({t:'c',inst:(canSpeak?'소리를 듣고, ':'')+'낱말의 첫 글자를 고르세요.',stim:stimPic(w),say:w.en,ch:opts(w.en[0],'abcdefghijklmnopqrstuvwxyz'.split(''),x=>x).map(x=>({h:EN(x),ok:x===w.en[0]})),ex:w.en+' : '+w.ko,sayAns:w.en}),
     family:w=>{ const k=keyOf(w); if(!k||u.keys.length<3) return T.picWord(w); return {t:'c',inst:'이 낱말에 들어 있는 소리를 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:opts(k,u.keys.map(x=>x[0]).filter(x=>x===k||!w.en.includes(x)),x=>x).map(x=>({h:EN(x),ok:x===k})),ex:w.en+' 에는 '+k+' 소리가 있어요.'}; },
     blank:w=>{ const cand=[...w.en].map((c,n)=>/[aeiou]/.test(c)?n:-1).filter(n=>n>=0), idx=lv1?0:(cand.length?cand[Math.floor(Math.random()*cand.length)]:0), ans=w.en[idx];
       return {t:'b',inst:lv1?'낱말의 첫 글자를 고르세요.':'빠진 글자를 골라 낱말을 완성하세요.',w,idx,tiles:shuffle([ans,...shuffle((/[aeiou]/.test(ans)?'aeiou':'bcdfghklmnprstw').split('').filter(c=>c!==ans)).slice(0,3)]),ex:w.en+' : '+w.ko}; },
     build:w=>({t:'w',inst:'흩어진 글자를 끌어다 낱말을 만드세요.',w,ex:w.en+' : '+w.ko}),
-    listenPic:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 그림을 고르세요.',listen:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}:T.wordPic(w),
+    listenPic:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 그림을 고르세요.',listen:w.en,ch:picOpts(w,PW).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}:T.wordPic(w),
     odd:w=>{ const k=phKeyOf(u,w), same=shuffle(W.filter(x=>x!==w&&phKeyOf(u,x)!==k)), g=phGroups(u).filter(x=>x.k!==k&&x.ws.filter(y=>phKeyOf(u,y)===x.k).length>=3)[0]; if(!g) return T.listenWord(w);
       const three=shuffle(g.ws.filter(y=>phKeyOf(u,y)===g.k)).slice(0,3); return {t:'c',inst:'소리가 다른 낱말 하나를 고르세요.',stim:'<div class="lead" style="margin:0">셋은 '+EN(g.k)+' 소리가 같아요.</div>',ch:shuffle([w,...three]).map(x=>({h:EN(x.en),ok:x===w})),ex:three.map(x=>x.en).join(', ')+' 는 '+g.k+' 소리, '+w.en+' 는 '+k+' 소리예요.',sayAns:w.en}; },
     order:s=>({t:'o',inst:'낱말을 순서대로 눌러 문장을 만드세요.',s:s[0],ex:s[0]+' ('+s[1]+')'}),
@@ -4214,14 +4225,21 @@ function stBook(u,l){
 /* ---------- 영어 동화: 문제 만들기 ---------- */
 function stQuiz(u,l){
   const W=u.words, PW=W.filter(w=>w.p), P=u.pages, QS=u.qs, EN=t=>'<span class="en">'+t+'</span>';
+  /* 2026-11-20: 그림 보기는 서로 닮지 않은 것만 모아요 */
+  const picOpts=(c,pool,n)=>{ n=n||3; const got=[c.p], ds=[];
+    const add=L=>L.forEach(x=>{ if(x!==c&&ds.length<n&&x.p&&x.ko!==c.ko&&x.en!==c.en&&!got.some(v=>__picClash(v,x.p))){ got.push(x.p); ds.push(x); } });
+    add(shuffle(pool));
+    /* 같은 단원에 안 닮은 그림이 모자라면 다른 단원 낱말에서 빌려 와요 */
+    if(ds.length<n) add(shuffle(allPicWords()));
+    return shuffle([c,...ds]); };
   const opts=(c,pool,val,n)=>{ const seen=new Set([val(c)]), ds=[]; shuffle(pool).forEach(x=>{ if(x!==c&&ds.length<(n||3)&&!seen.has(val(x))){ seen.add(val(x)); ds.push(x); } }); return shuffle([c,...ds]); };
   const same=p=>P.filter(x=>x.si===p.si), sc=p=>'<div class="stscene sm">'+p.p+'</div>';
   const SW=W.filter(w=>/^[a-z]+$/.test(w.en)&&w.en.length<=7), OP=P.filter(p=>{ const n=p.en.split(' ').length; return n>=3&&n<=7; });
   const T={
     picWord:w=>({t:'c',inst:'그림에 알맞은 낱말을 고르세요.',stim:'<div class="stimpic">'+w.p+'</div><div class="lead" style="margin:0">'+w.ko+'</div>',ch:opts(w,W,x=>x.en).map(x=>({h:EN(x.en),ok:x===w})),ex:w.en+' : '+w.ko,sayAns:w.en}),
     listenWord:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 낱말을 고르세요.',listen:w.en,ch:opts(w,W,x=>x.en).map(x=>({h:EN(x.en),ok:x===w})),ex:w.en+' : '+w.ko}:T.picWord(w),
-    wordPic:w=>({t:'c',inst:'낱말에 알맞은 그림을 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}),
-    listenPic:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 그림을 고르세요.',listen:w.en,ch:opts(w,PW,x=>x.p).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}:T.wordPic(w),
+    wordPic:w=>({t:'c',inst:'낱말에 알맞은 그림을 고르세요.',stim:'<div class="line en big2">'+w.en+'</div>',say:w.en,ch:picOpts(w,PW).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}),
+    listenPic:w=>canSpeak?{t:'c',inst:'버튼을 눌러 소리를 듣고 알맞은 그림을 고르세요.',listen:w.en,ch:picOpts(w,PW).map(x=>({h:'<span class="pic chpic">'+x.p+'</span>',ok:x===w})),ex:w.en+' : '+w.ko}:T.wordPic(w),
     build:w=>({t:'w',inst:'흩어진 글자를 끌어다 낱말을 만드세요.',w,ex:w.en+' : '+w.ko}),
     sq:q=>({t:'c',inst:q.q,stim:'',ch:shuffle([{h:q.a,ok:1},{h:q.b},{h:q.c}]),ex:'정답: '+q.a.replace(/^[^가-힣A-Za-z“]+/,'')}),
     pageSent:p=>({t:'c',inst:'그림에 알맞은 문장을 고르세요.',stim:sc(p),ch:opts(p,same(p),x=>x.en,2).map(x=>({h:EN(x.en),ok:x===p})),ex:p.en+' : '+p.ko,sayAns:p.en}),
@@ -7849,17 +7867,26 @@ window.__cookie=function(){ VIEW='ck'; show('<button class="back" data-go="bgfun
   const pic = (w, ko) => '<div class="rvs-em" style="font-size:3.4rem;line-height:1.1">' + w.p + '</div>' + (ko ? '<p style="margin:2px 0 8px;opacity:.75">' + w.ko + '</p>' : '');
   function makeQ(it, all) {
     const keysAll = [...new Set(all.map(x => x.k))], others = (n, f) => sh(all.filter(f)).slice(0, n);
+    /* 2026-11-20: 그림 보기끼리 닮지 않게 하나씩 골라요 */
+    const picOthers = n => { const got = [it.w.p], out = [];
+      const add = L => L.forEach(w => { if (out.length < n && w !== it.w && w.p && w.ko !== it.w.ko && w.en !== it.w.en && !got.some(v => __picClash(v, w.p))) { got.push(w.p); out.push(w); } });
+      add(sh(all).map(x => x.w));
+      if (out.length < n) add(sh(allPicWords()));
+      return out; };
     const kopts = () => sh([it.k].concat(sh(keysAll.filter(k => k !== it.k && k.length === it.k.length)).slice(0, 3))).map(k => ({ t: k, ok: k === it.k }));
     const T = [
       () => ({ q: it.lv1 ? '이 낱말은 어떤 글자로 시작할까요?' : '이 낱말에 들어 있는 소리는 무엇일까요?', stim: pic(it.w, 1) + sayBtn(it.w.en), opts: kopts(), ex: it.w.en + '(' + it.w.ko + ')에는 ' + it.k + '(' + it.s + ') 소리가 들어 있어요.' }),
-      () => ({ q: '들려주는 낱말의 그림을 골라요.', stim: '<div style="text-align:center;margin:8px 0">' + sayBtn(it.w.en, 1) + '</div>', opts: sh([it.w].concat(others(3, x => x.w.p !== it.w.p).map(x => x.w))).map(w => ({ t: w.p, ok: w === it.w })), ex: '들려준 낱말은 ' + it.w.en + '(' + it.w.ko + ')예요.' }),
+      () => ({ q: '들려주는 낱말의 그림을 골라요.', stim: '<div style="text-align:center;margin:8px 0">' + sayBtn(it.w.en, 1) + '</div>', opts: sh([it.w].concat(picOthers(3))).map(w => ({ t: w.p, ok: w === it.w })), ex: '들려준 낱말은 ' + it.w.en + '(' + it.w.ko + ')예요.' }),
       () => ({ q: '그림에 맞는 낱말을 골라요.', stim: pic(it.w, 1) + sayBtn(it.w.en), opts: sh([it.w].concat(others(3, x => x.w.en !== it.w.en).map(x => x.w))).map(w => ({ t: w.en, ok: w === it.w })), ex: it.w.p + ' ' + it.w.ko + '는 ' + it.w.en + '예요.' }),
       () => { const en = it.w.en, i0 = it.lv1 ? 0 : en.toLowerCase().indexOf(it.k), gap = en.slice(0, i0) + '_'.repeat(it.k.length) + en.slice(i0 + it.k.length);
         return { q: '빈칸에 들어갈 글자를 골라요.', stim: pic(it.w, 0) + '<div class="en" style="font-size:2rem;letter-spacing:.12em;text-align:center;margin:4px 0 8px">' + gap + '</div>' + sayBtn(it.w.en), opts: kopts(), ex: '빈칸에는 ' + it.k + '(' + it.s + ')가 들어가요. ' + en + '!' }; },
       () => { const ss = [...new Map(all.map(x => [x.k, x.s])).entries()].filter(([k, s]) => k !== it.k && s !== it.s && k.length === it.k.length), o = sh(ss).slice(0, 3);
         return { q: '이 ' + (it.lv1 ? '글자' : '소리 묶음') + '는 어떤 소리가 날까요?', stim: '<div class="en" style="font-size:3rem;font-weight:800;text-align:center;margin:6px 0">' + it.k + '</div>' + sayBtn(it.w.en), opts: sh([{ t: it.s, ok: true }].concat(o.map(x => ({ t: x[1], ok: false })))), ex: it.k + '는 ‘' + it.s + '’ 소리가 나요. ' + it.w.en + '(' + it.w.ko + ')처럼요.' }; }
     ];
-    const q = pick(T)(); q.speak = ' '; return q; }
+    /* 2026-11-20: 한 꾸러미에 같은 그림을 쓰는 낱말이 있으면(🪑 chair·sit) 그림만 보고 푸는 문제는 빼요 */
+    const amb = __picAmb(it.w.p, all, x => x.w.p);
+    const TT = T.filter((f, i) => !(amb && (i === 1 || i === 2)));
+    const q = pick(TT.length ? TT : T)(); q.speak = ' '; return q; }
   function session() { const L = learned(); if (!L.length) return null;
     const recent = L.slice(-2), its = L.flatMap(items), rec = recent.flatMap(items); if (its.length < 4) return null;
     const qs = [], used = new Set();
@@ -11856,5 +11883,28 @@ PX.push('#9ED8F5', '#5DB4E8', '#2E7D4F', '#A8DC7A', '#F6C9A0', '#6B3E26', '#F2D4
 })();
 </script>
 <!-- ===== 기록 예비 보관 끝 ===== -->
+<!-- ===== 비슷하게 생긴 그림 가려내기 (2026-11-20) ===== -->
+<script>
+/* 작은 화면에서 거의 똑같아 보이는 그림끼리는 한 문제의 보기로 함께 내지 않아요.
+   (예: ✏️ 연필 · 🖊️ 펜 · 🖋️ 잉크펜 · 🖌️ 붓)
+   또 한 단원 안에서 두 낱말이 같은 그림을 쓰면(🪑 chair·sit) 그림만 보고 고르는 문제는 내지 않아요. */
+(function(){
+  const G=['✏️🖊️🖋️🖍️🖌️📝✒️🪶','🥛🧃🥤☕🍵🍼🍶','🧢🎩👒⛑️🎓','👟👞🥿👠🥾🩴🧦','🏠🏡🏘️🛖🏚️🏚','🚗🚙🚕🚐🚓🚌🚎',
+    '🐶🐕🦮🐩🐺🦊','🐱🐈🐯','🍊🍋🍈🍏🍎🍐','🎒👜👝💼👛','📖📗📘📕📙📚📒📔📓','🛏️🛌🛋️','🛁🚿🚽','🍽️🍴🥄','🍲🥘🍛',
+    '👕👚','🧥🥼','👖🩳','👗👘','🌳🌲','🌿🍃','🌸🌺🌼🌷🏵️💐','☀️🌞🌅🌄🌇','🌊💧💦','📄📃✉️📜📰','⏰⌚🕐⏱️',
+    '📱☎️📞📟','💻🖥️⌨️🖱️','🐢🐸🦎','🐭🐹🐀','🐰🐇','🐮🐂🐄','🐷🐖','🐵🐒🦧','🪑💺','🚪🚧','🧼🧽🧴',
+    '🍞🥖🥐🥯','🥔🍠🧅','🚂🚃🚄🚅','✈️🛩️🛫🛬','⛵🚤🛶🚢','🏃🚶🧎','😢😭😿','😴😪💤'];
+  const M={}; G.forEach((g,i)=>{ Array.from(g).forEach(ch=>{ M[ch]=i; }); });
+  const base=p=>{ p=String(p||''); const a=Array.from(p).filter(c=>c!=='️'&&c!=='︎'); return a.length?a[0]:''; };
+  /* 🧑‍🚒 🧑‍🎨 처럼 여러 글자가 이어 붙은 그림은 통째로 봐요 (소방관·화가는 서로 달라요) */
+  const key=p=>{ const t=String(p||'').replace(/[️︎]/g,''); if(t.indexOf('‍')>=0) return 'z'+t; const b=base(t); return (b in M)?('g'+M[b]):('x'+b); };
+  window.__picKey=key;
+  /* 두 그림이 서로 헷갈릴 만한가? (같은 그림도 포함) */
+  window.__picClash=(a,b)=>{ if(!a||!b) return false; if(a===b) return true; return key(a)===key(b); };
+  /* 한 꾸러미 안에서 그림이 겹치는 낱말인가? */
+  window.__picAmb=(p,pool,get)=>{ if(!p||!pool) return false; let n=0;
+    for(const x of pool){ const q=get?get(x):(x&&x.p); if(q&&q===p){ n++; if(n>1) return true; } } return false; };
+})();
+</script>
 </body>
 </html>
