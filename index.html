@@ -9142,7 +9142,8 @@ window.__cookie=function(){ VIEW='ck'; show('<button class="back" data-go="bgfun
       const bar=tb.querySelector('.tbar'); if(bar){ bar.style.setProperty('--n',total); bar.setAttribute('aria-valuemax',total); bar.setAttribute('aria-valuenow',done); const bi=bar.querySelector('i'), bs=bar.querySelector('span'); if(bi) bi.style.width=(total?Math.round(done/total*100):0)+'%'; if(bs) bs.textContent=done>=total?'모두 끝!':'남은 학습 '+(total-done)+'개'; }
       const ld=tb.querySelector(':scope > .lead'); if(total&&done>=total){ tb.classList.add('alldone'); if(ld) ld.textContent='오늘의 학습을 끝냈어요! 🎉'; } else { tb.classList.remove('alldone'); if(ld&&/끝냈어요|남았어요/.test(ld.textContent)) ld.textContent='남은 학습 '+(total-done)+'개, 조금만 더 힘내요!'; }
       /* 게임: 남은 학습 수에 맞춰 다음 게임까지의 개수를 다시 맞춰요 */
-      try{ const M=mgState(); M.R=total-done; M.T=total; mgFit(M); saveLocal(); }catch(e){} }
+      /* SUNGAME 2026-11-22: 일요일(보따리)엔 숨어 있는 '오늘의 학습' 수로 게임 세기를 덮어쓰지 않아요 — 보따리 칸 수로만 세요 */
+      try{ if(new Date().getDay()!==0){ const M=mgState(); M.R=total-done; M.T=total; mgFit(M); saveLocal(); } }catch(e){} }
     const reads=[...tw.querySelectorAll('.nwbanner,.whybanner')], rdone=reads.filter(c=>c.classList.contains('did')).length;
     const mood=tw.querySelector(':scope > .moodrow');
 
