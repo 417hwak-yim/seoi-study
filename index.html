@@ -12257,5 +12257,34 @@ PX.push('#9ED8F5', '#5DB4E8', '#2E7D4F', '#A8DC7A', '#F6C9A0', '#6B3E26', '#F2D4
   };
 })();
 </script>
+<script>
+/* ===== GAMEFIX 2026-11-24: 오늘의 학습을 다 끝낸 날에는 게임이 꼭 한 번 열려요 =====
+   원래는 「2~3개마다」 또는 「남은 학습이 1개일 때」 게임을 열었어요. 그런데 마지막 칸이
+   grantGame을 거치지 않고 끝나는 길이 있어요 (복습할 문제가 없어 마무리 복습이 저절로 끝나는 날,
+   처음 화면에서 남은 학습 수를 다시 세면서 0이 되는 때 등). 그러면 다 끝냈는데도 게임이 안 열려요.
+   그래서 '남은 학습이 0이 되는 순간'을 따로 보고, 그때까지 게임이 안 열렸으면 한 번 열어 줘요.
+   하루에 한 번만이에요(M.fin1). 일요일(보따리)은 보따리 쪽 규칙을 그대로 둬요. */
+(function () {
+  if (typeof mgState !== 'function' || typeof grantGame !== 'function') return;
+  const weekday = () => new Date().getDay() !== 0;
+  function ensure() {
+    try {
+      const M = mgState();
+      if (M.fin1 || !weekday()) return;
+      if (typeof M.R !== 'number' || !(M.T > 0) || M.R > 0) return;
+      M.fin1 = 1;                                   /* 오늘은 확인했어요 */
+      if (!M.pend) {
+        const pool = Object.keys(MGAMES).filter(k => (M.open || []).indexOf(k) < 0);
+        if (pool.length) { const k = mgPick(pool); (M.open = M.open || []).push(k); M.pend = { k, sec: GSEC() }; M.c = 0; M.goal = 0; setTimeout(mgOffer, 1100); }
+      }
+      try { persist(); } catch (e) {}
+    } catch (e) {}
+  }
+  const _g = grantGame; grantGame = function () { const r = _g.apply(this, arguments); ensure(); return r; };
+  const _s = start; start = function () { const r = _s.apply(this, arguments); setTimeout(ensure, 400); return r; };
+  setTimeout(ensure, 900);
+  window.__gamefix = ensure;
+})();
+</script>
 </body>
 </html>
