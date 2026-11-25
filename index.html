@@ -6924,7 +6924,7 @@ try{ new MutationObserver(bgHook).observe(document.getElementById('app'),{childL
 function funMenu(){ closeSheet();
   show('<button class="back" data-go="start">🏠 메인 화면으로 나가기</button><section class="panel ttw"><h2 style="text-align:center;margin-bottom:2px">🎲 보드게임</h2><p style="text-align:center;margin:0 0 8px;opacity:.75;font-weight:800">공부가 아니라 그냥 재미로 하는 놀이예요</p>'
    +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="word"><h3>🔤 한글 보드게임</h3><p>초성 땅따먹기 · 글자판 모으기 · 끝말잇기 기차 · 글자 애벌레 · 받침 우체국 · 사탕 가게! 한 판 골라서 놀아요.</p></button>'
-   +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="sky"><h3>⚙️ 하늘 기계섬 잇기</h3><p>구름 위 기계 섬 타일을 돌려서 이어 붙여요. 길은 길끼리, 톱니 구역은 구역끼리!</p></button><button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="lab"><h3>🔱 보물 미로 탐험</h3><p>바닷속 미로에 타일을 밀어 넣어 물길을 바꿔요. 잠수함을 몰고 보물 4개를 모아 집으로 먼저 돌아가면 이겨요!</p></button><button type="button" class="ttgm tile" style="width:100%;text-align:left" data-fun2="ck"><h3>🧩 쿠키 틀 퍼즐</h3><p>조각을 톡 눌러 돌리고 꾹 눌러 뒤집어, 쿠키 틀을 빈틈없이 채워요.</p></button></section>','#D9480F');
+   +'<button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="sky"><h3>⚙️ 하늘 기계섬 잇기</h3><p>구름 위 기계 섬 타일을 돌려서 이어 붙여요. 길은 길끼리, 톱니 구역은 구역끼리!</p></button><button type="button" class="ttgm land" style="width:100%;text-align:left" data-fun2="lab"><h3>🔱 보물 미로 탐험</h3><p>바닷속 미로에 타일을 밀어 넣어 물길을 바꿔요. 잠수함을 몰고 보물 4개를 모아 집으로 먼저 돌아가면 이겨요!</p></button><button type="button" class="ttgm tile" style="width:100%;text-align:left" data-fun2="ck"><h3>🧩 쿠키 틀 퍼즐</h3><p>조각을 톡 눌러 고르고 틀의 빈칸을 톡! 돌리고 뒤집어 쿠키 틀을 빈틈없이 채워요.</p></button></section>','#D9480F');
   { const did=bgDone();
     $app.querySelectorAll('[data-fun2]').forEach(b=>{ const k=b.dataset.fun2;
       if(did.indexOf(k)>=0){ b.disabled=true; b.style.opacity='.55'; b.insertAdjacentHTML('beforeend','<p style="margin:4px 0 0;font-weight:800;color:#2E8B57">✅ 오늘은 다 했어요 · 내일 또 만나요</p>'); } }); }
@@ -7045,7 +7045,7 @@ function render(keepMsg){ const a=CKQ('#app'), om=keepMsg&&CKQ('#msg')?CKQ('#msg
   a.innerHTML='<h1>🧩 쿠키 틀 퍼즐 <small style="font-size:.8rem;opacity:.6">'+G.round+' / 6판</small></h1><div class="sc"><div class="pl me">🙂<span><small>나</small><br><b class="gems">💎×'+G.gem[0]+'</b></span></div><span></span><div class="pl ow"><span style="text-align:right"><small>부엉이</small><br><b class="gems">💎×'+G.gem[1]+'</b></span>🦉</div></div>'
    +'<div class="timer"><i style="width:'+Math.max(0,100-(Date.now()-P.t0)/P.lim*100)+'%"></i></div><p class="owlbar">'+(P.done[1]?'🦉 부엉이가 다 채웠어요!':'🦉 부엉이도 같은 틀을 푸는 중… 🤔')+'</p>'
    +'<div class="bd" style="--c:'+cs+'px;grid-template-columns:repeat('+P.W+','+cs+'px)">'+bd+'</div>'
-   +'<p class="tip2">조각을 <b>톡</b> 누르면 돌아가고, <b>꾹</b> 누르면 뒤집혀요. 끌어다 틀에 놓아도 돼요!</p><div class="btns"><button data-a="rot"'+(P.sel==null?' disabled':'')+'>⟳ 돌리기</button><button data-a="flip"'+(P.sel==null?' disabled':'')+'>⇋ 뒤집기</button><button data-a="help">❓</button></div>'
+   +'<p class="tip2">아래 조각을 <b>톡</b> 눌러 고르고, 틀의 <b>빈칸</b>을 톡 누르면 놓여요.<br>고른 조각을 한 번 더 누르면 <b>⟳ 돌아가고</b>, <b>꾹</b> 누르면 <b>⇋ 뒤집혀요</b>. 끌어다 놓아도 돼요!</p><div class="btns"><button data-a="rot"'+(P.sel==null?' disabled':'')+'>⟳ 돌리기</button><button data-a="flip"'+(P.sel==null?' disabled':'')+'>⇋ 뒤집기</button><button data-a="help">❓</button></div>'
    +'<div class="tray">'+P.pcs.map((p,i)=>p.at?'':pc(p,i)).join('')+'</div><p class="msg" id="msg">'+om+'</p>'; }
 function tryPlace(i,r,c){ const p=P.pcs[i], inS=new Set(P.cells.map(([a,b])=>K(a,b)));
   for(const [ar,ac] of p.s){ const abs=p.s.map(([a,b])=>[a-ar+r,b-ac+c]); if(abs.every(([a,b])=>inS.has(K(a,b))&&P.fill[K(a,b)]==null)){ abs.forEach(([a,b])=>P.fill[K(a,b)]=i); p.at=abs; return true; } } return false; }
@@ -7073,7 +7073,7 @@ document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sh
   if(pce) return;   /* 조각은 아래 손가락 동작으로 다뤄요 */
   if(cell&&cell.dataset.r!=null){ const r=+cell.dataset.r, c=+cell.dataset.c, o=P.fill[K(r,c)];
     if(o!=null){ P.pcs[o].at.forEach(([a,b])=>delete P.fill[K(a,b)]); P.pcs[o].at=null; P.sel=o; render(true); msg('조각을 뺐어요. 다시 놓아 봐요.'); return; }
-    if(P.sel==null){ msg('먼저 아래 조각을 골라요.'); return; }
+    if(P.sel==null){ msg('👆 먼저 아래에서 조각을 톡 눌러 골라요.'); return; }
     if(tryPlace(P.sel,r,c)){ P.sel=null; render(true); afterPlace(cell); }
     else { cell.classList.add('shake'); msg('여기엔 안 들어가요. 돌리거나 뒤집어 볼까요?'); } } });
 /* 2026-11-14: 손가락으로 조각 다루기 — 톡 누르면 90도 회전, 꾹 누르면 뒤집기, 끌어다 틀에 놓기 */
@@ -7081,7 +7081,7 @@ document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sh
   const pieceEl=e=>e.target.closest&&e.target.closest('[data-p]');
   const clear=()=>{ clearTimeout(longT); if(ghost){ ghost.remove(); ghost=null; } st=null; moved=false; flipped=false; };
   document.addEventListener('pointerdown',e=>{ if(!P||G.fin||P.done[0]||document.querySelector('.sheet')) return; const el=pieceEl(e); if(!el) return;
-    const i=+el.dataset.p; P.sel=i; render(true); st={i,x:e.clientX,y:e.clientY,el:document.querySelector('[data-p="'+i+'"]')}; moved=false; flipped=false;
+    const i=+el.dataset.p, was=P.sel; P.sel=i; render(true); st={i,was,x:e.clientX,y:e.clientY,el:document.querySelector('[data-p="'+i+'"]')}; moved=false; flipped=false;
     longT=setTimeout(()=>{ if(!st) return; const p=P.pcs[st.i]; p.s=flip(p.s); flipped=true; try{ navigator.vibrate&&navigator.vibrate(25); }catch(_){}
       render(true); msg('⇋ 뒤집었어요!'); },480); },true);
   document.addEventListener('pointermove',e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y;
@@ -7100,8 +7100,12 @@ document.addEventListener('click',e=>{ if(!P||G.fin||document.querySelector('.sh
         if(tryPlace(i,r,c)){ P.sel=null; render(true); afterPlace(cell); }
         else { msg('여기엔 안 들어가요. 톡 눌러 돌리거나 꾹 눌러 뒤집어 봐요.'); render(true); } }
       else { render(true); msg('틀 안에 놓아 주세요.'); } return; }
-    clearTimeout(longT); const wasFlip=flipped; clear();
-    if(!wasFlip){ const p=P.pcs[i]; p.s=rot(p.s); P.sel=i; render(true); msg('⟳ 돌렸어요! 틀에 끌어다 놓거나 빈칸을 눌러요.'); } },true);
+    clearTimeout(longT); const wasFlip=flipped, was=st.was; clear();
+    /* CKPICK 2026-11-25: 전에는 조각을 톡 누르면 바로 돌아가서, 고르는 방법이 끌기밖에 없었어요.
+       이제 처음 누르면 <고르기>, 고른 조각을 한 번 더 누르면 <돌리기>예요. 그래서 끌지 않고 톡·톡으로도 놓을 수 있어요 */
+    if(!wasFlip){ P.sel=i;
+      if(was!==i){ render(true); msg('👆 조각을 골랐어요! 이제 틀의 빈칸을 톡 누르면 놓여요.'); }
+      else { const p=P.pcs[i]; p.s=rot(p.s); render(true); msg('⟳ 돌렸어요! 틀의 빈칸을 톡 누르면 놓여요.'); } } },true);
   document.addEventListener('pointercancel',()=>{ clear(); document.querySelectorAll('.bc.hover').forEach(x=>x.classList.remove('hover')); },true);
 })();
 function afterPlace(cell){ if(solved()){ P.done[0]=true; const first=!P.done[1]; G.gem[0]+=first?2:1; render(true); msg(first?'🎉 내가 먼저 다 채웠어요! 💎💎':'👍 다 채웠어요! 🔹 1개'); clearInterval(timer); later(roundEnd,1800); }
