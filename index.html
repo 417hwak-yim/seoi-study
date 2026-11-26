@@ -2832,6 +2832,31 @@ function saveScore0(o){ if(!o||!o.stamps) return -1; return Object.keys(o.stamps
   if(p&&p.stamps){ STATE=Object.assign(STATE,p); return; }
   try{ const old=JSON.parse(lsGet0('seoi-none')||'null'); if(old) STATE.stamps=old; }catch(e){} })();
 STATE.stamps=STATE.stamps||{}; STATE.best=STATE.best||{}; STATE.days=STATE.days||{}; STATE.dsub=STATE.dsub||{};
+/* ===== TRFILL 2026-11-26: 빠진 25일 보물 자리 채우기 =====
+   서이가 11월 25일에 다른 인터넷 창으로 공부해서, 원래 공부방의 보물 기록에는 25일이 비었어요.
+   보물은 날짜가 아니라 '며칠째 다 했는가'로 정해져서, 26일에 받은 보물이 25일 자리의 것(기러기)으로 나왔어요.
+   비어 있던 25일을 보물 기록에만 채우면 기러기는 25일 보물이 되고 그 뒤 날짜가 제자리를 찾아요.
+   아빠 말대로 **지금 바로가 아니라, 26일 다음으로 학습을 끝내는 날**에 채워요.
+   그날은 보물이 한 번에 두 개 늘어요(빠졌던 자리 + 그날 것).
+   학습 기록과 달력은 건드리지 않아요. 한 번만 하고 다시 하지 않아요. */
+(function () {
+  const MISS = '2026-11-25', AFTER = new Date(2026, 10, 26);   /* 2026년 11월 26일 */
+  function parse(k) { const a = String(k).split('-'); return a.length === 3 ? new Date(+a[0], +a[1] - 1, +a[2]) : null; }
+  window.__trFill25 = function () {
+    try {
+      if (STATE.trFill1125) return false;                       /* 이미 했어요 */
+      const T = STATE.tr; if (!T || !T.days) return false;
+      if (T.days[MISS]) { STATE.trFill1125 = 1; return false; } /* 이미 들어 있으면 그대로 */
+      if (!T.days['2026-11-26']) return false;                  /* 26일을 끝낸 공부방에서만 */
+      const later = Object.keys(T.days).some(function (k) { const d = parse(k); return d && d > AFTER; });
+      if (!later) return false;                                 /* 26일 다음으로 끝낸 날이 생겨야 채워요 */
+      T.days[MISS] = 1; STATE.trFill1125 = 1;
+      setTimeout(function () { try { persist(); } catch (e) {} }, 0);
+      return true;
+    } catch (e) { return false; }
+  };
+  try { window.__trFill25(); } catch (e) {}
+})();
 const prog=STATE.stamps;
 let cloudRef=null, cloudBusy=false, cloudDirty=false, cloudState='checking';
 function saveLocal(){ const s=JSON.stringify(STATE); let ok=false;
@@ -12288,6 +12313,18 @@ PX.push('#9ED8F5', '#5DB4E8', '#2E7D4F', '#A8DC7A', '#F6C9A0', '#6B3E26', '#F2D4
   const _s = start; start = function () { const r = _s.apply(this, arguments); setTimeout(ensure, 400); return r; };
   setTimeout(ensure, 900);
   window.__gamefix = ensure;
+})();
+</script>
+<script>
+/* TRFILL 2026-11-26: 학습을 끝내고 처음 화면으로 돌아온 그때 채워지도록, 화면을 그린 뒤 한 번 더 봐요 */
+(function () {
+  try {
+    if (typeof start !== 'function' || !window.__trFill25) return;
+    const _s = start;
+    start = function () { const r = _s.apply(this, arguments);
+      try { if (window.__trFill25()) _s.apply(this, arguments); } catch (e) {}
+      return r; };
+  } catch (e) {}
 })();
 </script>
 </body>
